@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	.title {
+		@apply text-3xl text-primary font-calsans;
+	}
+
+	.title-2 {
+		@apply text-2xl text-primary font-calsans mt-3;
+	}
+
+	.title-3 {
+		@apply text-xl text-primary font-calsans mt-3;
+	}
+
+	.text {
+		@apply text-lg text-primary font-sregular;
+	}
+
+	.indicator-text {
+		@apply text-primary-100 italic text-lg font-sregular;
+	}
+}
+
+@layer components {
+	.custom-btn {
+		@apply flex-row items-center justify-center rounded-md py-2.5 px-6;
+	}
+
+	.custom-input {
+		@apply bg-background border border-primary-50 rounded-md pl-4 text-lg text-primary font-sregular;
+	}
+}

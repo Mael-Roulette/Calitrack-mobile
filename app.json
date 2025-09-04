@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "calitrack-ts",
+    "slug": "calitrack-ts",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo-fond.png",
+    "scheme": "calitrackts",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo-fond.png",
+        "backgroundColor": "#FFF9F7"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.mael_rltt.calitrackts"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/logo-fond.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo-fond.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFF9F7",
+          "dark": {
+            "backgroundColor": "#132541"
+          }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "L'application nécessite l'accès à vos photos pour que vous puissiez choisir une image de profil."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
