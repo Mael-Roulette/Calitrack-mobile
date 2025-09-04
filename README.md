@@ -31,7 +31,7 @@ home.tsx
     └── 📁app
         └── 📁(auth)
             ├── _layout.tsx
-            ├──
+            ├── home.tsx
             ├── sign-in.tsx
             ├── sign-up.tsx
         └── 📁(tabs)
