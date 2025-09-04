@@ -25,13 +25,13 @@ npx expo start
 ```
 
 ## Arborescence du projet
-
+home.tsx
 ```
 └── 📁calitrack-ts
     └── 📁app
         └── 📁(auth)
             ├── _layout.tsx
-            ├── home.tsx
+            ├──
             ├── sign-in.tsx
             ├── sign-up.tsx
         └── 📁(tabs)
