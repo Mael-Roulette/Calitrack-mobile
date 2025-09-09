@@ -6,30 +6,30 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import "./globals.css";
 
-export default function RootLayout() {
+export default function RootLayout () {
 	const { fetchAuthenticatedUser, isLoading } = useAuthStore();
 
-	const [fontsLoaded, error] = useFonts({
-		"CalSans-Regular": require("../assets/fonts/CalSans-Regular.ttf"),
-		"Sora-Regular": require("../assets/fonts/Sora-Regular.ttf"),
-	});
+	const [ fontsLoaded, error ] = useFonts( {
+		"CalSans-Regular": require( "../assets/fonts/CalSans-Regular.ttf" ),
+		"Sora-Regular": require( "../assets/fonts/Sora-Regular.ttf" ),
+	} );
 
-	useEffect(() => {
-		if (error) throw error;
-		if (fontsLoaded) SplashScreen.hideAsync();
-	}, [fontsLoaded, error]);
+	useEffect( () => {
+		if ( error ) throw error;
+		if ( fontsLoaded ) SplashScreen.hideAsync();
+	}, [ fontsLoaded, error ] );
 
-	useEffect(() => {
+	useEffect( () => {
 		fetchAuthenticatedUser();
-	}, []);
+	}, [] );
 
-	if (!fontsLoaded || isLoading) {
+	if ( !fontsLoaded || isLoading ) {
 		return null;
 	}
 
 	return (
 		<View className='bg-background flex-1'>
-			<Stack screenOptions={{ headerShown: false }} />
+			<Stack screenOptions={ { headerShown: false } } />
 		</View>
 	);
 };

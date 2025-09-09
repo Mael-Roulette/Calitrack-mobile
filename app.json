@@ -51,6 +51,9 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "EXPO_ROUTER_APP_ROOT": "./app"
     }
   }
 }
