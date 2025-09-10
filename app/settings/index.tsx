@@ -17,7 +17,7 @@ const Index = () => {
 		await logout();
 		await fetchAuthenticatedUser();
 
-		router.replace("/home");
+		router.replace("/(auth)");
 	};
 
 	return (
