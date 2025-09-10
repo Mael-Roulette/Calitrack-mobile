@@ -3,7 +3,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import CustomButton from "../../components/CustomButton";
 
-const Home = () => {
+const Index = () => {
 	const signin = () => {
 		router.push("/sign-in");
 	};
@@ -42,4 +42,4 @@ const Home = () => {
 	);
 };
 
-export default Home;
+export default Index;
