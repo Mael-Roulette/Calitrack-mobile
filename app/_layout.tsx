@@ -5,6 +5,17 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { View } from "react-native";
 import "./globals.css";
+import { NotificationProvider } from "@/context/NotificationContext";
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler( {
+	handleNotification: async () => ( {
+		shouldPlaySound: true,
+		shouldSetBadge: true,
+		shouldShowBanner: true,
+		shouldShowList: true,
+	} ),
+} );
 
 export default function RootLayout () {
 	const { fetchAuthenticatedUser, isLoading } = useAuthStore();
@@ -28,8 +39,10 @@ export default function RootLayout () {
 	}
 
 	return (
-		<View className='bg-background flex-1'>
-			<Stack screenOptions={ { headerShown: false } } />
-		</View>
+		<NotificationProvider>
+			<View className='bg-background flex-1'>
+				<Stack screenOptions={ { headerShown: false } } />
+			</View>
+		</NotificationProvider>
 	);
 };

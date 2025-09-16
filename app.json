@@ -20,7 +20,8 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.mael_rltt.calitrackts"
+      "package": "com.mael_rltt.calitrackts",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -47,7 +48,8 @@
           "photosPermission": "L'application nécessite l'accès à vos photos pour que vous puissiez choisir une image de profil."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "@react-native-firebase/app"
     ],
     "experiments": {
       "typedRoutes": true
