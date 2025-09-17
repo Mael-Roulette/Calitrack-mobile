@@ -1,383 +1,272 @@
-import Constants from 'expo-constants';
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import { useEffect, useState, useRef } from 'react';
-import { Button, Platform, SafeAreaView, Text, View, Alert, ScrollView, StyleSheet } from 'react-native';
+// app/settings/notifications/index.tsx
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Switch,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+  Platform
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNotificationStore } from '@/store/notification.store';
 
-async function sendPushNotification(expoPushToken: string) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'Test Notification',
-    body: 'This is a test notification sent at ' + new Date().toLocaleTimeString(),
-    data: {
-      someData: 'test data',
-      timestamp: Date.now(),
-      action: 'test_notification'
-    },
-  };
+export default function NotificationsPage () {
+  const {
+    permissions,
+    preferences,
+    isLoading,
+    requestPermissions,
+    updatePreferences,
+    updateDailyNotification,
+    testNotification,
+  } = useNotificationStore();
 
-  try {
-    const response = await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Accept-encoding': 'gzip, deflate',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
-    });
+  const [ showTimePicker, setShowTimePicker ] = useState( false );
 
-    const result = await response.json();
-    console.log('Push notification response:', result);
-
-    if (result.data && result.data.status === 'error') {
-      throw new Error(result.data.message || 'Failed to send notification');
+  useEffect( () => {
+    // Demander les permissions au chargement si pas encore accordées
+    if ( !permissions ) {
+      requestPermissions();
     }
+  }, [ permissions, requestPermissions ] );
 
-    return result;
-  } catch (error) {
-    console.error('Error sending push notification:', error);
-    Alert.alert('Error', 'Failed to send push notification');
-    throw error;
-  }
-}
-
-function handleRegistrationError(errorMessage: string) {
-  console.error('Registration error:', errorMessage);
-  Alert.alert('Registration Error', errorMessage);
-  throw new Error(errorMessage);
-}
-
-async function registerForPushNotificationsAsync() {
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== 'granted') {
-      handleRegistrationError('Permission not granted to get push token for push notification!');
-      return;
-    }
-
-    const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-
-    if (!projectId) {
-      handleRegistrationError('Project ID not found');
-    }
-
-    try {
-      const pushTokenString = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId,
-        })
-      ).data;
-      console.log('Push token:', pushTokenString);
-      return pushTokenString;
-    } catch (e: unknown) {
-      handleRegistrationError(`${e}`);
-    }
-  } else {
-    handleRegistrationError('Must use physical device for push notifications');
-  }
-}
-
-// Test local notification function
-async function scheduleTestNotification() {
-  try {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Local Test Notification',
-        body: 'This is a local notification scheduled at ' + new Date().toLocaleTimeString(),
-        data: {
-          type: 'local_test',
-          timestamp: Date.now()
-        },
-      },
-      trigger: null, // Show after 2 seconds
-    });
-    Alert.alert('Success', 'Local notification scheduled for 2 seconds from now');
-  } catch (error) {
-    console.error('Error scheduling local notification:', error);
-    Alert.alert('Error', 'Failed to schedule local notification');
-  }
-}
-
-export default function NotificationsPage() {
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [notificationHistory, setNotificationHistory] = useState<Notifications.Notification[]>([]);
-
-  // Use proper ref typing with null initial value
-  const notificationListener = useRef<{ remove(): void } | null>(null);
-  const responseListener = useRef<{ remove(): void } | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const setupNotifications = async () => {
-      try {
-        const token = await registerForPushNotificationsAsync();
-        if (isMounted) {
-          setExpoPushToken(token ?? '');
-          setIsLoading(false);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setExpoPushToken(`Error: ${error}`);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    setupNotifications();
-
-    // Set up notification listeners
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('🔔 Notification Received:', notification);
-      if (isMounted) {
-        setNotification(notification);
-        setNotificationHistory(prev => [notification, ...prev.slice(0, 4)]); // Keep last 5
-      }
-    });
-
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('🔔 Notification Response:', response);
+  const handlePermissionRequest = async () => {
+    await requestPermissions();
+    if ( !permissions ) {
       Alert.alert(
-        'Notification Tapped',
-        `You tapped on: ${response.notification.request.content.title}`
+        'Permissions requises',
+        'Veuillez autoriser les notifications dans les paramètres de votre téléphone',
+        [ { text: 'OK' } ]
       );
-      // Handle navigation or other actions based on notification data here
-    });
-
-    return () => {
-      isMounted = false;
-
-      if (notificationListener.current) {
-        notificationListener.current.remove();
-      }
-      if (responseListener.current) {
-        responseListener.current.remove();
-      }
-    };
-  }, []);
-
-  const handleSendPushNotification = async () => {
-    if (!expoPushToken || expoPushToken.startsWith('Error:')) {
-      Alert.alert('Error', 'No valid push token available');
-      return;
-    }
-
-    try {
-      await sendPushNotification(expoPushToken);
-      Alert.alert('Success', 'Push notification sent!');
-    } catch (error) {
-			console.log( error );
     }
   };
+
+  const handleTimeChange = ( selectedTime: Date ) => {
+    const hours = selectedTime.getHours().toString().padStart( 2, '0' );
+    const minutes = selectedTime.getMinutes().toString().padStart( 2, '0' );
+    const timeString = `${hours}:${minutes}`;
+
+    // Mettre à jour l'heure tout en gardant l'état activé/désactivé
+    updateDailyNotification( preferences.dailyReminder, timeString );
+
+    // Sur iOS, fermer le picker manuellement
+    if ( Platform.OS === 'ios' ) {
+      setShowTimePicker( false );
+    }
+  };
+
+  const handleDailyReminderToggle = ( value: boolean ) => {
+    updateDailyNotification( value, preferences.dailyTime );
+  };
+
+  const handleTestNotification = () => {
+    if ( !permissions ) {
+      Alert.alert( 'Permissions manquantes', 'Veuillez d\'abord autoriser les notifications' );
+      return;
+    }
+    testNotification();
+    Alert.alert( 'Test envoyé', 'Vérifiez votre barre de notifications !' );
+  };
+
+  const formatTime = ( timeString: string ) => {
+    const [ hours, minutes ] = timeString.split( ':' );
+    const hour24 = parseInt( hours );
+
+    if ( Platform.OS === 'ios' ) {
+      // Format 12h pour iOS
+      const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
+      const period = hour24 >= 12 ? 'PM' : 'AM';
+      return `${hour12}:${minutes} ${period}`;
+    } else {
+      // Format 24h pour Android
+      return `${hours}:${minutes}`;
+    }
+  };
+
+  const getInitialTimeForPicker = () => {
+    const [ hours, minutes ] = preferences.dailyTime.split( ':' ).map( Number );
+    const date = new Date();
+    date.setHours( hours, minutes, 0, 0 );
+    return date;
+  };
+
+  if ( isLoading ) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <Text className="text-lg">Chargement des paramètres...</Text>
+      </View>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Notification Testing</Text>
+    <ScrollView className="flex-1 bg-white">
+      <View className="p-4">
+        <Text className="text-2xl font-bold mb-6 text-gray-900">
+          Paramètres de notifications
+        </Text>
 
-          {/* Token Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Push Token Status:</Text>
-            <Text style={styles.tokenText}>
-              {isLoading ? 'Loading...' : (expoPushToken || 'No token available')}
+        {/* Status des permissions */ }
+        <View className="bg-gray-50 border border-gray-200 p-4 rounded-xl mb-6">
+          <Text className="font-semibold mb-2 text-gray-900">
+            État des notifications
+          </Text>
+          <View className="flex-row items-center">
+            <Text className={ `text-sm ${permissions ? 'text-green-600' : 'text-red-600'}` }>
+              { permissions ? '✅ Autorisées' : '❌ Non autorisées' }
             </Text>
           </View>
 
-          {/* Current Notification Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Latest Notification:</Text>
-            {notification ? (
-              <View style={styles.notificationCard}>
-                <Text style={styles.notificationTitle}>
-                  Title: {notification.request.content.title || 'No title'}
-                </Text>
-                <Text style={styles.notificationBody}>
-                  Body: {notification.request.content.body || 'No body'}
-                </Text>
-                <Text style={styles.notificationData}>
-                  Data: {JSON.stringify(notification.request.content.data) || 'No data'}
-                </Text>
-                <Text style={styles.notificationTime}>
-                  Received: {new Date(notification.date).toLocaleString()}
-                </Text>
-              </View>
-            ) : (
-              <Text style={styles.noNotification}>No notifications received yet</Text>
-            )}
+          { !permissions && (
+            <TouchableOpacity
+              onPress={ handlePermissionRequest }
+              className="bg-blue-500 p-3 rounded-lg mt-3"
+            >
+              <Text className="text-white text-center font-medium">
+                Autoriser les notifications
+              </Text>
+            </TouchableOpacity>
+          ) }
+        </View>
+
+        {/* Section Rappel quotidien */ }
+        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+          <View className="flex-row justify-between items-center mb-3">
+            <View className="flex-1">
+              <Text className="text-lg font-semibold text-gray-900">
+                Rappel quotidien
+              </Text>
+              <Text className="text-sm text-gray-600 mt-1">
+                Notification quotidienne pour votre entraînement
+              </Text>
+            </View>
+            <Switch
+              value={ preferences.dailyReminder }
+              onValueChange={ handleDailyReminderToggle }
+              disabled={ !permissions }
+              trackColor={ { false: '#f3f4f6', true: '#3b82f6' } }
+              thumbColor={ preferences.dailyReminder ? '#ffffff' : '#9ca3af' }
+            />
           </View>
 
-          {/* Notification History */}
-          {notificationHistory.length > 1 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Recent Notifications:</Text>
-              {notificationHistory.slice(1).map((notif, index) => (
-                <View key={index} style={styles.historyCard}>
-                  <Text style={styles.historyTitle}>{notif.request.content.title}</Text>
-                  <Text style={styles.historyTime}>
-                    {new Date(notif.date).toLocaleTimeString()}
-                  </Text>
-                </View>
-              ))}
+          {/* Sélecteur d'heure */ }
+          <TouchableOpacity
+            onPress={ () => setShowTimePicker( true ) }
+            disabled={ !permissions || !preferences.dailyReminder }
+            className={ `border border-gray-300 p-4 rounded-lg ${!permissions || !preferences.dailyReminder
+                ? 'bg-gray-100 opacity-50'
+                : 'bg-white'
+              }` }
+          >
+            <View className="flex-row justify-between items-center">
+              <Text className="text-gray-700 font-medium">
+                Heure du rappel
+              </Text>
+              <Text className="text-blue-600 font-semibold text-lg">
+                { formatTime( preferences.dailyTime ) }
+              </Text>
             </View>
-          )}
+          </TouchableOpacity>
+        </View>
 
-          {/* Action Buttons */}
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Send Push Notification"
-              onPress={handleSendPushNotification}
-              disabled={isLoading || expoPushToken.startsWith('Error:')}
+        {/* Section Autres notifications */ }
+        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+          <Text className="text-lg font-semibold text-gray-900 mb-4">
+            Autres notifications
+          </Text>
+
+          {/* Rappels d'entraînement */ }
+          <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
+            <View className="flex-1">
+              <Text className="font-medium text-gray-900">
+                Rappels d&apos;entraînement
+              </Text>
+              <Text className="text-sm text-gray-600 mt-1">
+                Avant vos séances programmées
+              </Text>
+            </View>
+            <Switch
+              value={ preferences.workoutReminder }
+              onValueChange={ ( value ) => updatePreferences( { workoutReminder: value } ) }
+              disabled={ !permissions }
+              trackColor={ { false: '#f3f4f6', true: '#3b82f6' } }
+              thumbColor={ preferences.workoutReminder ? '#ffffff' : '#9ca3af' }
             />
+          </View>
 
-            <View style={styles.buttonSpacer} />
-
-            <Button
-              title="Schedule Local Notification"
-              onPress={scheduleTestNotification}
-              color="#007AFF"
-            />
-
-            <View style={styles.buttonSpacer} />
-
-            <Button
-              title="Clear History"
-              onPress={() => {
-                setNotification(null);
-                setNotificationHistory([]);
-              }}
-              color="#FF3B30"
+          {/* Mises à jour de progression */ }
+          <View className="flex-row justify-between items-center py-3">
+            <View className="flex-1">
+              <Text className="font-medium text-gray-900">
+                Mises à jour de progression
+              </Text>
+              <Text className="text-sm text-gray-600 mt-1">
+                Notifications sur vos réalisations
+              </Text>
+            </View>
+            <Switch
+              value={ preferences.progressUpdates }
+              onValueChange={ ( value ) => updatePreferences( { progressUpdates: value } ) }
+              disabled={ !permissions }
+              trackColor={ { false: '#f3f4f6', true: '#3b82f6' } }
+              thumbColor={ preferences.progressUpdates ? '#ffffff' : '#9ca3af' }
             />
           </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        {/* Section Test */ }
+        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
+          <Text className="text-lg font-semibold text-gray-900 mb-3">
+            Test
+          </Text>
+          <TouchableOpacity
+            onPress={ handleTestNotification }
+            disabled={ !permissions }
+            className={ `p-4 rounded-lg ${permissions
+                ? 'bg-blue-500'
+                : 'bg-gray-300'
+              }` }
+          >
+            <Text className="text-white text-center font-semibold">
+              Envoyer une notification test
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Informations */ }
+        <View className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <Text className="text-blue-800 font-medium mb-2">
+            💡 À savoir
+          </Text>
+          <Text className="text-blue-700 text-sm leading-5">
+            • Les notifications quotidiennes se répètent automatiquement{ '\n' }
+            • Vous pouvez changer l&apos;heure à tout moment{ '\n' }
+            • Les permissions peuvent être modifiées dans les réglages de votre téléphone
+          </Text>
+        </View>
+      </View>
+
+      {/* DateTimePicker - Affichage conditionnel selon la plateforme */ }
+      { showTimePicker && (
+        <DateTimePicker
+          value={ getInitialTimeForPicker() }
+          mode="time"
+          is24Hour={ Platform.OS === 'android' }
+          display={ Platform.OS === 'ios' ? 'spinner' : 'default' }
+          onChange={ ( event, selectedTime ) => {
+            if ( Platform.OS === 'android' ) {
+              setShowTimePicker( false );
+            }
+            if ( selectedTime && event.type === 'set' ) {
+              handleTimeChange( selectedTime );
+            }
+            if ( event.type === 'dismissed' ) {
+              setShowTimePicker( false );
+            }
+          } }
+        />
+      ) }
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
-  },
-  section: {
-    marginBottom: 20,
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
-  },
-  tokenText: {
-    fontSize: 12,
-    color: '#666',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    backgroundColor: '#f8f8f8',
-    padding: 10,
-    borderRadius: 5,
-  },
-  notificationCard: {
-    backgroundColor: '#f8f9fa',
-    padding: 12,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
-  },
-  notificationTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: '#333',
-  },
-  notificationBody: {
-    fontSize: 14,
-    marginBottom: 5,
-    color: '#666',
-  },
-  notificationData: {
-    fontSize: 12,
-    color: '#888',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    marginBottom: 5,
-  },
-  notificationTime: {
-    fontSize: 12,
-    color: '#999',
-    fontStyle: 'italic',
-  },
-  noNotification: {
-    fontSize: 14,
-    color: '#999',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    padding: 20,
-  },
-  historyCard: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  historyTitle: {
-    fontSize: 14,
-    color: '#333',
-    flex: 1,
-  },
-  historyTime: {
-    fontSize: 12,
-    color: '#666',
-  },
-  buttonContainer: {
-    marginTop: 20,
-  },
-  buttonSpacer: {
-    height: 15,
-  },
-});

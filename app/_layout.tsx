@@ -5,7 +5,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { View } from "react-native";
 import "./globals.css";
-import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from 'expo-notifications';
 
 Notifications.setNotificationHandler( {
@@ -39,10 +38,8 @@ export default function RootLayout () {
 	}
 
 	return (
-		<NotificationProvider>
-			<View className='bg-background flex-1'>
-				<Stack screenOptions={ { headerShown: false } } />
-			</View>
-		</NotificationProvider>
+		<View className='bg-background flex-1'>
+			<Stack screenOptions={ { headerShown: false } } />
+		</View>
 	);
 };
