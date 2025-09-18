@@ -1,7 +1,7 @@
 // store/notifications.store.ts
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NotificationService, NotificationPreferences } from '../services/notification';
 
 interface NotificationState {
@@ -153,7 +153,7 @@ export const useNotificationStore = create<NotificationState>()(
     }),
     {
       name: 'notification-preferences',
-      // storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => AsyncStorage),
       // Ne persister que les préférences, pas l'état loading
       partialize: (state) => ({
         preferences: state.preferences,

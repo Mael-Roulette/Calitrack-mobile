@@ -1,7 +1,10 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
+import { Platform } from 'react-native';
 
-// Configuration des notifications
+/**
+ * Configuration des notifications
+ */
 Notifications.setNotificationHandler( {
   handleNotification: async () => ( {
     shouldPlaySound: true,
@@ -28,7 +31,10 @@ export class NotificationService {
     return NotificationService.instance;
   }
 
-  // Demander les permissions
+  /**
+   * Demande les permissions de notifications
+   * @returns true si les permissions sont acceptées, false sinon
+   */
   async requestPermissions (): Promise<boolean> {
     if ( !Device.isDevice ) {
       console.log( 'Must use physical device for push notifications' );
@@ -51,7 +57,31 @@ export class NotificationService {
     return true;
   }
 
-  // Programmer une notification quotidienne
+  /**
+   * Calcule la prochaine occurrence d'une heure donnée
+   * @param time heure au format "HH:MM"
+   * @returns Date de la prochaine occurrence
+   */
+  private getNextOccurrence ( time: string ): Date {
+    const [ hours, minutes ] = time.split( ':' ).map( Number );
+    const now = new Date();
+    const scheduledTime = new Date();
+
+    scheduledTime.setHours( hours, minutes, 0, 0 );
+
+    // Si l'heure est déjà passée aujourd'hui, programmer pour demain
+    if ( scheduledTime <= now ) {
+      scheduledTime.setDate( scheduledTime.getDate() + 1 );
+    }
+
+    return scheduledTime;
+  }
+
+  /**
+   * Programme la prochaine notification et configure la récurrence
+   * @param time heure de la notification
+   * @param enabled permet d'activer ou de désactiver la notification
+   */
   async scheduleDailyNotification ( time: string, enabled: boolean ) {
     // Annuler l'ancienne notification quotidienne
     await this.cancelNotification( 'daily-reminder' );
@@ -66,69 +96,114 @@ export class NotificationService {
       return;
     }
 
-    await Notifications.scheduleNotificationAsync( {
-      identifier: 'daily-reminder',
-      content: {
-        title: "C'est l'heure de s'entraîner ! 💪",
-        body: "N'oubliez pas votre séance d'aujourd'hui",
-        data: { type: 'daily-reminder' },
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-        hour: hours,
-        minute: minutes,
-        repeats: true,
-      },
-    } );
+    if ( Platform.OS === 'ios' ) {
+      // Sur iOS, on peut utiliser le trigger calendar
+      await Notifications.scheduleNotificationAsync( {
+        identifier: 'daily-reminder',
+        content: {
+          title: "C'est l'heure de s'entraîner ! 💪",
+          body: "N'oubliez pas votre séance d'aujourd'hui",
+          data: { type: 'daily-reminder' },
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+          hour: hours,
+          minute: minutes,
+          repeats: true,
+        },
+      } );
+    } else {
+      // Sur Android, on programme une série de notifications avec des dates spécifiques
+      await this.scheduleAndroidDailyNotifications( time );
+    }
 
-    console.log( `Notification quotidienne programmée à ${time}` );
+    console.log( `Notification quotidienne programmée à ${time} (${Platform.OS})` );
   }
 
-  // Programmer une notification à 18h spécifiquement
-  async scheduleDailyReminderAt6PM ( enabled: boolean ) {
-    await this.scheduleDailyNotification( "22:03", enabled );
-  }
-
-  // Programmer une notification pour demain à une heure donnée (pour test)
-  async scheduleNextDayNotification ( time: string ) {
+  /**
+   * Programme une série de notifications pour Android (30 jours)
+   * @param time heure de la notification
+   */
+  private async scheduleAndroidDailyNotifications ( time: string ) {
     const [ hours, minutes ] = time.split( ':' ).map( Number );
 
-    const tomorrow = new Date();
-    tomorrow.setDate( tomorrow.getDate() + 1 );
-    tomorrow.setHours( hours, minutes, 0, 0 );
+    // Programmer pour les 30 prochains jours
+    for ( let day = 0; day < 30; day++ ) {
+      const notificationDate = new Date();
+      notificationDate.setDate( notificationDate.getDate() + day );
+      notificationDate.setHours( hours, minutes, 0, 0 );
 
-    await Notifications.scheduleNotificationAsync( {
-      identifier: 'next-day-test',
-      content: {
-        title: "Test notification de demain ! 🔔",
-        body: `Notification programmée pour ${time}`,
-        data: { type: 'test' },
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DATE,
-        date: tomorrow,
-      },
-    } );
-
-    console.log( `Notification de test programmée pour demain à ${time}` );
+      // Ne programmer que si l'heure n'est pas déjà passée
+      if ( notificationDate > new Date() ) {
+        await Notifications.scheduleNotificationAsync( {
+          identifier: `daily-reminder-${day}`,
+          content: {
+            title: "C'est l'heure de s'entraîner ! 💪",
+            body: "N'oubliez pas votre séance d'aujourd'hui",
+            data: { type: 'daily-reminder' },
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: notificationDate,
+          },
+        } );
+      }
+    }
   }
 
-  // Annuler une notification
+  /**
+   * Permet de programmer une notification à une heure spécifique
+   * @param enabled permet d'activer ou de désactiver cette notifications
+   */
+  async scheduleDailyReminderAt6PM ( enabled: boolean ) {
+    await this.scheduleDailyNotification( "18:00", enabled );
+  }
+
+  /**
+   * Annuler une notifications
+   * @param identifier l'id de la notification
+   */
   async cancelNotification ( identifier: string ) {
     await Notifications.cancelScheduledNotificationAsync( identifier );
   }
 
-  // Annuler toutes les notifications
+  /**
+   * Annule toutes les notifications quotidiennes (iOS et Android)
+   */
+  async cancelDailyNotifications () {
+    if ( Platform.OS === 'ios' ) {
+      await this.cancelNotification( 'daily-reminder' );
+    } else {
+      // Sur Android, annuler toutes les notifications quotidiennes
+      const scheduledNotifications = await this.getScheduledNotifications();
+      for ( const notif of scheduledNotifications ) {
+        if ( notif.identifier.startsWith( 'daily-reminder' ) ) {
+          await this.cancelNotification( notif.identifier );
+        }
+      }
+    }
+  }
+
+  /**
+   * Permet d'annuler toute les notifications
+   */
   async cancelAllNotifications () {
     await Notifications.cancelAllScheduledNotificationsAsync();
   }
 
-  // Obtenir les notifications programmées
+  /**
+   * Permet d'obtenir toute les notifications programmées
+   * @returns retourner les notifications programmées
+   */
   async getScheduledNotifications () {
     return await Notifications.getAllScheduledNotificationsAsync();
   }
 
-  // Notification immédiate (pour les tests)
+  /**
+   * Permet d'envoyer une notification immédiate pour les tests
+   * @param title titre de la notification
+   * @param body contenu de la notification
+   */
   async sendImmediateNotification ( title: string, body: string ) {
     await Notifications.scheduleNotificationAsync( {
       content: {
@@ -140,9 +215,37 @@ export class NotificationService {
     } );
   }
 
-  // Vérifier si une notification est programmée
+  /**
+   * Vérifie si une notification quotidienne est programmée
+   * @returns retourne si une notification quotidienne est programmée
+   */
   async isDailyNotificationScheduled (): Promise<boolean> {
     const scheduledNotifications = await this.getScheduledNotifications();
-    return scheduledNotifications.some( notif => notif.identifier === 'daily-reminder' );
+
+    if ( Platform.OS === 'ios' ) {
+      return scheduledNotifications.some( notif => notif.identifier === 'daily-reminder' );
+    } else {
+      return scheduledNotifications.some( notif => notif.identifier.startsWith( 'daily-reminder' ) );
+    }
+  }
+
+  /**
+   * Méthode de maintenance pour renouveler les notifications Android
+   * À appeler périodiquement (par exemple au lancement de l'app)
+   */
+  async renewAndroidNotifications () {
+    if ( Platform.OS !== 'android' ) return;
+
+    const scheduledNotifications = await this.getScheduledNotifications();
+    const dailyNotifications = scheduledNotifications.filter( notif =>
+      notif.identifier.startsWith( 'daily-reminder' )
+    );
+
+    // Si il reste moins de 7 notifications, en reprogrammer
+    if ( dailyNotifications.length < 7 ) {
+      console.log( 'Renouvellement des notifications Android nécessaire' );
+      // Vous pouvez récupérer l'heure depuis les préférences utilisateur
+      // et relancer scheduleDailyNotification
+    }
   }
 }

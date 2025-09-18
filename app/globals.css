@@ -15,6 +15,10 @@
 		@apply text-xl text-primary font-calsans mt-3;
 	}
 
+	.title-4 {
+		@apply text-lg text-primary font-calsans;
+	}
+
 	.text {
 		@apply text-lg text-primary font-sregular;
 	}

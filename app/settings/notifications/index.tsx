@@ -7,10 +7,11 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
-  Platform
+  Modal,
+  TextInput
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNotificationStore } from '@/store/notification.store';
+import CustomButton from '@/components/CustomButton';
 
 export default function NotificationsPage () {
   const {
@@ -24,13 +25,19 @@ export default function NotificationsPage () {
   } = useNotificationStore();
 
   const [ showTimePicker, setShowTimePicker ] = useState( false );
+  const [ tempHour, setTempHour ] = useState( '18' );
+  const [ tempMinute, setTempMinute ] = useState( '00' );
 
   useEffect( () => {
-    // Demander les permissions au chargement si pas encore accordées
     if ( !permissions ) {
       requestPermissions();
     }
-  }, [ permissions, requestPermissions ] );
+
+    // Initialiser les valeurs temporaires avec l'heure actuelle
+    const [ hours, minutes ] = preferences.dailyTime.split( ':' );
+    setTempHour( hours );
+    setTempMinute( minutes );
+  }, [ permissions, requestPermissions, preferences.dailyTime ] );
 
   const handlePermissionRequest = async () => {
     await requestPermissions();
@@ -43,18 +50,18 @@ export default function NotificationsPage () {
     }
   };
 
-  const handleTimeChange = ( selectedTime: Date ) => {
-    const hours = selectedTime.getHours().toString().padStart( 2, '0' );
-    const minutes = selectedTime.getMinutes().toString().padStart( 2, '0' );
-    const timeString = `${hours}:${minutes}`;
+  const handleTimeConfirm = () => {
+    const hour = parseInt( tempHour );
+    const minute = parseInt( tempMinute );
 
-    // Mettre à jour l'heure tout en gardant l'état activé/désactivé
-    updateDailyNotification( preferences.dailyReminder, timeString );
-
-    // Sur iOS, fermer le picker manuellement
-    if ( Platform.OS === 'ios' ) {
-      setShowTimePicker( false );
+    if ( hour < 0 || hour > 23 || minute < 0 || minute > 59 ) {
+      Alert.alert( 'Erreur', 'Veuillez entrer une heure valide (00:00 - 23:59)' );
+      return;
     }
+
+    const timeString = `${hour.toString().padStart( 2, '0' )}:${minute.toString().padStart( 2, '0' )}`;
+    updateDailyNotification( preferences.dailyReminder, timeString );
+    setShowTimePicker( false );
   };
 
   const handleDailyReminderToggle = ( value: boolean ) => {
@@ -70,28 +77,6 @@ export default function NotificationsPage () {
     Alert.alert( 'Test envoyé', 'Vérifiez votre barre de notifications !' );
   };
 
-  const formatTime = ( timeString: string ) => {
-    const [ hours, minutes ] = timeString.split( ':' );
-    const hour24 = parseInt( hours );
-
-    if ( Platform.OS === 'ios' ) {
-      // Format 12h pour iOS
-      const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
-      const period = hour24 >= 12 ? 'PM' : 'AM';
-      return `${hour12}:${minutes} ${period}`;
-    } else {
-      // Format 24h pour Android
-      return `${hours}:${minutes}`;
-    }
-  };
-
-  const getInitialTimeForPicker = () => {
-    const [ hours, minutes ] = preferences.dailyTime.split( ':' ).map( Number );
-    const date = new Date();
-    date.setHours( hours, minutes, 0, 0 );
-    return date;
-  };
-
   if ( isLoading ) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
@@ -101,43 +86,36 @@ export default function NotificationsPage () {
   }
 
   return (
-    <ScrollView className="flex-1 bg-white">
+    <ScrollView className="flex-1 bg-background">
       <View className="p-4">
-        <Text className="text-2xl font-bold mb-6 text-gray-900">
-          Paramètres de notifications
-        </Text>
-
         {/* Status des permissions */ }
-        <View className="bg-gray-50 border border-gray-200 p-4 rounded-xl mb-6">
-          <Text className="font-semibold mb-2 text-gray-900">
+        <View className="border border-primary-50 p-4 rounded-md mb-6">
+          <Text className="title-4 mb-2">
             État des notifications
           </Text>
           <View className="flex-row items-center">
-            <Text className={ `text-sm ${permissions ? 'text-green-600' : 'text-red-600'}` }>
-              { permissions ? '✅ Autorisées' : '❌ Non autorisées' }
+            <Text className={ `indicator-text ${permissions ? 'text-green' : 'text-red-600'}` }>
+              { permissions ? 'Autorisées' : 'Non autorisées' }
             </Text>
           </View>
 
           { !permissions && (
-            <TouchableOpacity
-              onPress={ handlePermissionRequest }
-              className="bg-blue-500 p-3 rounded-lg mt-3"
-            >
-              <Text className="text-white text-center font-medium">
-                Autoriser les notifications
-              </Text>
-            </TouchableOpacity>
+            <CustomButton title='Autoriser les notifications' onPress={ handlePermissionRequest } customStyles='mt-3' />
           ) }
         </View>
 
+        <Text className="title-2 mb-4">
+          Paramètres de notifications
+        </Text>
+
         {/* Section Rappel quotidien */ }
-        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
-          <View className="flex-row justify-between items-center mb-3">
+        <View className="border border-primary-50 px-4 py-6 rounded-md mb-6">
+          <View className="flex-row justify-between items-end mb-3">
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-gray-900">
+              <Text className="title-4">
                 Rappel quotidien
               </Text>
-              <Text className="text-sm text-gray-600 mt-1">
+              <Text className="text-md text-primary-100 mt-1">
                 Notification quotidienne pour votre entraînement
               </Text>
             </View>
@@ -145,7 +123,7 @@ export default function NotificationsPage () {
               value={ preferences.dailyReminder }
               onValueChange={ handleDailyReminderToggle }
               disabled={ !permissions }
-              trackColor={ { false: '#f3f4f6', true: '#3b82f6' } }
+              trackColor={ { false: '#f3f4f6', true: '#FC7942' } }
               thumbColor={ preferences.dailyReminder ? '#ffffff' : '#9ca3af' }
             />
           </View>
@@ -154,35 +132,30 @@ export default function NotificationsPage () {
           <TouchableOpacity
             onPress={ () => setShowTimePicker( true ) }
             disabled={ !permissions || !preferences.dailyReminder }
-            className={ `border border-gray-300 p-4 rounded-lg ${!permissions || !preferences.dailyReminder
-                ? 'bg-gray-100 opacity-50'
-                : 'bg-white'
+            className={ `border border-primary-50 p-4 rounded-md ${!permissions || !preferences.dailyReminder
+              ? 'bg-primary-100 opacity-50'
+              : 'bg-background'
               }` }
           >
             <View className="flex-row justify-between items-center">
-              <Text className="text-gray-700 font-medium">
+              <Text className="title-4">
                 Heure du rappel
               </Text>
-              <Text className="text-blue-600 font-semibold text-lg">
-                { formatTime( preferences.dailyTime ) }
+              <Text className="text-secondary text">
+                { preferences.dailyTime }
               </Text>
             </View>
           </TouchableOpacity>
         </View>
 
-        {/* Section Autres notifications */ }
-        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
-            Autres notifications
-          </Text>
-
-          {/* Rappels d'entraînement */ }
-          <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
+        {/* Section Rappel entrainement programmé */ }
+        {/* <View className="border border-primary-50 px-4 py-6 rounded-md mb-6">
+          <View className="flex-row justify-between items-end">
             <View className="flex-1">
-              <Text className="font-medium text-gray-900">
+              <Text className="title-4">
                 Rappels d&apos;entraînement
               </Text>
-              <Text className="text-sm text-gray-600 mt-1">
+              <Text className="text-md text-primary-100 mt-1">
                 Avant vos séances programmées
               </Text>
             </View>
@@ -190,83 +163,81 @@ export default function NotificationsPage () {
               value={ preferences.workoutReminder }
               onValueChange={ ( value ) => updatePreferences( { workoutReminder: value } ) }
               disabled={ !permissions }
-              trackColor={ { false: '#f3f4f6', true: '#3b82f6' } }
+              trackColor={ { false: '#f3f4f6', true: '#FC7942' } }
               thumbColor={ preferences.workoutReminder ? '#ffffff' : '#9ca3af' }
             />
           </View>
-
-          {/* Mises à jour de progression */ }
-          <View className="flex-row justify-between items-center py-3">
-            <View className="flex-1">
-              <Text className="font-medium text-gray-900">
-                Mises à jour de progression
-              </Text>
-              <Text className="text-sm text-gray-600 mt-1">
-                Notifications sur vos réalisations
-              </Text>
-            </View>
-            <Switch
-              value={ preferences.progressUpdates }
-              onValueChange={ ( value ) => updatePreferences( { progressUpdates: value } ) }
-              disabled={ !permissions }
-              trackColor={ { false: '#f3f4f6', true: '#3b82f6' } }
-              thumbColor={ preferences.progressUpdates ? '#ffffff' : '#9ca3af' }
-            />
-          </View>
-        </View>
+        </View> */}
 
         {/* Section Test */ }
-        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
-          <Text className="text-lg font-semibold text-gray-900 mb-3">
-            Test
+        <View className="border border-primary-50 px-4 py-6 rounded-md mb-6">
+          <Text className="title-4 mb-3">
+            Test notification
           </Text>
-          <TouchableOpacity
-            onPress={ handleTestNotification }
-            disabled={ !permissions }
-            className={ `p-4 rounded-lg ${permissions
-                ? 'bg-blue-500'
-                : 'bg-gray-300'
-              }` }
-          >
-            <Text className="text-white text-center font-semibold">
-              Envoyer une notification test
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Informations */ }
-        <View className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <Text className="text-blue-800 font-medium mb-2">
-            💡 À savoir
-          </Text>
-          <Text className="text-blue-700 text-sm leading-5">
-            • Les notifications quotidiennes se répètent automatiquement{ '\n' }
-            • Vous pouvez changer l&apos;heure à tout moment{ '\n' }
-            • Les permissions peuvent être modifiées dans les réglages de votre téléphone
-          </Text>
+          <CustomButton title='Envoyer une notification test' onPress={ handleTestNotification } isLoading={ !permissions } customStyles={ `p-4 rounded-lg ${permissions
+            ? 'bg-blue-500'
+            : 'bg-gray-300'
+            }` } />
         </View>
       </View>
 
-      {/* DateTimePicker - Affichage conditionnel selon la plateforme */ }
-      { showTimePicker && (
-        <DateTimePicker
-          value={ getInitialTimeForPicker() }
-          mode="time"
-          is24Hour={ Platform.OS === 'android' }
-          display={ Platform.OS === 'ios' ? 'spinner' : 'default' }
-          onChange={ ( event, selectedTime ) => {
-            if ( Platform.OS === 'android' ) {
-              setShowTimePicker( false );
-            }
-            if ( selectedTime && event.type === 'set' ) {
-              handleTimeChange( selectedTime );
-            }
-            if ( event.type === 'dismissed' ) {
-              setShowTimePicker( false );
-            }
-          } }
-        />
-      ) }
+      {/* Modal Time Picker Custom */ }
+      <Modal
+        animationType="slide"
+        transparent={ true }
+        visible={ showTimePicker }
+        onRequestClose={ () => setShowTimePicker( false ) }
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-background w-[80%] p-5 rounded-xl">
+            <Text className="title-3 text-center mb-3">
+              Choisir l&apos;heure
+            </Text>
+
+            <View className="flex-row justify-center items-center mb-6">
+              <View className="items-center">
+                <Text className="indicator-text">Heure</Text>
+                <TextInput
+                  value={ tempHour }
+                  onChangeText={ setTempHour }
+                  keyboardType="numeric"
+                  maxLength={ 2 }
+                  className="text-xl font-bold text-center border border-primary-100 rounded-md w-16"
+                />
+              </View>
+
+              <Text className="text-3xl font-bold mx-4">:</Text>
+
+              <View className="items-center">
+                <Text className="indicator-text">Minutes</Text>
+                <TextInput
+                  value={ tempMinute }
+                  onChangeText={ setTempMinute }
+                  keyboardType="numeric"
+                  maxLength={ 2 }
+                  className="text-xl font-bold text-center border border-primary-100 rounded-md w-16"
+                />
+              </View>
+            </View>
+
+            <View className="flex-row justify-between">
+              <TouchableOpacity
+                onPress={ () => setShowTimePicker( false ) }
+                className="bg-gray-300 px-6 py-3 rounded-lg flex-1 mr-2"
+              >
+                <Text className="text-center font-medium">Annuler</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={ handleTimeConfirm }
+                className="bg-blue-500 px-6 py-3 rounded-lg flex-1 ml-2"
+              >
+                <Text className="text-white text-center font-medium">Confirmer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
