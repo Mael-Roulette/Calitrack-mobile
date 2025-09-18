@@ -92,9 +92,9 @@ const Day = () => {
 						<TrainingItem
 							id={training.$id}
 							key={`${training.$id}-${index}`}
-							title={training.Name}
-							days={training.Days}
-							duration={training.Duration}
+							title={training.name}
+							days={training.days}
+							duration={training.duration}
 						/>
 					))
 				) : (

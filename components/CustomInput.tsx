@@ -29,6 +29,7 @@ const CustomInput = ({
 				onFocus={() => setIsFocused(true)}
 				onBlur={() => setIsFocused(false)}
 				placeholder={placeholder}
+				placeholderTextColor={"#AEC4E7"}
 				className={cn("custom-input", customStyles)}
 				editable={editable}
 			/>

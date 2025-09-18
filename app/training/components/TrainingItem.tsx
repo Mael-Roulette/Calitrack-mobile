@@ -1,5 +1,5 @@
 import PrimaryGradient from "@/components/PrimaryGradient";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -72,7 +72,7 @@ const TrainingItem = ({
 					className='flex-row items-center justify-center rounded-md py-3 px-6 gap-4 bg-background'
 					onPress={goToTraining}
 				>
-					<AntDesign name='caretright' size={22} color='#FC7942' />
+					<FontAwesome name="caret-right" size={22} color="#FC7942" />
 					<Text className='text-secondary font-sregular text-base'>
 						Lancer ma séance
 					</Text>
