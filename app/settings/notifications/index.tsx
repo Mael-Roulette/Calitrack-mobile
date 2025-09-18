@@ -1,17 +1,18 @@
 // app/settings/notifications/index.tsx
+import CustomButton from '@/components/CustomButton';
+import { useNotificationStore } from '@/store/notification.store';
+import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Switch,
   Alert,
-  TouchableOpacity,
-  ScrollView,
   Modal,
-  TextInput
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { useNotificationStore } from '@/store/notification.store';
-import CustomButton from '@/components/CustomButton';
 
 export default function NotificationsPage () {
   const {
@@ -23,7 +24,6 @@ export default function NotificationsPage () {
     updateDailyNotification,
     testNotification,
   } = useNotificationStore();
-
   const [ showTimePicker, setShowTimePicker ] = useState( false );
   const [ tempHour, setTempHour ] = useState( '18' );
   const [ tempMinute, setTempMinute ] = useState( '00' );
@@ -60,6 +60,7 @@ export default function NotificationsPage () {
     }
 
     const timeString = `${hour.toString().padStart( 2, '0' )}:${minute.toString().padStart( 2, '0' )}`;
+
     updateDailyNotification( preferences.dailyReminder, timeString );
     setShowTimePicker( false );
   };
@@ -170,7 +171,7 @@ export default function NotificationsPage () {
         </View> */}
 
         {/* Section Test */ }
-        <View className="border border-primary-50 px-4 py-6 rounded-md mb-6">
+        {/* <View className="border border-primary-50 px-4 py-6 rounded-md mb-6">
           <Text className="title-4 mb-3">
             Test notification
           </Text>
@@ -178,7 +179,7 @@ export default function NotificationsPage () {
             ? 'bg-blue-500'
             : 'bg-gray-300'
             }` } />
-        </View>
+        </View> */}
       </View>
 
       {/* Modal Time Picker Custom */ }
@@ -220,20 +221,9 @@ export default function NotificationsPage () {
               </View>
             </View>
 
-            <View className="flex-row justify-between">
-              <TouchableOpacity
-                onPress={ () => setShowTimePicker( false ) }
-                className="bg-gray-300 px-6 py-3 rounded-lg flex-1 mr-2"
-              >
-                <Text className="text-center font-medium">Annuler</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={ handleTimeConfirm }
-                className="bg-blue-500 px-6 py-3 rounded-lg flex-1 ml-2"
-              >
-                <Text className="text-white text-center font-medium">Confirmer</Text>
-              </TouchableOpacity>
+            <View className="flex-row justify-around">
+              <CustomButton title='Annuler' onPress={ () => setShowTimePicker( false ) } variant='secondary' />
+              <CustomButton title='Confirmer' onPress={ handleTimeConfirm } />
             </View>
           </View>
         </View>

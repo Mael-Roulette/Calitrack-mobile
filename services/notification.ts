@@ -58,26 +58,6 @@ export class NotificationService {
   }
 
   /**
-   * Calcule la prochaine occurrence d'une heure donnée
-   * @param time heure au format "HH:MM"
-   * @returns Date de la prochaine occurrence
-   */
-  private getNextOccurrence ( time: string ): Date {
-    const [ hours, minutes ] = time.split( ':' ).map( Number );
-    const now = new Date();
-    const scheduledTime = new Date();
-
-    scheduledTime.setHours( hours, minutes, 0, 0 );
-
-    // Si l'heure est déjà passée aujourd'hui, programmer pour demain
-    if ( scheduledTime <= now ) {
-      scheduledTime.setDate( scheduledTime.getDate() + 1 );
-    }
-
-    return scheduledTime;
-  }
-
-  /**
    * Programme la prochaine notification et configure la récurrence
    * @param time heure de la notification
    * @param enabled permet d'activer ou de désactiver la notification
@@ -139,7 +119,7 @@ export class NotificationService {
           identifier: `daily-reminder-${day}`,
           content: {
             title: "C'est l'heure de s'entraîner ! 💪",
-            body: "N'oubliez pas votre séance d'aujourd'hui",
+            body: "N'oublie pas ta séance d'aujourd'hui",
             data: { type: 'daily-reminder' },
           },
           trigger: {
