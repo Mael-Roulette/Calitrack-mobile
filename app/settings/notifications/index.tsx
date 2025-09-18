@@ -1,7 +1,7 @@
 // app/settings/notifications/index.tsx
 import CustomButton from '@/components/CustomButton';
 import { useNotificationStore } from '@/store/notification.store';
-import { getAllScheduledNotificationsAsync } from 'expo-notifications';
+// import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -20,9 +20,8 @@ export default function NotificationsPage () {
     preferences,
     isLoading,
     requestPermissions,
-    updatePreferences,
     updateDailyNotification,
-    testNotification,
+    // testNotification,
   } = useNotificationStore();
   const [ showTimePicker, setShowTimePicker ] = useState( false );
   const [ tempHour, setTempHour ] = useState( '18' );
@@ -69,14 +68,14 @@ export default function NotificationsPage () {
     updateDailyNotification( value, preferences.dailyTime );
   };
 
-  const handleTestNotification = () => {
-    if ( !permissions ) {
-      Alert.alert( 'Permissions manquantes', 'Veuillez d\'abord autoriser les notifications' );
-      return;
-    }
-    testNotification();
-    Alert.alert( 'Test envoyé', 'Vérifiez votre barre de notifications !' );
-  };
+  // const handleTestNotification = () => {
+  //   if ( !permissions ) {
+  //     Alert.alert( 'Permissions manquantes', 'Veuillez d\'abord autoriser les notifications' );
+  //     return;
+  //   }
+  //   testNotification();
+  //   Alert.alert( 'Test envoyé', 'Vérifiez votre barre de notifications !' );
+  // };
 
   if ( isLoading ) {
     return (
