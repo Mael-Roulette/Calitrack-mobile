@@ -63,14 +63,6 @@ const TabsLayout = () => {
 						headerTitle: () => (
 							<CustomHeader
 								title={`Salut ${user?.name || "utilisateur"} !`}
-								link={"/notifications"}
-								icon={
-									<Ionicons
-										name='notifications-outline'
-										size={30}
-										color='#132541'
-									/>
-								}
 							/>
 						),
 					}}

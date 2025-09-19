@@ -13,9 +13,9 @@ import {
 	Modal,
 	Text,
 	TouchableOpacity,
-	View,
-	SafeAreaView
+	View
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {
 	const { id } = useLocalSearchParams();

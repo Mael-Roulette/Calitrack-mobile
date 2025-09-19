@@ -3,7 +3,8 @@ import { PlanManager } from "@/constants/premiumPlan";
 import { useAuthStore } from "@/store";
 import { Link } from "expo-router";
 import React, { useState } from "react";
-import { SafeAreaView, ScrollView, Text, View, Alert } from "react-native";
+import { ScrollView, Text, View, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {
 	const { user } = useAuthStore();

@@ -10,8 +10,8 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
-	SafeAreaView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GoalItem from "../goal/components/GoalItem";
 import { MAX_GOALS } from "@/constants/value";
 

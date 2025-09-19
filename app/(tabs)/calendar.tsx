@@ -1,4 +1,5 @@
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CustomCalendar from "../calendar/components/CustomCalendar";
 import TrainingItem from "../training/components/TrainingItem";
 import { useEffect, useState } from "react";

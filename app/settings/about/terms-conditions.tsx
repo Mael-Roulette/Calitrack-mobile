@@ -1,6 +1,7 @@
 import { LEGAL_CONTENT_UPDATED_AT } from "@/constants/value";
 import React from "react";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const TermsCondition = () => {
 	return (

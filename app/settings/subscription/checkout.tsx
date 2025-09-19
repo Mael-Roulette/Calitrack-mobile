@@ -1,6 +1,7 @@
 import { StripeProvider } from "@stripe/stripe-react-native";
 import React from "react";
-import { SafeAreaView, Text } from "react-native";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Checkout = () => {
 	const publishableKey = process.env.EXPO_PUBLIC_STRIPE_PUBLIC_KEY ?? "";

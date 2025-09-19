@@ -1,9 +1,10 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { View, Text } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
 import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
 import TrainingItem from "../training/components/TrainingItem";
 import CustomButton from "@/components/CustomButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Day = () => {
 	const { day, month, year } = useLocalSearchParams();

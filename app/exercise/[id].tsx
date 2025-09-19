@@ -1,78 +1,82 @@
 import { getExericseById } from "@/lib/exercise.appwrite";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { Image } from 'expo-image';
 import {
 	ActivityIndicator,
-	Image,
-	SafeAreaView,
 	ScrollView,
 	Text,
 	View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseDetails = () => {
 	const { id } = useLocalSearchParams();
-	const [exercise, setExercise] = useState<any>(null);
-	const [loading, setLoading] = useState(true);
+	const [ exercise, setExercise ] = useState<any>( null );
+	const [ loading, setLoading ] = useState( true );
 	const navigation = useNavigation();
 
-	useEffect(() => {
+	useEffect( () => {
 		const fetchExercise = async () => {
-			setLoading(true);
+			setLoading( true );
 			try {
-				const response = await getExericseById(id as string);
-				setExercise(response);
-			} catch (error) {
-				console.error("Erreur lors de la récupération de l'exercice", error);
-				router.push("/exercise/exercise-list");
+				const response = await getExericseById( id as string );
+				setExercise( response );
+			} catch ( error ) {
+				console.error( "Erreur lors de la récupération de l'exercice", error );
+				router.push( "/exercise/exercise-list" );
 			} finally {
-				setLoading(false);
+				setLoading( false );
 			}
 		};
 		fetchExercise();
-	}, [id, router]);
+	}, [ id, router ] );
 
-	useLayoutEffect(() => {
-		navigation.setOptions({
+	useLayoutEffect( () => {
+		navigation.setOptions( {
 			headerTitle: () => (
 				<Text
 					className='title-2 text-ellipsis overflow-hidden max-w-60'
-					numberOfLines={1}
+					numberOfLines={ 1 }
 				>
-					{exercise?.name || "Exercice"}
+					{ exercise?.name || "Exercice" }
 				</Text>
 			),
-		});
-	}, [exercise]);
+		} );
+	}, [ exercise ] );
 	return (
 		<SafeAreaView className='flex-1 bg-background'>
-			{loading ? (
+			{ loading ? (
 				<View className='flex-1 items-center justify-center'>
 					<ActivityIndicator size='large' color='#0000ff' />
 					<Text>Chargement...</Text>
 				</View>
 			) : (
 				<ScrollView>
-					{exercise.image && (
+					{ exercise.image && (
 						<View className='bg-secondary p-4 rounded-b-md'>
-							<Image source={{ uri: exercise.image }} />
+							<Image
+								source={ exercise.image }
+								style={ { width: 250, height: 250 } }
+								contentFit="contain"
+							/>
 						</View>
-					)}
+					) }
 					<View className='px-5 py-2'>
 						<View className='flex-row items-center justify-between'>
 							<Text className='text'>
-								Type :{" "}
-								<Text className='text-secondary'>{exercise.type.name}</Text>
+								Type :{ " " }
+								<Text className='text-secondary'>{ exercise.type.name }</Text>
 							</Text>
 							<Text className='text'>
-								Difficulté :{" "}
-								<Text className='text-secondary'>{exercise.difficulty}</Text>
+								Difficulté :{ " " }
+								<Text className='text-secondary'>{ exercise.difficulty }</Text>
 							</Text>
 						</View>
-						<Text className='text mt-2'>{exercise.description}</Text>
+						<Text className='text mt-2'>{ exercise.description }</Text>
 					</View>
 				</ScrollView>
-			)}
+			) }
 		</SafeAreaView>
 	);
 };

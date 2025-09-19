@@ -7,7 +7,8 @@ import { useTrainingsStore } from "@/store";
 import { createTrainingParams, Exercise } from "@/types";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import ExerciseItem from "../exercise/components/ExerciseItem";
 import ExerciseSelectionModal from "./components/ExerciseSelectionModal";
 

@@ -5,7 +5,6 @@ import { useNavigation, router } from "expo-router";
 import {
 	Alert,
 	FlatList,
-	SafeAreaView,
 	Text,
 	TouchableOpacity,
 	View,
@@ -14,6 +13,7 @@ import TrainingItem from "../training/components/TrainingItem";
 import { useLayoutEffect } from "react";
 import { MAX_TRAININGS } from "@/constants/value";
 import CustomButton from "@/components/CustomButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Trainings = () => {
 	const { trainings } = useTrainingsStore();

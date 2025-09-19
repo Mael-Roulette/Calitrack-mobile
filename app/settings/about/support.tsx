@@ -1,5 +1,6 @@
 import React from "react";
-import { SafeAreaView, ScrollView, Text, View, Linking } from "react-native";
+import { ScrollView, Text, View, Linking } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Support = () => {
 	return (

@@ -6,7 +6,8 @@ import { GoalState } from "@/types";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddGoal = () => {
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

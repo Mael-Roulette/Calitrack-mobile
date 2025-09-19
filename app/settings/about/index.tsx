@@ -7,12 +7,12 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
 	Alert,
-	SafeAreaView,
 	ScrollView,
 	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {
 	const [isLoading, setIsLoading] = useState(false);

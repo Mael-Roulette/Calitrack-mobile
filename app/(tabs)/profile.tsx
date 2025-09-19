@@ -4,7 +4,8 @@ import { useAuthStore, useGoalsStore } from "@/store";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, router } from "expo-router";
-import { Image, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GoalStats from "../goal/components/GoalStats";
 import CustomButton from "@/components/CustomButton";
 

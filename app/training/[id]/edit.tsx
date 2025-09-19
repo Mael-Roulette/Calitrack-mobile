@@ -11,12 +11,12 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
 	ActivityIndicator,
 	Alert,
-	SafeAreaView,
 	ScrollView,
 	Text,
 	View,
 } from "react-native";
 import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Edit = () => {
 	const { id } = useLocalSearchParams();

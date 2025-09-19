@@ -1,8 +1,9 @@
 import useExercicesStore from "@/store/exercises.stores";
 import { router } from "expo-router";
 import React from "react";
-import { FlatList, SafeAreaView, View } from "react-native";
+import { FlatList, View } from "react-native";
 import ExerciseItem from "./components/ExerciseItem";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseList = () => {
 	const { exercices } = useExercicesStore();

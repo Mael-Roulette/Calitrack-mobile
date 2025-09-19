@@ -9,11 +9,11 @@ import React, { useState } from "react";
 import {
 	Alert,
 	Image,
-	SafeAreaView,
 	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {
 	const { user, isLoading, refreshUser } = useAuthStore();
