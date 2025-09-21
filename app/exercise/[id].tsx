@@ -7,8 +7,11 @@ import {
 	ScrollView,
 	Text,
 	View,
+	TouchableOpacity
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getExerciseImage } from '@/constants/exercises';
+import { Ionicons } from "@expo/vector-icons";
 
 const ExerciseDetails = () => {
 	const { id } = useLocalSearchParams();
@@ -30,20 +33,15 @@ const ExerciseDetails = () => {
 			}
 		};
 		fetchExercise();
-	}, [ id, router ] );
+	}, [ id ] );
 
+	/* ----- Masquer l'entete ----- */
 	useLayoutEffect( () => {
 		navigation.setOptions( {
-			headerTitle: () => (
-				<Text
-					className='title-2 text-ellipsis overflow-hidden max-w-60'
-					numberOfLines={ 1 }
-				>
-					{ exercise?.name || "Exercice" }
-				</Text>
-			),
+			headerShown: false,
 		} );
-	}, [ exercise ] );
+	}, [ navigation ] );
+
 	return (
 		<SafeAreaView className='flex-1 bg-background'>
 			{ loading ? (
@@ -53,17 +51,30 @@ const ExerciseDetails = () => {
 				</View>
 			) : (
 				<ScrollView>
-					{ exercise.image && (
-						<View className='bg-secondary p-4 rounded-b-md'>
+					<View className='relative bg-secondary px-4 py-8 rounded-b-2xl min-h-80 w-full items-center justify-center'>
+						{ exercise.image ? (
 							<Image
-								source={ exercise.image }
+								source={ getExerciseImage( exercise.image ) }
 								style={ { width: 250, height: 250 } }
 								contentFit="contain"
 							/>
+						) : (
+							<Text className="title-4 text-background text-center">Illustration en cours de création…</Text>
+						) }
+
+						<View className='absolute top-4 left-4 z-10'>
+							<TouchableOpacity
+								onPress={ () => router.back() }
+								className='w-10 h-10 rounded-full items-center justify-center'
+							>
+								<Ionicons name="arrow-back" size={ 24 } color="#FFF9F7" />
+							</TouchableOpacity>
 						</View>
-					) }
-					<View className='px-5 py-2'>
-						<View className='flex-row items-center justify-between'>
+					</View>
+
+					<View className='px-5 mt-6 mb-4'>
+						<Text className="title-2 mb-4">{ exercise.name }</Text>
+						<View className='flex-row items-center justify-between mb-3'>
 							<Text className='text'>
 								Type :{ " " }
 								<Text className='text-secondary'>{ exercise.type.name }</Text>

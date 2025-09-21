@@ -17,7 +17,7 @@ const ExerciseList = () => {
 
 	return (
 		<SafeAreaView className='px-5 bg-background flex-1'>
-			<View className='py-5'>
+			<View>
 				<FlatList
 					data={exercices}
 					renderItem={({ item }) => (

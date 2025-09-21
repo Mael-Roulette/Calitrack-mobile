@@ -32,6 +32,7 @@ const useExercicesStore = create<ExerciseState>((set, get) => ({
 					({
 						$id: doc.$id,
 						name: doc.name,
+						image: doc.image,
 						description: doc.description,
 						type: doc.type,
 						difficulty: doc.difficulty,
