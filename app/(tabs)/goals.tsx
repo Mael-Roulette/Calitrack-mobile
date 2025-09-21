@@ -11,7 +11,6 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import GoalItem from "../goal/components/GoalItem";
 import { MAX_GOALS } from "@/constants/value";
 
@@ -100,7 +99,7 @@ const Goals = () => {
 	}, [progressGoals, finishedGoals]);
 
 	return (
-		<SafeAreaView className='px-5 bg-background flex-1'>
+		<View className='px-5 bg-background flex-1'>
 			<View className='mb-6'>
 				<Text className='indicator-text'>
 					Nombre d&apos;objectifs en cours : {progressGoals.length}/{MAX_GOALS}.
@@ -138,7 +137,7 @@ const Goals = () => {
 					</View>
 				)}
 			/>
-		</SafeAreaView>
+		</View>
 	);
 };
 

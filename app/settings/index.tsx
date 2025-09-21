@@ -8,7 +8,7 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const Index = () => {
 	const { logout, fetchAuthenticatedUser } = useAuthStore();
@@ -21,7 +21,7 @@ const Index = () => {
 	};
 
 	return (
-		<SafeAreaView className='bg-background flex-1'>
+		<View className='bg-background flex-1'>
 			<ScrollView>
 				<View className='flex-col gap-6 mb-4 pt-5 first:border-t-[1px] first:border-gray-200'>
 					{ [
@@ -64,7 +64,7 @@ const Index = () => {
 					</TouchableOpacity>
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 };
 

@@ -8,53 +8,53 @@ import { createTrainingParams, Exercise } from "@/types";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import ExerciseItem from "../exercise/components/ExerciseItem";
 import ExerciseSelectionModal from "./components/ExerciseSelectionModal";
 
 const AddTraining = () => {
-	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-	const [selectedDays, setSelectedDays] = useState<string[]>([]);
-	const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-	const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
-	const [form, setForm] = useState<Partial<createTrainingParams>>({
+	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
+	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
+	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
+	const [ selectedExercises, setSelectedExercises ] = useState<Exercise[]>( [] );
+	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
 		name: "",
 		days: [],
 		hours: 0,
 		minutes: 0,
-	});
+	} );
 	const { fetchUserTrainings } = useTrainingsStore();
 
 	const openExerciseModal = () => {
-		setIsModalVisible(true);
+		setIsModalVisible( true );
 	};
 
 	const closeExerciseModal = () => {
-		setIsModalVisible(false);
+		setIsModalVisible( false );
 	};
 
-	const handleExerciseSelection = (exercises: Exercise[]) => {
-		setSelectedExercises(exercises);
-		setIsModalVisible(false);
+	const handleExerciseSelection = ( exercises: Exercise[] ) => {
+		setSelectedExercises( exercises );
+		setIsModalVisible( false );
 	};
 
 	const submit = async (): Promise<void> => {
-		if (!form.name || !form.days) {
-			Alert.alert("Erreur", "Veuillez remplir tous les champs");
+		if ( !form.name || !form.days ) {
+			Alert.alert( "Erreur", "Veuillez remplir tous les champs" );
 			return;
 		}
 
-		if (form.hours === undefined) {
+		if ( form.hours === undefined ) {
 			form.hours = 0;
 		}
 
-		if (form.minutes === undefined) {
+		if ( form.minutes === undefined ) {
 			form.minutes = 0;
 		}
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
-		const exerciseIds = selectedExercises.map((exercise) => exercise.$id);
+		const exerciseIds = selectedExercises.map( ( exercise ) => exercise.$id );
 
 		const trainingData = {
 			name: form.name,
@@ -64,37 +64,37 @@ const AddTraining = () => {
 		};
 
 		try {
-			setIsSubmitting(true);
-			await createTraining(trainingData);
+			setIsSubmitting( true );
+			await createTraining( trainingData );
 			await fetchUserTrainings();
-			router.push("/trainings");
-		} catch (err) {
-			console.error(err);
-			Alert.alert("Erreur", "Échec de l'ajout. Réessayez.");
+			router.push( "/trainings" );
+		} catch ( err ) {
+			console.error( err );
+			Alert.alert( "Erreur", "Échec de l'ajout. Réessayez." );
 		} finally {
-			setIsSubmitting(false);
+			setIsSubmitting( false );
 		}
 	};
 
 	return (
-		<SafeAreaView className='flex-1 bg-background min-h-full px-5'>
+		<View className='flex-1 bg-background min-h-full px-5'>
 			<ScrollView className='flex-1'>
 				<View className='flex-col gap-5'>
 					<CustomInput
 						label="Nom de l'entrainement"
-						value={form.name}
+						value={ form.name }
 						placeholder='Ex : Planche + combo'
-						onChangeText={(t: string) => setForm((p) => ({ ...p, name: t }))}
+						onChangeText={ ( t: string ) => setForm( ( p ) => ( { ...p, name: t } ) ) }
 					/>
 
 					<View className='flex-row w-full gap-3'>
 						<View className='flex-1'>
 							<CustomInput
 								label='Heure'
-								value={form.hours !== 0 ? String(form.hours) : ''}
+								value={ form.hours !== 0 ? String( form.hours ) : '' }
 								placeholder='1'
-								onChangeText={(t: string) =>
-									setForm((p) => ({ ...p, hours: parseInt(t) || 0 }))
+								onChangeText={ ( t: string ) =>
+									setForm( ( p ) => ( { ...p, hours: parseInt( t ) || 0 } ) )
 								}
 								keyboardType='numeric'
 							/>
@@ -102,10 +102,10 @@ const AddTraining = () => {
 						<View className='flex-1'>
 							<CustomInput
 								label='Minutes'
-								value={form.minutes !== 0 ? String(form.minutes) : ''}
+								value={ form.minutes !== 0 ? String( form.minutes ) : '' }
 								placeholder='30'
-								onChangeText={(t: string) =>
-									setForm((p) => ({ ...p, minutes: parseInt(t) || 0 }))
+								onChangeText={ ( t: string ) =>
+									setForm( ( p ) => ( { ...p, minutes: parseInt( t ) || 0 } ) )
 								}
 								keyboardType='numeric'
 							/>
@@ -115,61 +115,61 @@ const AddTraining = () => {
 					<CustomTags
 						label='Jours de disponibilité'
 						placeholder="Sélectionnez vos jours d'entrainement..."
-						suggestions={DAYS_TRANSLATION}
-						value={selectedDays}
-						onChangeText={(days) => {
-							setSelectedDays(days);
-							setForm((prev) => ({ ...prev, days }));
-						}}
-						maxTags={7}
-						allowCustomTags={false}
+						suggestions={ DAYS_TRANSLATION }
+						value={ selectedDays }
+						onChangeText={ ( days ) => {
+							setSelectedDays( days );
+							setForm( ( prev ) => ( { ...prev, days } ) );
+						} }
+						maxTags={ 7 }
+						allowCustomTags={ false }
 					/>
 
-					{selectedExercises.length > 0 && (
+					{ selectedExercises.length > 0 && (
 						<View className='mb-4'>
 							<Text className='text-primary font-calsans text-lg mb-1'>
-								Exercices sélectionnés ({selectedExercises.length})
+								Exercices sélectionnés ({ selectedExercises.length })
 							</Text>
-							{selectedExercises.length > 4 && (
+							{ selectedExercises.length > 4 && (
 								<Text className='indicator-text'>
 									Avoir trop d&apos;exercices dans son entrainement n&apos;est
 									pas forcément une bonne chose
 								</Text>
-							)}
+							) }
 
-							{selectedExercises.map((exercise, index) => (
+							{ selectedExercises.map( ( exercise, index ) => (
 								<ExerciseItem
-									key={exercise.$id}
-									name={exercise.name}
-									type={exercise.type.name}
-									difficulty={exercise.difficulty}
+									key={ exercise.$id }
+									name={ exercise.name }
+									type={ exercise.type.name }
+									difficulty={ exercise.difficulty }
 								/>
-							))}
+							) ) }
 						</View>
-					)}
+					) }
 				</View>
 
 				<CustomButton
-					title={`${selectedExercises.length > 0 ? "Modifier les" : "Ajouter des"} exercices${selectedExercises.length > 0 ? ` (${selectedExercises.length})` : ""}`}
+					title={ `${selectedExercises.length > 0 ? "Modifier les" : "Ajouter des"} exercices${selectedExercises.length > 0 ? ` (${selectedExercises.length})` : ""}` }
 					variant='secondary'
-					onPress={openExerciseModal}
+					onPress={ openExerciseModal }
 				/>
 			</ScrollView>
 
 			<CustomButton
 				title="Créer l'entrainement"
-				onPress={submit}
-				isLoading={isSubmitting}
+				onPress={ submit }
+				isLoading={ isSubmitting }
 				customStyles='mt-5 mb-10'
 			/>
 
 			<ExerciseSelectionModal
-				isVisible={isModalVisible}
-				onClose={closeExerciseModal}
-				onExerciseSelected={handleExerciseSelection}
-				initialSelectedExercises={selectedExercises}
+				isVisible={ isModalVisible }
+				onClose={ closeExerciseModal }
+				onExerciseSelected={ handleExerciseSelection }
+				initialSelectedExercises={ selectedExercises }
 			/>
-		</SafeAreaView>
+		</View>
 	);
 };
 

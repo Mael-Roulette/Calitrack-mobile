@@ -1,5 +1,5 @@
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import CustomCalendar from "../calendar/components/CustomCalendar";
 import TrainingItem from "../training/components/TrainingItem";
 import { useEffect, useState } from "react";
@@ -8,10 +8,10 @@ import cn from 'clsx';
 import { Training } from "@/types";
 
 const Calendar = () => {
-	const [upcomingTrainings, setUpcomingTrainings] = useState<any[]>([]);
-	const [ isLoading, setIsLoading ] = useState(true);
+	const [ upcomingTrainings, setUpcomingTrainings ] = useState<any[]>( [] );
+	const [ isLoading, setIsLoading ] = useState( true );
 
-	const getDayInEnglish = (date: Date) => {
+	const getDayInEnglish = ( date: Date ) => {
 		const days = [
 			"sunday",
 			"monday",
@@ -21,10 +21,10 @@ const Calendar = () => {
 			"friday",
 			"saturday",
 		];
-		return days[date.getDay()];
+		return days[ date.getDay() ];
 	};
 
-	const formatDate = (date: Date) => {
+	const formatDate = ( date: Date ) => {
 		const days = [
 			"Dimanche",
 			"Lundi",
@@ -35,42 +35,42 @@ const Calendar = () => {
 			"Samedi",
 		];
 
-		return `${days[date.getDay()]}`;
+		return `${days[ date.getDay() ]}`;
 	};
 
-	useEffect(() => {
+	useEffect( () => {
 		const fetchUpcomingTrainings = async () => {
 			try {
-				setIsLoading(true);
+				setIsLoading( true );
 				const nextDays = [];
 				const currentDate = new Date();
 
-				for (let i = 0; i <= 2; i++) {
+				for ( let i = 0; i <= 2; i++ ) {
 					const nextDate = new Date();
-					nextDate.setDate(currentDate.getDate() + i);
+					nextDate.setDate( currentDate.getDate() + i );
 
-					const dayName = getDayInEnglish(nextDate);
-					const trainings = await getTrainingFromUserByDay(dayName);
+					const dayName = getDayInEnglish( nextDate );
+					const trainings = await getTrainingFromUserByDay( dayName );
 
-					nextDays.push({
+					nextDays.push( {
 						date: nextDate,
 						trainings: trainings || [],
-					});
+					} );
 				}
 
-				setUpcomingTrainings(nextDays);
-			} catch (error) {
-				console.error("Error fetching upcoming trainings:", error);
+				setUpcomingTrainings( nextDays );
+			} catch ( error ) {
+				console.error( "Error fetching upcoming trainings:", error );
 			} finally {
-				setIsLoading(false);
+				setIsLoading( false );
 			}
 		};
 
 		fetchUpcomingTrainings();
-	}, []);
+	}, [] );
 
 	return (
-		<SafeAreaView className='px-5 bg-background flex-1'>
+		<View className='px-5 bg-background flex-1'>
 			<ScrollView>
 
 				<CustomCalendar />
@@ -79,48 +79,48 @@ const Calendar = () => {
 					{ isLoading ? (
 						<Text className='indicator-text'>Chargement des entraînements...</Text>
 					) : (
-						upcomingTrainings.map((item: any, index: number) => {
+						upcomingTrainings.map( ( item: any, index: number ) => {
 							const isFirstDay = index === 0;
-							const formattedDate = isFirstDay ? "Entrainement du jour" : formatDate(item.date);
+							const formattedDate = isFirstDay ? "Entrainement du jour" : formatDate( item.date );
 
 							return (
 								<View
-									key={`${item.date.getTime()}-${index}`}
-									className={index > 0 ? "mt-5" : ""}
+									key={ `${item.date.getTime()}-${index}` }
+									className={ index > 0 ? "mt-5" : "" }
 								>
-									<Text className={cn('text-primary font-calsans mb-3', isFirstDay ? 'text-2xl' : 'text-xl')}>
-										{formattedDate}
+									<Text className={ cn( 'text-primary font-calsans mb-3', isFirstDay ? 'text-2xl' : 'text-xl' ) }>
+										{ formattedDate }
 									</Text>
-									{item.trainings.length > 0 ? (
+									{ item.trainings.length > 0 ? (
 										<>
-											{item.trainings.map(
-												(training: Training, trainingIndex: number) => (
+											{ item.trainings.map(
+												( training: Training, trainingIndex: number ) => (
 													<View
-														key={`${item.date.getTime()}-${training.$id}-${trainingIndex}`}
-														className={trainingIndex > 0 ? "mt-3" : ""}
+														key={ `${item.date.getTime()}-${training.$id}-${trainingIndex}` }
+														className={ trainingIndex > 0 ? "mt-3" : "" }
 													>
 														<TrainingItem
-															id={training.$id}
-															title={training.name}
-															duration={training.duration}
-															isTrainingDay={isFirstDay}
+															id={ training.$id }
+															title={ training.name }
+															duration={ training.duration }
+															isTrainingDay={ isFirstDay }
 														/>
 													</View>
 												)
-											)}
+											) }
 										</>
 									) : (
 										<Text className='indicator-text mb-3'>
 											Aucun entraînement prévu.
 										</Text>
-									)}
+									) }
 								</View>
 							);
-						})
-					)}
+						} )
+					) }
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 };
 

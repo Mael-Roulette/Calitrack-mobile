@@ -13,13 +13,13 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const Index = () => {
 	const { user, isLoading, refreshUser } = useAuthStore();
-	const [newAvatar, setNewAvatar] = useState<string | undefined>(user?.avatar);
-	const [newPseudo, setNewPseudo] = useState(user?.name || "");
-	const [newMail, setNewMail] = useState(user?.email || "");
+	const [ newAvatar, setNewAvatar ] = useState<string | undefined>( user?.avatar );
+	const [ newPseudo, setNewPseudo ] = useState( user?.name || "" );
+	const [ newMail, setNewMail ] = useState( user?.email || "" );
 
 	const handleUpdateUser = async (
 		newAvatar?: string,
@@ -27,30 +27,30 @@ const Index = () => {
 		newMail?: string
 	) => {
 		try {
-			if (!user) return;
-			await updateUser({
+			if ( !user ) return;
+			await updateUser( {
 				avatar: newAvatar || user.avatar,
 				name: newPseudo || user.name,
 				email: newMail || user.email,
-			});
+			} );
 			await refreshUser();
 
-			router.push("/profile");
-		} catch (error) {
+			router.push( "/profile" );
+		} catch ( error ) {
 			const errorMessage =
-				error instanceof Error ? error.message : String(error);
+				error instanceof Error ? error.message : String( error );
 
-			if (errorMessage.toLowerCase().includes("email")) {
+			if ( errorMessage.toLowerCase().includes( "email" ) ) {
 				Alert.alert(
 					"Email déjà utilisé",
 					"Cette adresse email est déjà utilisée. Veuillez en choisir une autre.",
-					[{ text: "OK" }]
+					[ { text: "OK" } ]
 				);
 			} else {
 				Alert.alert(
 					"Erreur",
 					"Une erreur est survenue lors de la mise à jour de votre profil.",
-					[{ text: "OK" }]
+					[ { text: "OK" } ]
 				);
 			}
 		}
@@ -63,36 +63,36 @@ const Index = () => {
 			Alert.alert(
 				"Réinitialisation de mot de passe",
 				"Un email de réinitialisation a été envoyé sur votre mail.",
-				[{ text: "OK" }]
+				[ { text: "OK" } ]
 			);
 		} catch {
 			Alert.alert(
 				"Erreur",
 				"Une erreur est survenue lors de l'envoi de l'email de réinitialisation.",
-				[{ text: "OK" }]
+				[ { text: "OK" } ]
 			);
 		}
 	};
 
 	const pickNewAvatar = async () => {
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ["images"],
+		let result = await ImagePicker.launchImageLibraryAsync( {
+			mediaTypes: [ "images" ],
 			allowsEditing: true,
-			aspect: [3, 3],
+			aspect: [ 3, 3 ],
 			quality: 1,
-		});
+		} );
 
-		if (!result.canceled) {
-			const newAvatarUri = result.assets[0].uri;
-			setNewAvatar(newAvatarUri);
+		if ( !result.canceled ) {
+			const newAvatarUri = result.assets[ 0 ].uri;
+			setNewAvatar( newAvatarUri );
 
-			handleUpdateUser(newAvatarUri);
+			handleUpdateUser( newAvatarUri );
 		}
 	};
 
 	return (
-		<SafeAreaView className='flex-1 px-5 bg-background'>
-			{isLoading ? (
+		<View className='flex-1 px-5 bg-background'>
+			{ isLoading ? (
 				<View className='flex-1 items-center justify-center'>
 					<Text className='text-lg text-muted'>Chargement...</Text>
 				</View>
@@ -100,23 +100,23 @@ const Index = () => {
 				<View className='gap-4 mb-8'>
 					<View className='flex-row items-end justify-start gap-4 w-full'>
 						<View className='w-24 h-24 rounded-full bg-gray-200 overflow-hidden'>
-							{user?.avatar ? (
+							{ user?.avatar ? (
 								<Image
-									source={{ uri: user.avatar }}
+									source={ { uri: user.avatar } }
 									className='w-full h-full'
 									resizeMode='cover'
 								/>
 							) : (
 								<View className='w-full h-full items-center justify-center'>
-									<Ionicons name='person' size={50} color='#132541' />
+									<Ionicons name='person' size={ 50 } color='#132541' />
 								</View>
-							)}
+							) }
 						</View>
 						<TouchableOpacity
 							className='justify-center items-center bg-transparent rounded-md'
 							accessibilityLabel='Modifier la photo de profil'
-							onPress={pickNewAvatar}
-							disabled={isLoading}
+							onPress={ pickNewAvatar }
+							disabled={ isLoading }
 						>
 							<Text className='text text-base underline'>
 								Modifier la photo de profil
@@ -128,18 +128,18 @@ const Index = () => {
 						<View className='flex-1'>
 							<CustomInput
 								label='Pseudo'
-								value={newPseudo}
-								onChangeText={(text) => setNewPseudo(text)}
+								value={ newPseudo }
+								onChangeText={ ( text ) => setNewPseudo( text ) }
 								placeholder='Entrer votre pseudo'
 							/>
 						</View>
 						<TouchableOpacity
 							className='self-end aspect-square h-[50px] justify-center items-center bg-secondary rounded-md'
 							accessibilityLabel='Modifier le pseudo'
-							onPress={() => handleUpdateUser(undefined, newPseudo, undefined)}
-							disabled={isLoading}
+							onPress={ () => handleUpdateUser( undefined, newPseudo, undefined ) }
+							disabled={ isLoading }
 						>
-							<Feather name='check' size={24} color='#FFF9F7' />
+							<Feather name='check' size={ 24 } color='#FFF9F7' />
 						</TouchableOpacity>
 					</View>
 
@@ -147,18 +147,18 @@ const Index = () => {
 						<View className='flex-1'>
 							<CustomInput
 								label='Email'
-								value={newMail}
-								onChangeText={(text) => setNewMail(text)}
+								value={ newMail }
+								onChangeText={ ( text ) => setNewMail( text ) }
 								placeholder='Entrer votre email'
 							/>
 						</View>
 						<TouchableOpacity
 							className='self-end aspect-square h-[50px] justify-center items-center bg-secondary rounded-md'
 							accessibilityLabel='Modifier le mail'
-							onPress={() => handleUpdateUser(undefined, undefined, newMail)}
-							disabled={isLoading}
+							onPress={ () => handleUpdateUser( undefined, undefined, newMail ) }
+							disabled={ isLoading }
 						>
-							<Feather name='check' size={24} color='#FFF9F7' />
+							<Feather name='check' size={ 24 } color='#FFF9F7' />
 						</TouchableOpacity>
 					</View>
 
@@ -186,8 +186,8 @@ const Index = () => {
 						</Text>
 					</View>
 				</View>
-			)}
-		</SafeAreaView>
+			) }
+		</View>
 	);
 };
 

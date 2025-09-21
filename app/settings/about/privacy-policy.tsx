@@ -1,14 +1,14 @@
 import { LEGAL_CONTENT_UPDATED_AT } from "@/constants/value";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const PrivacyPolicy = () => {
 	return (
-		<SafeAreaView className='flex-1 px-5 bg-background'>
-			<ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
+		<View className='flex-1 px-5 bg-background'>
+			<ScrollView contentContainerStyle={ { paddingBottom: 16 } }>
 				<Text className='indicator-text mb-4'>
-					Dernière mise à jour : {LEGAL_CONTENT_UPDATED_AT}
+					Dernière mise à jour : { LEGAL_CONTENT_UPDATED_AT }
 				</Text>
 				<View>
 					<Text className='mb-2 text'>
@@ -162,7 +162,7 @@ const PrivacyPolicy = () => {
 					</Text>
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 };
 

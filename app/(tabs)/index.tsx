@@ -5,7 +5,6 @@ import Feather from "@expo/vector-icons/Feather";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import GoalItem from "../goal/components/GoalItem";
 import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
 import TrainingItem from "../training/components/TrainingItem";
@@ -61,7 +60,7 @@ export default function Index() {
 	);
 
 	return (
-		<SafeAreaView className='bg-background min-h-full'>
+		<View className='bg-background min-h-full'>
 			{isLoading ? (
 				<View>
 					<Text className='title'>Chargement...</Text>
@@ -133,6 +132,6 @@ export default function Index() {
 					</View>
 				</ScrollView>
 			)}
-		</SafeAreaView>
+		</View>
 	);
 }

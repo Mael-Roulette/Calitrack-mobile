@@ -1,15 +1,15 @@
 import { LEGAL_CONTENT_UPDATED_AT } from "@/constants/value";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const LegalNotices = () => {
 	return (
-		<SafeAreaView className='flex-1 px-5 bg-background'>
-			<ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
+		<View className='flex-1 px-5 bg-background'>
+			<ScrollView contentContainerStyle={ { paddingBottom: 16 } }>
 				<View>
 					<Text className='indicator-text'>
-						Dernière mise à jour : {LEGAL_CONTENT_UPDATED_AT}
+						Dernière mise à jour : { LEGAL_CONTENT_UPDATED_AT }
 					</Text>
 				</View>
 
@@ -113,12 +113,12 @@ const LegalNotices = () => {
 				<View className='mt-4 mb-10'>
 					<Text className='title-2'>Contact</Text>
 					<Text className='text mt-2'>
-						Pour toute question relative à l&apos;application ou à vos données :{" "}
+						Pour toute question relative à l&apos;application ou à vos données :{ " " }
 						<Text className='underline'>calitrack@mael-roulette.fr</Text>
 					</Text>
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 };
 
