@@ -28,7 +28,6 @@ const Index = () => {
 						{ title: "Compte", screen: "account" },
 						{ title: "Notifications", screen: "notifications" },
 						// { title: "Abonnement", screen: "subscription" },
-						// FIXME: A propos ne s'affiche pas correctement
 						{ title: "À propos", screen: "about" },
 					].map( ( item, index ) => (
 						<View
@@ -40,7 +39,7 @@ const Index = () => {
 								style={ { paddingHorizontal: 20 } }
 							>
 								<View className='flex-row items-center justify-between w-full'>
-									<Text className='title-4'>
+									<Text className='title-4' numberOfLines={ 1 }>
 										{ item.title }
 									</Text>
 									<Entypo

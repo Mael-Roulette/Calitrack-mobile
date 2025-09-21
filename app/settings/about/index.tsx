@@ -35,7 +35,7 @@ const Index = () => {
 							setIsAuthenticated(false);
 							setUser(null);
 
-							router.replace("/home");
+							router.replace("/(auth)");
 
 							Alert.alert(
 								"Compte supprimé",
@@ -94,7 +94,7 @@ const Index = () => {
 						>
 							<Link href={`./${item.screen}`} style={{ paddingHorizontal: 20 }}>
 								<View className='flex-row items-center justify-between w-full'>
-									<Text className='text-lg font-calsans text-primary'>
+									<Text className='text-lg font-calsans text-primary'  numberOfLines={ 1 }>
 										{item.title}
 									</Text>
 									<Entypo
