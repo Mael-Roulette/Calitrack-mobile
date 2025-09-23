@@ -158,6 +158,7 @@ const CustomTags = ({
 					value={inputValue}
 					onChangeText={setInputValue}
 					placeholder={selectedValues.length === 0 ? placeholder : ""}
+					placeholderTextColor={"#AEC4E7"}
 					className='flex-1 min-w-[100px] p-1'
 					onFocus={() => setShowSuggestions(filteredSuggestions.length > 0)}
 					onBlur={() => {

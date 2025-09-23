@@ -11,7 +11,7 @@ import { Alert, ScrollView, Text, View } from "react-native";
 
 import ExerciseItem from "../exercise/components/ExerciseItem";
 import ExerciseSelectionModal from "./components/ExerciseSelectionModal";
-// TODO : Modifier la couleur du choix des jours
+
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );

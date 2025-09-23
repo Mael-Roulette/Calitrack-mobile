@@ -8,7 +8,6 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 
-// TODO : Modifier couleur choix du type
 const AddGoal = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 
@@ -81,7 +80,7 @@ const AddGoal = () => {
 										type: itemValue as "push" | "pull",
 									} ) )
 								}
-								style={ { backgroundColor: "#FFF9F7", paddingLeft: 16 } }
+								style={ { backgroundColor: "#FFF9F7", paddingLeft: 16, color: "#132541" } }
 							>
 								<Picker.Item label='Push' value='push' />
 								<Picker.Item label='Pull' value='pull' />
