@@ -174,8 +174,6 @@ const Index = () => {
 		/>
 	);
 
-	console.log( trainingExercises );
-
 	return (
 		<View className='bg-background min-h-full px-5'>
 			{ loading ? (

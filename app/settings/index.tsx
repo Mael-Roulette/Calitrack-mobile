@@ -17,7 +17,7 @@ const Index = () => {
 		await logout();
 		await fetchAuthenticatedUser();
 
-		router.replace( "/(auth)" );
+		router.replace( "/(auth)/sign-in" );
 	};
 
 	return (
