@@ -97,6 +97,7 @@ export const useNotificationStore = create<NotificationState>()(
           const notificationService = NotificationService.getInstance();
 
           await notificationService.cancelDailyNotifications();
+
           if ( enabled ) {
             await notificationService.scheduleDailyNotification( updatedTime, true );
           }
@@ -109,9 +110,6 @@ export const useNotificationStore = create<NotificationState>()(
               dailyTime: updatedTime,
             }
           } );
-
-          console.log( `Notification quotidienne ${enabled ? 'programmée' : 'désactivée'} à ${updatedTime}` );
-
         } catch ( error ) {
           console.error( 'Erreur lors de la mise à jour de la notification quotidienne:', error );
           // En cas d'erreur, ne pas changer l'état
