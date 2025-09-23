@@ -7,63 +7,63 @@ type TrainingState = {
 	trainings: Training[];
 	isLoadingTrainings: boolean;
 
-	setTrainings: (trainings: Training[]) => void;
-	setIsLoadingTrainings: (value: boolean) => void;
+	setTrainings: ( trainings: Training[] ) => void;
+	setIsLoadingTrainings: ( value: boolean ) => void;
 	fetchUserTrainings: () => Promise<void>;
-	addTraining: (training: Training) => void;
+	addTraining: ( training: Training ) => void;
 	updateTraining: (
 		trainingId: string,
 		updatedTraining: Partial<Training>
 	) => void;
 };
 
-const useTrainingsStore = create<TrainingState>((set, get) => ({
+const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 	trainings: [],
 	isLoadingTrainings: false,
 
-	setTrainings: (trainings: Training[]) => set({ trainings }),
-	setIsLoadingTrainings: (value: boolean) => set({ isLoadingTrainings: value }),
+	setTrainings: ( trainings: Training[] ) => set( { trainings } ),
+	setIsLoadingTrainings: ( value: boolean ) => set( { isLoadingTrainings: value } ),
 
 	fetchUserTrainings: async () => {
 		const { isAuthenticated } = useAuthStore.getState();
-		if (!isAuthenticated) return;
+		if ( !isAuthenticated ) return;
 
-		set({ isLoadingTrainings: true });
+		set( { isLoadingTrainings: true } );
 
 		try {
 			const documents = await getTrainingsFromUser();
 			const trainings = documents.map(
-				(doc) =>
-					({
+				( doc ) =>
+					( {
 						$id: doc.$id,
 						user: doc.user,
 						name: doc.name,
 						days: doc.days,
 						duration: doc.duration,
-					}) as Training
+					} ) as Training
 			);
-			set({ trainings });
-		} catch (error) {
-			console.error("Erreur lors de la récupération des entrainements:", error);
-			set({ trainings: [] });
+			set( { trainings } );
+		} catch ( error ) {
+			console.error( "Erreur lors de la récupération des entraînements:", error );
+			set( { trainings: [] } );
 		} finally {
-			set({ isLoadingTrainings: false });
+			set( { isLoadingTrainings: false } );
 		}
 	},
 
-	addTraining: (training: Training) => {
-		set((state) => ({ trainings: [...state.trainings, training] }));
+	addTraining: ( training: Training ) => {
+		set( ( state ) => ( { trainings: [ ...state.trainings, training ] } ) );
 	},
 
-	updateTraining: (trainingId: string, updatedTraining: Partial<Training>) => {
-		set((state) => ({
-			trainings: state.trainings.map((training) =>
+	updateTraining: ( trainingId: string, updatedTraining: Partial<Training> ) => {
+		set( ( state ) => ( {
+			trainings: state.trainings.map( ( training ) =>
 				training.$id === trainingId
 					? { ...training, ...updatedTraining }
 					: training
 			),
-		}));
+		} ) );
 	},
-}));
+} ) );
 
 export default useTrainingsStore;

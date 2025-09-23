@@ -44,7 +44,7 @@ const Day = () => {
 	}, [ navigation ] );
 
 	/* -------------------------------------------------- */
-	/* ---------- Récupération des entrainements associé au jour ---------- */
+	/* ---------- Récupération des entraînements associé au jour ---------- */
 	useEffect( () => {
 		const fetchDayTrainings = async () => {
 			try {
@@ -72,7 +72,7 @@ const Day = () => {
 				setDayTrainings( trainings );
 			} catch ( error ) {
 				console.error(
-					"Erreur lors de la récupération des entrainements :",
+					"Erreur lors de la récupération des entraînements :",
 					error
 				);
 			} finally {

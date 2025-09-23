@@ -5,7 +5,7 @@
 ## 📱 Fonctionnalités
 
 - Création et suivi d’objectifs personnalisés
-- Création d'entrainement personnalisé
+- Création d'entraînement personnalisé
 
 ## 🛠️ Stack technique
 

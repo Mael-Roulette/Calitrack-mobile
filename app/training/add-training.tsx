@@ -81,7 +81,7 @@ const AddTraining = () => {
 			<ScrollView className='flex-1'>
 				<View className='flex-col gap-5'>
 					<CustomInput
-						label="Nom de l'entrainement"
+						label="Nom de l'entraînement"
 						value={ form.name }
 						placeholder='Ex : Planche + combo'
 						onChangeText={ ( t: string ) => setForm( ( p ) => ( { ...p, name: t } ) ) }
@@ -114,7 +114,7 @@ const AddTraining = () => {
 
 					<CustomTags
 						label='Jours de disponibilité'
-						placeholder="Sélectionnez vos jours d'entrainement..."
+						placeholder="Sélectionnez vos jours d'entraînement..."
 						suggestions={ DAYS_TRANSLATION }
 						value={ selectedDays }
 						onChangeText={ ( days ) => {
@@ -132,7 +132,7 @@ const AddTraining = () => {
 							</Text>
 							{ selectedExercises.length > 4 && (
 								<Text className='indicator-text'>
-									Avoir trop d&apos;exercices dans son entrainement n&apos;est
+									Avoir trop d&apos;exercices dans son entraînement n&apos;est
 									pas forcément une bonne chose
 								</Text>
 							) }
@@ -157,7 +157,7 @@ const AddTraining = () => {
 			</ScrollView>
 
 			<CustomButton
-				title="Créer l'entrainement"
+				title="Créer l'entraînement"
 				onPress={ submit }
 				isLoading={ isSubmitting }
 				customStyles='mt-5 mb-10'

@@ -1,9 +1,9 @@
 import { Stack } from "expo-router";
 
-export default function TrainingLayout() {
+export default function TrainingLayout () {
 	return (
 		<Stack
-			screenOptions={{
+			screenOptions={ {
 				headerShown: true,
 				headerStyle: {
 					backgroundColor: "#FFF9F7",
@@ -14,19 +14,19 @@ export default function TrainingLayout() {
 					fontSize: 24,
 				},
 				headerShadowVisible: false,
-			}}
+			} }
 		>
 			<Stack.Screen
 				name='add-training'
-				options={{
-					title: "Ajouter un entrainement",
-				}}
+				options={ {
+					title: "Ajouter un entraînement",
+				} }
 			/>
 			<Stack.Screen
 				name='[id]'
-				options={{
+				options={ {
 					headerShown: false,
-				}}
+				} }
 			/>
 		</Stack>
 	);

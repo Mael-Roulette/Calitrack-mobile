@@ -44,10 +44,10 @@ const PrivacyPolicy = () => {
 					<Text className='text mb-2'>• Pseudo (obligatoire)</Text>
 					<Text className='text mb-2'>• Adresse email (obligatoire)</Text>
 					<Text className='text mb-2'>
-						• Nombre d&apos;entrainements effectués
+						• Nombre d&apos;entraînements effectués
 					</Text>
 					<Text className='text mb-2'>
-						• Objecitfs et entrainements associés
+						• Objecitfs et entraînements associés
 					</Text>
 					<Text className='text mb-4'>
 						Ces données sont nécessaires pour le fonctionnement de l’application

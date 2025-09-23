@@ -21,8 +21,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.mael_rltt.calitrackts",
-      "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi": true
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",

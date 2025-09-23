@@ -25,7 +25,7 @@ const Session = () => {
 	const [ relatedGoals, setRelatedGoals ] = useState<Goal[]>( [] );
 
 	/* -------------------------------------------------- */
-	/* ---------- Récupérer les informations de l'entrainement ---------- */
+	/* ---------- Récupérer les informations de l'entraînement ---------- */
 	useEffect( () => {
 		const fetchTraining = async () => {
 			setLoading( true );
@@ -34,7 +34,7 @@ const Session = () => {
 				setTraining( response );
 			} catch ( error ) {
 				console.error(
-					"Erreur lors de la récupération de l'entrainement",
+					"Erreur lors de la récupération de l'entraînement",
 					error
 				);
 				router.push( "/trainings" );
@@ -53,7 +53,7 @@ const Session = () => {
 					className='title text-ellipsis overflow-hidden max-w-60'
 					numberOfLines={ 1 }
 				>
-					{ training?.name || "Entrainement" }
+					{ training?.name || "Entraînement" }
 				</Text>
 			),
 		} );
@@ -82,7 +82,7 @@ const Session = () => {
 		} );
 	};
 
-	/* ----- Afficher les objectifs liés à l'entrainement ----- */
+	/* ----- Afficher les objectifs liés à l'entraînement ----- */
 	useEffect( () => {
 		if ( !trainingExercises.length || !goals.length ) return;
 
@@ -117,7 +117,7 @@ const Session = () => {
 		/>
 	);
 
-	/* ----- Méthode pour gérer la fin de l'entrainement ----- */
+	/* ----- Méthode pour gérer la fin de l'entraînement ----- */
 	const handleEndTraining = async () => {
 		if ( !user?.$id ) {
 			console.error( "Utilisateur non connecté" );
@@ -182,7 +182,7 @@ const Session = () => {
 						{ relatedGoals !== null && relatedGoals.length > 0 && (
 							<View>
 								<Text className='title-3 mb-3'>
-									Objectifs liés à l&apos;entrainement
+									Objectifs liés à l&apos;entraînement
 								</Text>
 								{ relatedGoals.map( ( item: Goal ) => (
 									<FlatList
@@ -199,7 +199,7 @@ const Session = () => {
 
 					<View className='my-5'>
 						<CustomButton
-							title='Entrainement terminé !'
+							title='Entraînement terminé !'
 							onPress={ handleEndTraining }
 							isLoading={ isFinishing }
 						/>

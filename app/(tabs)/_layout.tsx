@@ -82,13 +82,13 @@ const TabsLayout = () => {
 				<Tabs.Screen
 					name='trainings'
 					options={{
-						title: "Entrainements",
+						title: "Entraînements",
 						tabBarIcon: ({ focused }) => (
 							<TabIcon icon={focused ? icons.training_focus : icons.training} />
 						),
 						headerTitle: () => (
 							<CustomHeader
-								title={"Mes entrainements"}
+								title={"Mes entraînements"}
 							/>
 						),
 					}}

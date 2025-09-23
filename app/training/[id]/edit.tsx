@@ -56,7 +56,7 @@ const Edit = () => {
 				setSelectedExercises( response.exercise );
 			} catch ( error ) {
 				console.error(
-					"Erreur lors de la récupération de l'entrainement",
+					"Erreur lors de la récupération de l'entraînement",
 					error
 				);
 				router.push( "/trainings" );
@@ -76,7 +76,7 @@ const Edit = () => {
 					className='title text-ellipsis overflow-hidden max-w-60'
 					numberOfLines={ 1 }
 				>
-					Modifier : { training?.name || "Entrainement" }
+					Modifier : { training?.name || "Entraînement" }
 				</Text>
 			),
 		} );
@@ -144,7 +144,7 @@ const Edit = () => {
 					<ScrollView className='flex-1'>
 						<View className='flex-col gap-5'>
 							<CustomInput
-								label="Nom de l'entrainement"
+								label="Nom de l'entraînement"
 								value={ form.name }
 								placeholder='Ex : Planche + combo'
 								onChangeText={ ( t: string ) =>
@@ -179,7 +179,7 @@ const Edit = () => {
 
 							<CustomTags
 								label='Jours de disponibilité'
-								placeholder="Sélectionnez vos jours d'entrainement..."
+								placeholder="Sélectionnez vos jours d'entraînement..."
 								suggestions={ DAYS_TRANSLATION }
 								value={ selectedDays }
 								onChangeText={ ( days ) => {
@@ -197,7 +197,7 @@ const Edit = () => {
 									</Text>
 									{ selectedExercises.length > 4 && (
 										<Text className='indicator-text'>
-											Avoir trop d&apos;exercices dans son entrainement
+											Avoir trop d&apos;exercices dans son entraînement
 											n&apos;est pas forcément une bonne chose
 										</Text>
 									) }
@@ -222,7 +222,7 @@ const Edit = () => {
 					</ScrollView>
 
 					<CustomButton
-						title="Modifier l'entrainement"
+						title="Modifier l'entraînement"
 						onPress={ submit }
 						isLoading={ isSubmitting }
 						customStyles='mt-5 mb-10'

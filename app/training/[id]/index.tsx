@@ -36,7 +36,7 @@ const Index = () => {
 				setTraining( response );
 			} catch ( error ) {
 				console.error(
-					"Erreur lors de la récupération de l'entrainement",
+					"Erreur lors de la récupération de l'entraînement",
 					error
 				);
 				router.push( "/trainings" );
@@ -66,7 +66,7 @@ const Index = () => {
 					className='title-2 text-ellipsis overflow-hidden max-w-60'
 					numberOfLines={ 1 }
 				>
-					{ training?.name || "Entrainement" }
+					{ training?.name || "Entraînement" }
 				</Text>
 			),
 			headerRight: () => (
@@ -141,7 +141,7 @@ const Index = () => {
 		} );
 	};
 
-	/* ----- Afficher les objectifs liés à l'entrainement ----- */
+	/* ----- Afficher les objectifs liés à l'entraînement ----- */
 	useEffect( () => {
 		if ( !trainingExercises.length || !goals.length ) return;
 
@@ -217,7 +217,7 @@ const Index = () => {
 					{ relatedGoals !== null && relatedGoals.length > 0 && (
 						<View>
 							<Text className='title-3 mb-3'>
-								Objectifs liés à l&apos;entrainement
+								Objectifs liés à l&apos;entraînement
 							</Text>
 							{ relatedGoals.map( ( item: Goal ) => (
 								<FlatList

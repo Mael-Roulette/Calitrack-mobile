@@ -81,7 +81,7 @@ const Calendar = () => {
 					) : (
 						upcomingTrainings.map( ( item: any, index: number ) => {
 							const isFirstDay = index === 0;
-							const formattedDate = isFirstDay ? "Entrainement du jour" : formatDate( item.date );
+							const formattedDate = isFirstDay ? "Entraînement du jour" : formatDate( item.date );
 
 							return (
 								<View

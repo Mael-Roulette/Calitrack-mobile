@@ -6,7 +6,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { DAYS_TRANSLATION } from "@/constants/value";
 
-const TrainingItem = ({
+const TrainingItem = ( {
 	id,
 	title,
 	duration,
@@ -18,74 +18,72 @@ const TrainingItem = ({
 	duration: number;
 	days?: string[];
 	isTrainingDay?: boolean;
-}) => {
+} ) => {
 	const goToTraining = () => {
 		if ( isTrainingDay ) {
-			router.push(`/training/${id}/session`);
+			router.push( `/training/${id}/session` );
 		} else {
-			router.push(`/training/${id}/`);
+			router.push( `/training/${id}/` );
 		}
 	};
 
-	const formatDuration = (duration: number) => {
+	const formatDuration = ( duration: number ) => {
 		return duration < 60
 			? `${duration} minutes`
-			: `${Math.floor(duration / 60)}h${duration % 60 === 0 ? "" : duration % 60}`;
+			: `${Math.floor( duration / 60 )}h${duration % 60 === 0 ? "" : duration % 60}`;
 	};
 
 	const TrainingContent = () => (
 		<>
 			<View className='flex-row justify-between items-center gap-12'>
 				<Text
-					className={`font-sregular text-xl flex-1 ${
-						isTrainingDay ? "text-background capitalize-first" : "text-primary"
-					}`}
+					className={ `font-sregular text-xl flex-1 ${isTrainingDay ? "text-background capitalize-first" : "text-primary"
+						}` }
 				>
-					{title}
+					{ title }
 				</Text>
 				<View className='flex-row items-center gap-2'>
 					<Ionicons
 						name='time-sharp'
-						size={24}
-						color={isTrainingDay ? "#FFF9F7" : "#132541"}
+						size={ 24 }
+						color={ isTrainingDay ? "#FFF9F7" : "#132541" }
 					/>
 					<Text
-						className={`font-sregular text-base ${
-							isTrainingDay ? "text-background" : "text-primary"
-						}`}
+						className={ `font-sregular text-base ${isTrainingDay ? "text-background" : "text-primary"
+							}` }
 					>
-						{formatDuration(duration)}
+						{ formatDuration( duration ) }
 					</Text>
 				</View>
 			</View>
-			{days.length > 0 && (
+			{ days.length > 0 && (
 				<View className='flex-row items-center gap-2'>
-					{days.map((day, index) => (
-						<Text key={index} className="py-1 px-3 bg-background rounded-full border border-secondary text-secondary font-sregular text-xs">
-							{DAYS_TRANSLATION.find((d) => d.value === day)?.label || day}
+					{ days.map( ( day, index ) => (
+						<Text key={ index } className="py-1 px-3 bg-background rounded-full border border-secondary text-secondary font-sregular text-xs">
+							{ DAYS_TRANSLATION.find( ( d ) => d.value === day )?.label || day }
 						</Text>
-					))}
+					) ) }
 				</View>
-			)}
-			{isTrainingDay ? (
+			) }
+			{ isTrainingDay ? (
 				<TouchableOpacity
 					className='flex-row items-center justify-center rounded-md py-3 px-6 gap-4 bg-background'
-					onPress={goToTraining}
+					onPress={ goToTraining }
 				>
-					<FontAwesome name="caret-right" size={22} color="#FC7942" />
+					<FontAwesome name="caret-right" size={ 22 } color="#FC7942" />
 					<Text className='text-secondary font-sregular text-base'>
 						Lancer ma séance
 					</Text>
 				</TouchableOpacity>
 			) : (
-				<CustomButton title="Voir l'entrainement" onPress={goToTraining} />
-			)}
+				<CustomButton title="Voir l'entraînement" onPress={ goToTraining } />
+			) }
 		</>
 	);
 
-	if (isTrainingDay) {
+	if ( isTrainingDay ) {
 		return (
-			<PrimaryGradient style={{}}>
+			<PrimaryGradient style={ {} }>
 				<View className='px-5 py-4 gap-3'>
 					<TrainingContent />
 				</View>

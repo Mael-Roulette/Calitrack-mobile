@@ -105,7 +105,7 @@ export default function NotificationsPage () {
         </View>
 
         <Text className="title-2 mb-4">
-          Paramètres de notifications
+          Paramètres des notifications
         </Text>
 
         {/* Section Rappel quotidien */ }
@@ -148,7 +148,7 @@ export default function NotificationsPage () {
           </TouchableOpacity>
         </View>
 
-        {/* Section Rappel entrainement programmé */ }
+        {/* Section Rappel entraînement programmé */ }
         {/* <View className="border border-primary-50 px-4 py-6 rounded-md mb-6">
           <View className="flex-row justify-between items-end">
             <View className="flex-1">

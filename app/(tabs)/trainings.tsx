@@ -27,7 +27,7 @@ const Trainings = () => {
 		if ( trainings.length >= MAX_TRAININGS ) {
 			Alert.alert(
 				"Limite atteinte",
-				`Vous ne pouvez pas ajouter plus de ${MAX_TRAININGS} entrainements.`
+				`Vous ne pouvez pas ajouter plus de ${MAX_TRAININGS} entraînements.`
 			);
 		} else {
 			router.push( "/training/add-training" );
@@ -37,7 +37,7 @@ const Trainings = () => {
 	useLayoutEffect( () => {
 		navigation.setOptions( {
 			headerRight: () => (
-				<TouchableOpacity onPress={ handleAddTrainingLink } className="mr-4" accessibilityLabel="Ajouter un entrainement">
+				<TouchableOpacity onPress={ handleAddTrainingLink } className="mr-4" accessibilityLabel="Ajouter un entraînement">
 					<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
 				</TouchableOpacity>
 			),
@@ -48,7 +48,7 @@ const Trainings = () => {
 		<View className='px-5 bg-background flex-1'>
 			<View className='mb-6'>
 				<Text className='indicator-text'>
-					Nombre d&apos;entrainements : { trainings.length }/{ MAX_TRAININGS }.
+					Nombre d&apos;entraînements : { trainings.length }/{ MAX_TRAININGS }.
 				</Text>
 			</View>
 
@@ -60,7 +60,7 @@ const Trainings = () => {
 					showsVerticalScrollIndicator={ false }
 					ListEmptyComponent={
 						<Text className='indicator-text'>
-							Aucun entrainement
+							Aucun entraînement
 						</Text>
 					}
 				/>
