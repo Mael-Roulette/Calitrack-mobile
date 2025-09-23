@@ -135,7 +135,6 @@ const ExerciseSelectionModal = ({
 	/* ----- Confirmer la sélection ----- */
 	const handleConfirmSelection = useCallback(() => {
 		setTimeout(() => {
-			console.log( selectedExercises );
 			if (onExerciseSelected) {
 				onExerciseSelected(selectedExercises);
 			}
