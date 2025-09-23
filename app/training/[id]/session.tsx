@@ -139,7 +139,7 @@ const Session = () => {
 	};
 
 	return (
-		<ScrollView className='bg-background min-h-full px-5'>
+		<ScrollView className='bg-background min-h-full px-5 pb-12'>
 			{ loading ? (
 				<View className='flex-1 justify-center items-center'>
 					<ActivityIndicator size='large' color='#FC7942' />
