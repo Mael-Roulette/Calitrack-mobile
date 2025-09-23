@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 
-
+// TODO : Modifier couleur choix du type
 const AddGoal = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 
