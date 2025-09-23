@@ -70,66 +70,29 @@ export class NotificationService {
 
     const [ hours, minutes ] = time.split( ':' ).map( Number );
 
-    // Vérifier que l'heure est valide
     if ( hours < 0 || hours > 23 || minutes < 0 || minutes > 59 ) {
       console.error( 'Invalid time format' );
       return;
     }
 
-    if ( Platform.OS === 'ios' ) {
-      // Sur iOS, on peut utiliser le trigger calendar
-      await Notifications.scheduleNotificationAsync( {
-        identifier: 'daily-reminder',
-        content: {
-          title: "C'est l'heure de s'entraîner ! 💪",
-          body: "N'oubliez pas votre séance d'aujourd'hui",
-          data: { type: 'daily-reminder' },
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-          hour: hours,
-          minute: minutes,
-          repeats: true,
-        },
-      } );
-    } else {
-      // Sur Android, on programme une série de notifications avec des dates spécifiques
-      await this.scheduleAndroidDailyNotifications( time );
-    }
+    await Notifications.scheduleNotificationAsync( {
+      identifier: 'daily-reminder',
+      content: {
+        title: "C'est l'heure de s'entraîner ! 💪",
+        body: "N'oublie pas ta séance d'aujourd'hui",
+        data: { type: 'daily-reminder' },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+        hour: hours,
+        minute: minutes,
+        repeats: true,
+      },
+    } );
 
-    console.log( `Notification quotidienne programmée à ${time} (${Platform.OS})` );
+    console.log( `Notification quotidienne programmée à ${time}` );
   }
 
-  /**
-   * Programme une série de notifications pour Android (30 jours)
-   * @param time heure de la notification
-   */
-  private async scheduleAndroidDailyNotifications ( time: string ) {
-    const [ hours, minutes ] = time.split( ':' ).map( Number );
-
-    // Programmer pour les 30 prochains jours
-    for ( let day = 0; day < 30; day++ ) {
-      const notificationDate = new Date();
-      notificationDate.setDate( notificationDate.getDate() + day );
-      notificationDate.setHours( hours, minutes, 0, 0 );
-
-      // Ne programmer que si l'heure n'est pas déjà passée
-      if ( notificationDate > new Date() ) {
-        await Notifications.scheduleNotificationAsync( {
-          identifier: `daily-reminder-${day}`,
-          content: {
-            title: "C'est l'heure de s'entraîner ! 💪",
-            body: "N'oublie pas ta séance d'aujourd'hui",
-            data: { type: 'daily-reminder' },
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: notificationDate,
-          },
-        } );
-      }
-    }
-  }
 
   /**
    * Permet de programmer une notification à une heure spécifique
