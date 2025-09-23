@@ -10,7 +10,7 @@ import { useAuthStore, useGoalsStore } from "@/store";
 import { Exercise, Goal } from "@/types";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
 
 
 const Session = () => {
@@ -139,7 +139,7 @@ const Session = () => {
 	};
 
 	return (
-		<View className='bg-background min-h-full px-5'>
+		<ScrollView className='bg-background min-h-full px-5'>
 			{ loading ? (
 				<View className='flex-1 justify-center items-center'>
 					<ActivityIndicator size='large' color='#FC7942' />
@@ -206,7 +206,7 @@ const Session = () => {
 					</View>
 				</View>
 			) }
-		</View>
+		</ScrollView>
 	);
 };
 
