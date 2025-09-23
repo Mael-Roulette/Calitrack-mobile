@@ -128,7 +128,7 @@ const Index = () => {
 	const renderExerciseItem = ( { item }: { item: Exercise } ) => (
 		<ExerciseItem
 			name={ item.name }
-			type={ item.type }
+			type={ item.type.name }
 			difficulty={ item.difficulty }
 			onPress={ () => goToExerciseDetails( item.$id ) }
 		/>
@@ -173,6 +173,8 @@ const Index = () => {
 			$updatedAt={ item.$updatedAt }
 		/>
 	);
+
+	console.log( trainingExercises );
 
 	return (
 		<View className='bg-background min-h-full px-5'>
