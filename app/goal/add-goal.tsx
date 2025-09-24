@@ -1,9 +1,9 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
+import CustomSelect from "@/components/CustomSelect";
 import { createGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
 import { GoalState } from "@/types";
-import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
@@ -64,28 +64,18 @@ const AddGoal = () => {
 						<Text className='font-sregular text-xl mb-2'>
 							Type d&apos;objectif
 						</Text>
-						<View
-							style={ {
-								borderWidth: 1,
-								borderColor: "#617188",
-								borderRadius: 8,
-								overflow: "hidden",
-							} }
-						>
-							<Picker
-								selectedValue={ form.type }
-								onValueChange={ ( itemValue ) =>
-									setForm( ( prev ) => ( {
-										...prev,
-										type: itemValue as "push" | "pull",
-									} ) )
-								}
-								style={ { backgroundColor: "#FFF9F7", paddingLeft: 16, color: "#132541" } }
-							>
-								<Picker.Item label='Push' value='push' />
-								<Picker.Item label='Pull' value='pull' />
-							</Picker>
-						</View>
+
+						<CustomSelect
+							options={ [
+								{ label: "Push", value: "push" },
+								{ label: "Pull", value: "pull" },
+							] }
+							value={ form.type }
+							onChange={ ( val ) =>
+								setForm( ( prev ) => ( { ...prev, type: val as "push" | "pull" } ) )
+							}
+						/>
+
 					</View>
 					<CustomInput
 						label='Max à atteindre'

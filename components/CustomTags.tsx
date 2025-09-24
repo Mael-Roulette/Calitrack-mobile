@@ -136,7 +136,7 @@ const CustomTags = ({
 			</View>
 
 			{/* Tags display and input */}
-			<View className='flex-row flex-wrap items-center border border-primary-50 rounded-md p-2'>
+			<View className='flex-row flex-wrap items-center border border-primary-100 rounded-md p-2 min-h-[50px]'>
 				{selectedValues.map((tagValue, index) => (
 					<View
 						key={`${tagValue}-${index}`}
@@ -159,7 +159,7 @@ const CustomTags = ({
 					onChangeText={setInputValue}
 					placeholder={selectedValues.length === 0 ? placeholder : ""}
 					placeholderTextColor={"#AEC4E7"}
-					className='flex-1 min-w-[100px] p-1'
+					className='flex-1 min-w-[100px] p-1 placeholder:text-lg'
 					onFocus={() => setShowSuggestions(filteredSuggestions.length > 0)}
 					onBlur={() => {
 						setTimeout(() => setShowSuggestions(false), 150);

@@ -2,7 +2,7 @@ import PrimaryGradient from "@/components/PrimaryGradient";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { DAYS_TRANSLATION } from "@/constants/value";
 
@@ -57,13 +57,20 @@ const TrainingItem = ( {
 				</View>
 			</View>
 			{ days.length > 0 && (
-				<View className='flex-row items-center gap-2'>
+				<ScrollView
+					horizontal={ true }
+					showsHorizontalScrollIndicator={ false }
+					contentContainerStyle={ { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 1 } }
+				>
 					{ days.map( ( day, index ) => (
-						<Text key={ index } className="py-1 px-3 bg-background rounded-full border border-secondary text-secondary font-sregular text-xs">
+						<Text
+							key={ index }
+							className="py-1 px-3 bg-background rounded-full border border-secondary text-secondary font-sregular text-xs"
+						>
 							{ DAYS_TRANSLATION.find( ( d ) => d.value === day )?.label || day }
 						</Text>
 					) ) }
-				</View>
+				</ScrollView>
 			) }
 			{ isTrainingDay ? (
 				<TouchableOpacity

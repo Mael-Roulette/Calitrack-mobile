@@ -94,12 +94,10 @@ const Session = () => {
 			)
 		);
 
-		const matchingGoals = goals.filter(
+		setRelatedGoals( goals.filter(
 			( goal ) =>
 				exerciseTypes.has( goal.type.name ) && goal.state === "in-progress"
-		);
-
-		setRelatedGoals( matchingGoals );
+		) );
 	}, [ trainingExercises, goals ] );
 
 	const renderGoalItem = ( { item }: { item: Goal } ) => (
@@ -139,15 +137,15 @@ const Session = () => {
 	};
 
 	return (
-		<ScrollView className='bg-background min-h-full px-5 pb-12'>
+		<ScrollView className='bg-background min-h-full' contentContainerStyle={ { paddingBottom: 20 } }>
 			{ loading ? (
 				<View className='flex-1 justify-center items-center'>
 					<ActivityIndicator size='large' color='#FC7942' />
 					<Text className='mt-2 text-primary'>Chargement...</Text>
 				</View>
 			) : (
-				<View className='flex-1 h-full'>
-					<View className='flex-1 h-full'>
+				<View className="px-5">
+					<View>
 						<View>
 							<Text className='text-lg font-sregular text-primary mb-2'>
 								Durée:{ " " }
@@ -173,28 +171,28 @@ const Session = () => {
 								renderItem={ renderExerciseItem }
 								keyExtractor={ ( item ) => item.name }
 								showsVerticalScrollIndicator={ false }
+								scrollEnabled={ false }
 								ListEmptyComponent={
 									<Text className='indicator-text'>Aucun exercice</Text>
 								}
 							/>
 						</View>
 
-						{ relatedGoals !== null && relatedGoals.length > 0 && (
+						{ relatedGoals && relatedGoals.length > 0 && (
 							<View>
 								<Text className='title-3 mb-3'>
 									Objectifs liés à l&apos;entraînement
 								</Text>
-								{ relatedGoals.map( ( item: Goal ) => (
-									<FlatList
-										key={ item.$id }
-										data={ relatedGoals }
-										renderItem={ renderGoalItem }
-										keyExtractor={ ( item ) => item.title }
-										showsVerticalScrollIndicator={ false }
-									/>
-								) ) }
+								<FlatList
+									data={ relatedGoals }
+									renderItem={ renderGoalItem }
+									keyExtractor={ ( item ) => item.title }
+									scrollEnabled={ false }
+									showsVerticalScrollIndicator={ false }
+								/>
 							</View>
 						) }
+
 					</View>
 
 					<View className='my-5'>
