@@ -1,73 +1,44 @@
 import { ScrollView, Text, View } from "react-native";
 
+import { useTrainingsStore } from "@/store";
+import { Training } from "@/types";
+import cn from 'clsx';
+import { useMemo } from "react";
 import CustomCalendar from "../calendar/components/CustomCalendar";
 import TrainingItem from "../training/components/TrainingItem";
-import { useEffect, useState } from "react";
-import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
-import cn from 'clsx';
-import { Training } from "@/types";
+
+const DAYS_EN = [ "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ];
+const DAYS_FR = [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ];
+
+const getDayInEnglish = ( date: Date ) => DAYS_EN[ date.getDay() ];
+const formatDate = ( date: Date ) => DAYS_FR[ date.getDay() ];
 
 const Calendar = () => {
-	const [ upcomingTrainings, setUpcomingTrainings ] = useState<any[]>( [] );
-	const [ isLoading, setIsLoading ] = useState( true );
+	const { trainings, isLoadingTrainings } = useTrainingsStore();
 
-	const getDayInEnglish = ( date: Date ) => {
-		const days = [
-			"sunday",
-			"monday",
-			"tuesday",
-			"wednesday",
-			"thursday",
-			"friday",
-			"saturday",
-		];
-		return days[ date.getDay() ];
-	};
+	const upcomingTrainings = useMemo( () => {
+		const result = [];
+		const currentDate = new Date();
 
-	const formatDate = ( date: Date ) => {
-		const days = [
-			"Dimanche",
-			"Lundi",
-			"Mardi",
-			"Mercredi",
-			"Jeudi",
-			"Vendredi",
-			"Samedi",
-		];
+		for ( let i = 0; i <= 2; i++ ) {
+			const nextDate = new Date();
+			nextDate.setDate( currentDate.getDate() + i );
 
-		return `${days[ date.getDay() ]}`;
-	};
+			const dayName = getDayInEnglish( nextDate );
 
-	useEffect( () => {
-		const fetchUpcomingTrainings = async () => {
-			try {
-				setIsLoading( true );
-				const nextDays = [];
-				const currentDate = new Date();
+			// Filtrer les trainings pour ce jour
+			const dayTrainings = trainings.filter( ( training: Training ) =>
+				training.days?.includes( dayName )
+			);
 
-				for ( let i = 0; i <= 2; i++ ) {
-					const nextDate = new Date();
-					nextDate.setDate( currentDate.getDate() + i );
+			result.push( {
+				date: nextDate,
+				trainings: dayTrainings,
+			} );
+		}
 
-					const dayName = getDayInEnglish( nextDate );
-					const trainings = await getTrainingFromUserByDay( dayName );
-
-					nextDays.push( {
-						date: nextDate,
-						trainings: trainings || [],
-					} );
-				}
-
-				setUpcomingTrainings( nextDays );
-			} catch ( error ) {
-				console.error( "Error fetching upcoming trainings:", error );
-			} finally {
-				setIsLoading( false );
-			}
-		};
-
-		fetchUpcomingTrainings();
-	}, [] );
+		return result;
+	}, [ trainings ] );
 
 	return (
 		<View className='px-5 bg-background flex-1'>
@@ -76,7 +47,7 @@ const Calendar = () => {
 				<CustomCalendar />
 
 				<View className='mt-10'>
-					{ isLoading ? (
+					{ isLoadingTrainings ? (
 						<Text className='indicator-text'>Chargement des entraînements...</Text>
 					) : (
 						upcomingTrainings.map( ( item: any, index: number ) => {
