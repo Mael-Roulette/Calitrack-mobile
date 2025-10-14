@@ -9,8 +9,8 @@ const Support = () => {
 				<View>
 					<Text className='title-2 mb-4'>💬&nbsp;Besoin d&apos;aide ?</Text>
 					<Text className='indicator-text mb-4'>
-						Une question, un problème ou un retour à nous partager ? Nous sommes
-						là pour vous aider et répondrons dans les plus brefs délais.
+						Une question, un problème ou un retour à me partager ? Je suis
+						là pour vous aider et répondre à vos questions.
 					</Text>
 					<Text className='mb-2 text'>
 						Vous pouvez nous contacter à l&apos;adresse suivante&nbsp;:&nbsp;
@@ -30,12 +30,12 @@ const Support = () => {
 					<Text className='indicator-text mb-4'>
 						Retrouvez des informations sur l&apos;avancement de
 						l&apos;application, les mises à jour et la résolution des bugs sur
-						notre site officiel ou sur notre Github.
+						le site officiel ou sur mon Github.
 					</Text>
 					<Text
 						className='text-primary font-sregular underline mb-2'
 						onPress={ () => {
-							Linking.openURL( "https://calitrack.mael-roulette.fr" );
+							Linking.openURL( "https://calitrack.appwrite.network/" );
 						} }
 					>
 						Site officiel
@@ -53,7 +53,7 @@ const Support = () => {
 				<View className='mt-6'>
 					<Text className='title-2 mb-4'>📱&nbsp;Réseaux sociaux</Text>
 					<Text className='mb-2 text'>
-						Suivez-nous sur Instagram pour ne rien manquer de nos actualités,
+						Suivez-moi sur Instagram pour ne rien manquer de nos actualités,
 						conseils et nouveautés&nbsp;:&nbsp;
 						<Text
 							className='text-primary font-sregular underline'
