@@ -25,28 +25,32 @@ export default function Index () {
 		router.replace( "/(auth)" );
 	}
 
+	// Lancement de la vérification de first launch
 	useEffect( () => {
 		checkFirstLaunch();
 	}, [] );
 
 	const checkFirstLaunch = async () => {
 		try {
+			// Récupère la clé du local storage
 			const hasLaunched = await AsyncStorage.getItem( FIRST_LAUNCH_KEY );
 
 			if ( hasLaunched === null ) {
 				// Premier lancement
 				setShowWelcomeModal( true );
-				await AsyncStorage.setItem( FIRST_LAUNCH_KEY, 'true' );
+				await AsyncStorage.setItem( FIRST_LAUNCH_KEY, 'false' ); // TODO passer à true
 			}
 		} catch ( error ) {
 			console.error( 'Erreur lors de la vérification du premier lancement:', error );
 		}
 	};
 
+	// Fermeture de la modal de bienvenue
 	const handleCloseModal = () => {
 		setShowWelcomeModal( false );
 	};
 
+	// Date du jour
 	const today = new Date()
 		.toLocaleDateString( "en-EN", {
 			weekday: "long",
