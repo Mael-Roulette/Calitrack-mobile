@@ -45,6 +45,7 @@ const Day = () => {
 
 	/* -------------------------------------------------- */
 	/* ---------- Récupération des entraînements associé au jour ---------- */
+	// TODO : Optimiser le chargement des entrainements
 	useEffect( () => {
 		const fetchDayTrainings = async () => {
 			try {
