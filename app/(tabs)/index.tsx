@@ -35,10 +35,10 @@ export default function Index () {
 			// Récupère la clé du local storage
 			const hasLaunched = await AsyncStorage.getItem( FIRST_LAUNCH_KEY );
 
-			if ( hasLaunched === null ) {
+			if ( hasLaunched === null || hasLaunched === 'false' ) {
 				// Premier lancement
 				setShowWelcomeModal( true );
-				await AsyncStorage.setItem( FIRST_LAUNCH_KEY, 'false' ); // TODO passer à true
+				await AsyncStorage.setItem( FIRST_LAUNCH_KEY, 'true' );
 			}
 		} catch ( error ) {
 			console.error( 'Erreur lors de la vérification du premier lancement:', error );
@@ -103,20 +103,20 @@ export default function Index () {
 						transparent={ true }
 						visible={ showWelcomeModal }
 						onRequestClose={ handleCloseModal }
-						className="rounded-md shadow"
 					>
-						<View className="space-y-2">
-							<Text className="title-2">Bienvenue ! 🎉</Text>
-							<Text className="text">Merci d&apos;avoir rejoint la version bêta de l&apos;application !</Text>
-							<Text className="text">Avant de commencer, voici quelques points importants :</Text>
-							<Text className="text">Cette application est encore en phase de test, ce qui signifie que tu pourrais rencontrer quelques bugs. N&apos;hésite pas à me les signaler afin que je puisse les corriger rapidement.</Text>
-							<Text className="text">Les fonctionnalités actuelles sont les bases de l&apos;application — ton avis est précieux pour les améliorer et en ajouter de nouvelles !</Text>
-							<Text className="text">Enfin, garde à l&apos;esprit que toutes les données que tu saisis pendant la bêta pourraient être supprimées à la fin de cette phase.</Text>
-							<Text className="text">Merci encore pour ta participation et ton aide !</Text>
-							<CustomButton
-								title="Commencer"
-								onPress={ handleCloseModal }
-							/>
+						<View className='flex-1 justify-center items-center bg-black/50'>
+							<View className="rounded-xl shadow bg-background w-[90%] p-5">
+								<Text className="title-2 mb-3">Bienvenue !</Text>
+								<Text className="text mb-4">Merci d&apos;avoir rejoint la version bêta de l&apos;application !</Text>
+								<Text className="text mb-2">Avant de commencer, voici quelques points importants :</Text>
+								<Text className="text mb-2">• Les fonctionnalités actuelles sont les bases de l&apos;application, ton avis est précieux pour les améliorer et en ajouter de nouvelles !</Text>
+								<Text className="text mb-4">• Garde à l&apos;esprit que toutes les données que tu saisis pendant la bêta pourraient être supprimées à la fin de cette phase.</Text>
+								<Text className="text mb-8">Merci encore pour ta participation et ton aide !</Text>
+								<CustomButton
+									title="Commencer"
+									onPress={ handleCloseModal }
+								/>
+							</View>
 						</View>
 					</Modal>
 					<View>

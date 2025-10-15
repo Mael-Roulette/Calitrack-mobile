@@ -15,7 +15,7 @@ const Stats = () => {
 						<GoalStats
 							key={ goal.$id }
 							title={ goal.title }
-							state={ goal.state ?? "" }
+							state={ goal.state }
 							progressHistory={ goal.progressHistory }
 							total={ goal.total }
 						/>
