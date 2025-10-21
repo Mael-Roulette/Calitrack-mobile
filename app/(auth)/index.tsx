@@ -32,12 +32,6 @@ const Index = () => {
 					variant='secondary'
 				/>
 			</View>
-
-			{/* <View>
-				<Text className='text-center text-primary font-sregular'>
-					Ou continuer avec :
-				</Text>
-			</View> */}
 		</View>
 	);
 };

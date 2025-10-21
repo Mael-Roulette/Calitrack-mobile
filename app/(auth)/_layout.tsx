@@ -3,7 +3,6 @@ import {
 	Dimensions,
 	Image,
 	KeyboardAvoidingView,
-	Platform,
 	ScrollView,
 	View,
 } from "react-native";

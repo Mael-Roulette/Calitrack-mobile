@@ -5,11 +5,6 @@ export interface User extends Models.Document {
 	email: string;
 	avatar: string;
 	completedTrainings?: number;
-	isPremium?: boolean;
-	planId?: string;
-	subscriptionStart?: Date;
-	subscriptionEnd?: Date;
-	subscriptionProvider?: "stripe" | "apple" | "google";
 }
 
 export interface CreateUserParams {
