@@ -10,7 +10,6 @@ import * as Progress from "react-native-progress";
 const GoalItem = ({
 	$id,
 	title,
-	type,
 	progress,
 	total,
 	state,
@@ -19,28 +18,6 @@ const GoalItem = ({
 	const [newProgress, setNewProgress] = useState<string>();
 	const [isUpdating, setIsUpdating] = useState(false);
 	const { fetchUserGoals } = useGoalsStore();
-
-	// Theme configuration
-	const themes = {
-		push: {
-			border: "border-secondary",
-			text: "text-secondary",
-			color: "rgba(252, 121, 66, 1)",
-		},
-		pull: {
-			border: "border-secondary",
-			text: "text-secondary",
-			color: "rgba(252, 121, 66, 1)",
-		},
-	};
-
-	const theme = themes[type.name as keyof typeof themes];
-
-	// State labels
-	const stateLabels = {
-		"in-progress": "En cours",
-		finish: "validé",
-	};
 
 	const handleUpdateProgress = async () => {
 		if (!newProgress) {
@@ -89,7 +66,7 @@ const GoalItem = ({
 					width={null}
 					unfilledColor='#e0e0e0'
 					borderWidth={0}
-					color={theme.color}
+					color={"rgba(252, 121, 66, 1)"}
 				/>
 			</View>
 		);
@@ -113,14 +90,14 @@ const GoalItem = ({
 				activeOpacity={state === "in-progress" ? 0.7 : 1}
 			>
 				<View
-					className={`w-full px-5 py-4 mb-4 border-[1px] rounded-xl ${theme.border}`}
+					className={`w-full px-5 py-4 mb-4 border-[1px] rounded-xl border-secondary`}
 				>
 					<View className='flex-row justify-between items-center gap-2'>
 						<Text className='font-sregular text-primary text-lg'>{title}</Text>
 						<Text
-							className={`text-xs font-sregular px-3 py-2 rounded-full border-[1px] ${theme.border} ${theme.text}`}
+							className={`text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary`}
 						>
-							{stateLabels[state as keyof typeof stateLabels] || state}
+							{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
 						</Text>
 					</View>
 					{renderContent()}

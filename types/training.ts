@@ -26,7 +26,7 @@ export interface Training {
 export interface Exercise {
 	$id: string;
 	name: string;
-	type: any;
+	type: "push" | "pull";
 	difficulty: string;
 	image?: string;
 }

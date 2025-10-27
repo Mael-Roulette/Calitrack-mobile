@@ -7,62 +7,61 @@ type GoalState = {
 	goals: Goal[];
 	isLoadingGoals: boolean;
 
-	setGoals: (goals: Goal[]) => void;
-	setIsLoadingGoals: (value: boolean) => void;
+	setGoals: ( goals: Goal[] ) => void;
+	setIsLoadingGoals: ( value: boolean ) => void;
 	fetchUserGoals: () => Promise<void>;
-	addGoal: (goal: Goal) => void;
-	updateGoal: (goalId: string, updatedGoal: Partial<Goal>) => void;
+	addGoal: ( goal: Goal ) => void;
+	updateGoal: ( goalId: string, updatedGoal: Partial<Goal> ) => void;
 };
 
-const useGoalsStore = create<GoalState>((set, get) => ({
+const useGoalsStore = create<GoalState>( ( set, get ) => ( {
 	goals: [],
 	isLoadingGoals: false,
 
-	setGoals: (goals: Goal[]) => set({ goals }),
-	setIsLoadingGoals: (value: boolean) => set({ isLoadingGoals: value }),
+	setGoals: ( goals: Goal[] ) => set( { goals } ),
+	setIsLoadingGoals: ( value: boolean ) => set( { isLoadingGoals: value } ),
 
 	fetchUserGoals: async () => {
 		const { isAuthenticated } = useAuthStore.getState();
-		if (!isAuthenticated) return;
+		if ( !isAuthenticated ) return;
 
-		set({ isLoadingGoals: true });
+		set( { isLoadingGoals: true } );
 
 		try {
 			const documents = await getGoalsFromUser();
 			const goals = documents.map(
-				(doc) =>
-					({
+				( doc ) =>
+					( {
 						$id: doc.$id,
 						$createdAt: doc.$createdAt,
 						$updatedAt: doc.$updatedAt,
 						title: doc.title,
-						type: doc.type,
 						progress: doc.progress,
-						progressHistory: JSON.parse(doc.progressHistory || "[]"),
+						progressHistory: JSON.parse( doc.progressHistory || "[]" ),
 						total: doc.total,
 						state: doc.state,
-					}) as Goal
+					} ) as Goal
 			);
-			set({ goals });
-		} catch (error) {
-			console.error("Erreur lors de la récupération des objectifs:", error);
-			set({ goals: [] });
+			set( { goals } );
+		} catch ( error ) {
+			console.error( "Erreur lors de la récupération des objectifs:", error );
+			set( { goals: [] } );
 		} finally {
-			set({ isLoadingGoals: false });
+			set( { isLoadingGoals: false } );
 		}
 	},
 
-	addGoal: (goal: Goal) => {
-		set((state) => ({ goals: [...state.goals, goal] }));
+	addGoal: ( goal: Goal ) => {
+		set( ( state ) => ( { goals: [ ...state.goals, goal ] } ) );
 	},
 
-	updateGoal: (goalId: string, updatedGoal: Partial<Goal>) => {
-		set((state) => ({
-			goals: state.goals.map((goal) =>
+	updateGoal: ( goalId: string, updatedGoal: Partial<Goal> ) => {
+		set( ( state ) => ( {
+			goals: state.goals.map( ( goal ) =>
 				goal.$id === goalId ? { ...goal, ...updatedGoal } : goal
 			),
-		}));
+		} ) );
 	},
-}));
+} ) );
 
 export default useGoalsStore;

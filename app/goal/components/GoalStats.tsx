@@ -1,37 +1,23 @@
-import { View, Text } from "react-native";
+import { Goal } from "@/types";
 import React, { FC } from "react";
+import { Text, View } from "react-native";
 import GoalChart from "./GoalChart";
 
-type GoalState = "in-progress" | "finish";
-
-interface GoalStatsProps {
-	title: string;
-	state: GoalState;
-	progressHistory: number[];
-	total: number;
-}
-
-const GoalStats: FC<GoalStatsProps> = ( {
+const GoalStats: FC<Partial<Goal>> = ( {
 	title,
 	state,
-	progressHistory,
-	total,
+	progressHistory = [],
+	total = 0,
 } ) => {
-	const stateLabels: Record<GoalState, string> = {
-		"in-progress": "En cours",
-		finish: "validé",
-	};
+	// Récupère la valeur la plus haute du tableau
+	const highestValue = progressHistory && progressHistory.length > 0
+		? Math.max( ...progressHistory )
+		: 0;
 
-	const highestValue =
-		progressHistory && progressHistory.length > 0
-			? Math.max( ...progressHistory )
-			: 0;
-
-	let progressPercentage: number | string =
-		total > 0 ? ( highestValue / total ) * 100 : 0;
+	let progressPercentage: number = total > 0 ? ( highestValue / total ) * 100 : 0;
 
 	if ( progressPercentage % 1 !== 0 ) {
-		progressPercentage = progressPercentage.toFixed( 2 );
+		progressPercentage = parseFloat( progressPercentage.toFixed( 2 ) );
 	}
 
 	return (
@@ -41,7 +27,7 @@ const GoalStats: FC<GoalStatsProps> = ( {
 				<Text
 					className="text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary"
 				>
-					{ stateLabels[ state ] }
+					{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
 				</Text>
 			</View>
 			<Text className="text-primary-100 font-sregular mb-7">

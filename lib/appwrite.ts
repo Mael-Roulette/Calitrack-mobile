@@ -17,7 +17,6 @@ export const appwriteConfig = {
 		process.env.EXPO_PUBLIC_APPRWITE_TRAINING_COLLECTION_ID!,
 	exerciseCollectionId:
 		process.env.EXPO_PUBLIC_APPWRITE_EXERCISE_COLLECTION_ID!,
-	typeCollectionId: process.env.EXPO_PUBLIC_APPWRITE_TYPE_COLLECTION_ID!,
 	passwordRedirectUrl: process.env.EXPO_PUBLIC_APPWRITE_PASSWORD_REDIRECT_URL!,
 	deleteAccountFunctionId: process.env.EXPO_PUBLIC_APPWRITE_DELETE_ACCOUNT_FUNCTION_ID!,
 };

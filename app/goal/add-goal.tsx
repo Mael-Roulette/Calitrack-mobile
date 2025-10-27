@@ -1,40 +1,37 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
-import CustomSelect from "@/components/CustomSelect";
 import { createGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
-import { GoalState } from "@/types";
+import { createGoalParams } from "@/types";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 const AddGoal = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 
-	const [ form, setForm ] = useState<GoalState>( {
+	const [ form, setForm ] = useState<createGoalParams>( {
 		title: "",
-		type: "push",
-		total: "",
+		total: 0,
 		progress: 0,
 	} );
 	const { fetchUserGoals } = useGoalsStore();
 
 	const submit = async (): Promise<void> => {
-		if ( !form.title || !form.type || !form.total ) {
+		if ( !form.title || !form.total ) {
 			Alert.alert( "Erreur", "Veuillez remplir tous les champs" );
 			return;
 		}
 
-		const { title, type, total, progress } = form;
+		const { title, total, progress } = form;
 
 
 		try {
 			setIsSubmitting( true );
 			await createGoal( {
-				title: title,
-				type: type,
+				title,
 				progress: progress || 0,
-				total: parseInt( total ),
+				total,
 			} );
 
 			await fetchUserGoals();
@@ -60,30 +57,14 @@ const AddGoal = () => {
 							setForm( ( prev ) => ( { ...prev, title: text } ) )
 						}
 					/>
-					<View>
-						<Text className='font-sregular text-xl mb-2'>
-							Type d&apos;objectif
-						</Text>
 
-						<CustomSelect
-							options={ [
-								{ label: "Push", value: "push" },
-								{ label: "Pull", value: "pull" },
-							] }
-							value={ form.type }
-							onChange={ ( val ) =>
-								setForm( ( prev ) => ( { ...prev, type: val as "push" | "pull" } ) )
-							}
-						/>
-
-					</View>
 					<CustomInput
 						label='Max à atteindre'
-						value={ form.total }
+						value={ form.total.toString() }
 						placeholder='10'
 						keyboardType='numeric'
 						onChangeText={ ( number ) =>
-							setForm( ( prev ) => ( { ...prev, total: number } ) )
+							setForm( ( prev ) => ( { ...prev, total: parseInt( number ) } ) )
 						}
 					/>
 					<CustomInput

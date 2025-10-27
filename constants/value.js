@@ -1,6 +1,5 @@
 import Constants from "expo-constants";
 
-// TODO : Update these constants with values of the premium plan
 export const MAX_TRAININGS = 6;
 export const MAX_GOALS = 4;
 
