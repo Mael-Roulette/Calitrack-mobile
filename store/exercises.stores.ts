@@ -7,45 +7,45 @@ type ExerciseState = {
 	exercices: Exercise[];
 	isLoadingExercices: boolean;
 
-	setExercices: (exercices: Exercise[]) => void;
-	setIsLoadingExercices: (value: boolean) => void;
+	setExercices: ( exercices: Exercise[] ) => void;
+	setIsLoadingExercices: ( value: boolean ) => void;
 	fetchExercises: () => Promise<void>;
 };
 
-const useExercicesStore = create<ExerciseState>((set, get) => ({
+const useExercicesStore = create<ExerciseState>( ( set, get ) => ( {
 	exercices: [],
 	isLoadingExercices: false,
 
-	setExercices: (exercices: Exercise[]) => set({ exercices }),
-	setIsLoadingExercices: (value: boolean) => set({ isLoadingExercices: value }),
+	setExercices: ( exercices: Exercise[] ) => set( { exercices } ),
+	setIsLoadingExercices: ( value: boolean ) => set( { isLoadingExercices: value } ),
 
 	fetchExercises: async () => {
 		const { isAuthenticated } = useAuthStore.getState();
-		if (!isAuthenticated) return;
+		if ( !isAuthenticated ) return;
 
-		set({ isLoadingExercices: true });
+		set( { isLoadingExercices: true } );
 
 		try {
 			const documents = await getAllExercises();
 			const exercices = documents.map(
-				(doc) =>
-					({
+				( doc ) =>
+					( {
 						$id: doc.$id,
 						name: doc.name,
 						image: doc.image,
 						description: doc.description,
 						type: doc.type,
 						difficulty: doc.difficulty,
-					}) as Exercise
+					} ) as Exercise
 			);
-			set({ exercices });
-		} catch (error) {
-			console.error("Erreur lors de la récupération des exercices:", error);
-			set({ exercices: [] });
+			set( { exercices } );
+		} catch ( error ) {
+			console.error( "Erreur lors de la récupération des exercices:", error );
+			set( { exercices: [] } );
 		} finally {
-			set({ isLoadingExercices: false });
+			set( { isLoadingExercices: false } );
 		}
 	},
-}));
+} ) );
 
 export default useExercicesStore;

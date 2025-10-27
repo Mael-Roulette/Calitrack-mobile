@@ -69,7 +69,7 @@ const Session = () => {
 	const renderExerciseItem = ( { item }: { item: Exercise } ) => (
 		<ExerciseItem
 			name={ item.name }
-			type={ item.type.name }
+			type={ item.type }
 			difficulty={ item.difficulty }
 			onPress={ () => goToExerciseDetails( item.$id ) }
 		/>
@@ -88,16 +88,11 @@ const Session = () => {
 
 		const exerciseTypes = new Set(
 			trainingExercises.map( ( exercise ) =>
-				typeof exercise.type.name === "string"
-					? exercise.type.name
-					: exercise.type.name
+				typeof exercise.type === "string"
+					? exercise.type
+					: exercise.type
 			)
 		);
-
-		setRelatedGoals( goals.filter(
-			( goal ) =>
-				exerciseTypes.has( goal.type.name ) && goal.state === "in-progress"
-		) );
 	}, [ trainingExercises, goals ] );
 
 	const renderGoalItem = ( { item }: { item: Goal } ) => (
@@ -105,7 +100,6 @@ const Session = () => {
 			key={ item.$id }
 			$id={ item.$id }
 			title={ item.title }
-			type={ item.type }
 			progress={ item.progress }
 			progressHistory={ item.progressHistory }
 			total={ item.total }

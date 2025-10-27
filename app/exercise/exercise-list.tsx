@@ -23,7 +23,7 @@ const ExerciseList = () => {
 					renderItem={ ( { item } ) => (
 						<ExerciseItem
 							name={ item.name }
-							type={ item.type.name }
+							type={ item.type }
 							difficulty={ item.difficulty }
 							onPress={ () => goToExerciseDetails( item.$id ) }
 						/>

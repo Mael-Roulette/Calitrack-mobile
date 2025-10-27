@@ -126,7 +126,7 @@ const Index = () => {
 	const renderExerciseItem = ( { item }: { item: Exercise } ) => (
 		<ExerciseItem
 			name={ item.name }
-			type={ item.type.name }
+			type={ item.type }
 			difficulty={ item.difficulty }
 			onPress={ () => goToExerciseDetails( item.$id ) }
 		/>

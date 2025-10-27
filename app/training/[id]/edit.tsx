@@ -206,7 +206,7 @@ const Edit = () => {
 										<ExerciseItem
 											key={ exercise.$id }
 											name={ exercise.name }
-											type={ exercise.type.name }
+											type={ exercise.type }
 											difficulty={ exercise.difficulty }
 										/>
 									) ) }

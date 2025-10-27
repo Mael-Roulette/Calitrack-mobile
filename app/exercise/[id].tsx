@@ -42,6 +42,28 @@ const ExerciseDetails = () => {
 		} );
 	}, [ navigation ] );
 
+	let difficultyInfo;
+	if ( !loading ) {
+		const getDifficultyColor = ( difficulty: string ) => {
+			switch ( difficulty ) {
+				case "beginner":
+					return { traduction: "Débutant", color: "#3b82f6" };
+				case "novice":
+					return { traduction: "Novice", color: "#22c55e" };
+				case "intermediate":
+					return { traduction: "Intermédiaire", color: "#eab308" };
+				case "advanced":
+					return { traduction: "Avancé", color: "#f97316" };
+				case "expert":
+					return { traduction: "Expert", color: "#ef4444" };
+				default:
+					return { traduction: "Novice", color: "#22c55e" };
+			}
+		};
+
+		difficultyInfo = getDifficultyColor( exercise.difficulty );
+	}
+
 	return (
 		<SafeAreaView className='flex-1 bg-background'>
 			<View className='flex-1'>
@@ -78,11 +100,11 @@ const ExerciseDetails = () => {
 							<View className='flex-row items-center justify-between mb-3'>
 								<Text className='text'>
 									Type :{ " " }
-									<Text className='text-secondary'>{ exercise.type.name }</Text>
+									<Text className='text-secondary'>{ exercise.type }</Text>
 								</Text>
 								<Text className='text'>
 									Difficulté :{ " " }
-									<Text className='text-secondary'>{ exercise.difficulty }</Text>
+									<Text style={ { color: difficultyInfo ? difficultyInfo.color : '#FC7942' } }>{ difficultyInfo ? difficultyInfo.traduction : exercise.difficulty }</Text>
 								</Text>
 							</View>
 							<Text className='text mt-2'>{ exercise.description }</Text>

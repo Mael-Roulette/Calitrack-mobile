@@ -7,16 +7,15 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
 	Animated,
 	Dimensions,
+	FlatList,
 	Modal,
 	PanResponder,
-	ScrollView,
 	Text,
 	TouchableWithoutFeedback,
 	View,
-	FlatList,
 } from "react-native";
 
-const ExerciseSelectionModal = ({
+const ExerciseSelectionModal = ( {
 	isVisible,
 	onClose,
 	onExerciseSelected,
@@ -24,139 +23,139 @@ const ExerciseSelectionModal = ({
 }: {
 	isVisible: boolean;
 	onClose: () => void;
-	onExerciseSelected?: (exercises: Exercise[]) => void;
+	onExerciseSelected?: ( exercises: Exercise[] ) => void;
 	initialSelectedExercises?: Exercise[];
-}) => {
+} ) => {
 	const { exercices } = useExercicesStore();
 
-	const [selectedExercises, setSelectedExercises] = useState<Exercise[]>(
+	const [ selectedExercises, setSelectedExercises ] = useState<Exercise[]>(
 		initialSelectedExercises
 	);
-	const [filteredExercises, setFilteredExercises] =
-		useState<Exercise[]>(exercices);
+	const [ filteredExercises, setFilteredExercises ] =
+		useState<Exercise[]>( exercices );
 
-	useEffect(() => {
-		setFilteredExercises(exercices);
-	}, [exercices]);
+	useEffect( () => {
+		setFilteredExercises( exercices );
+	}, [ exercices ] );
 
 	/* -------------------------------------------------- */
 	/* ---------- Gestion de la modal ---------- */
-	const panY = useRef(new Animated.Value(0)).current;
-	const screenHeight = Dimensions.get("screen").height;
+	const panY = useRef( new Animated.Value( 0 ) ).current;
+	const screenHeight = Dimensions.get( "screen" ).height;
 
-	const resetPositionAnim = Animated.timing(panY, {
+	const resetPositionAnim = Animated.timing( panY, {
 		toValue: 0,
 		duration: 300,
 		useNativeDriver: true,
-	});
+	} );
 
-	const closeAnim = Animated.timing(panY, {
+	const closeAnim = Animated.timing( panY, {
 		toValue: screenHeight,
 		duration: 300,
 		useNativeDriver: true,
-	});
+	} );
 
 	const panResponder = useRef(
-		PanResponder.create({
+		PanResponder.create( {
 			onStartShouldSetPanResponder: () => true,
 			onMoveShouldSetPanResponder: () => true,
-			onPanResponderMove: (e, gestureState) => {
-				if (gestureState.dy > 0) {
-					panY.setValue(gestureState.dy);
+			onPanResponderMove: ( e, gestureState ) => {
+				if ( gestureState.dy > 0 ) {
+					panY.setValue( gestureState.dy );
 				}
 			},
-			onPanResponderRelease: (e, gestureState) => {
-				if (gestureState.dy > 200) {
+			onPanResponderRelease: ( e, gestureState ) => {
+				if ( gestureState.dy > 200 ) {
 					closeModal();
 				} else {
 					resetPositionAnim.start();
 				}
 			},
-		})
+		} )
 	).current;
 
-	useEffect(() => {
-		if (isVisible) {
-			panY.setValue(0);
+	useEffect( () => {
+		if ( isVisible ) {
+			panY.setValue( 0 );
 			resetPositionAnim.start();
-			setSelectedExercises(initialSelectedExercises);
+			setSelectedExercises( initialSelectedExercises );
 		}
-	}, [isVisible, initialSelectedExercises]);
+	}, [isVisible, initialSelectedExercises, panY, resetPositionAnim] );
 
-	const closeModal = useCallback(() => {
-		closeAnim.start(() => {
+	const closeModal = useCallback( () => {
+		closeAnim.start( () => {
 			// Utiliser setTimeout pour éviter les mises à jour synchrones
-			setTimeout(() => {
+			setTimeout( () => {
 				onClose();
-			}, 0);
-		});
-	}, [closeAnim, onClose]);
+			}, 0 );
+		} );
+	}, [ closeAnim, onClose ] );
 
 	/* ----- Recherche d'exercice ----- */
-	const handleSearch = (text: string) => {
-		if (!text.trim()) {
-			setFilteredExercises(exercices);
+	const handleSearch = ( text: string ) => {
+		if ( !text.trim() ) {
+			setFilteredExercises( exercices );
 			return;
 		}
 
 		const query = text.toLowerCase();
 		const filtered = exercices.filter(
-			(exercise) =>
-				exercise.name?.toLowerCase().includes(query) ||
-				exercise.type?.name?.toLowerCase().includes(query)
+			( exercise ) =>
+				exercise.name?.toLowerCase().includes( query ) ||
+				exercise.type?.toLowerCase().includes( query )
 		);
 
-		setFilteredExercises(filtered);
+		setFilteredExercises( filtered );
 	};
 
 	/* -------------------------------------------------- */
 	/* ---------- Sélection des exercices ---------- */
-	const handleExerciseToggle = useCallback((exercise: Exercise) => {
-		setSelectedExercises((prev) => {
-			const isAlreadySelected = prev.some((ex) => ex.$id === exercise.$id);
+	const handleExerciseToggle = useCallback( ( exercise: Exercise ) => {
+		setSelectedExercises( ( prev ) => {
+			const isAlreadySelected = prev.some( ( ex ) => ex.$id === exercise.$id );
 
-			if (isAlreadySelected) {
+			if ( isAlreadySelected ) {
 				// Désélectionner l'exercice
-				return prev.filter((ex) => ex.$id !== exercise.$id);
+				return prev.filter( ( ex ) => ex.$id !== exercise.$id );
 			} else {
 				// Sélectionner l'exercice
-				return [...prev, exercise];
+				return [ ...prev, exercise ];
 			}
-		});
-	}, []);
+		} );
+	}, [] );
 
 	const isExerciseSelected = useCallback(
-		(exerciseId: string) => {
-			return selectedExercises.some((ex) => ex.$id === exerciseId);
+		( exerciseId: string ) => {
+			return selectedExercises.some( ( ex ) => ex.$id === exerciseId );
 		},
-		[selectedExercises]
+		[ selectedExercises ]
 	);
 
 	/* ----- Confirmer la sélection ----- */
-	const handleConfirmSelection = useCallback(() => {
-		setTimeout(() => {
-			if (onExerciseSelected) {
-				onExerciseSelected(selectedExercises);
+	const handleConfirmSelection = useCallback( () => {
+		setTimeout( () => {
+			if ( onExerciseSelected ) {
+				onExerciseSelected( selectedExercises );
 			}
 			closeModal();
-		}, 0);
-	}, [selectedExercises, onExerciseSelected, closeModal]);
+		}, 0 );
+	}, [ selectedExercises, onExerciseSelected, closeModal ] );
 
-	if (!isVisible) return null;
+	if ( !isVisible ) return null;
 
 	return (
 		<Modal
 			animationType='slide'
-			transparent={true}
-			visible={isVisible}
-			onRequestClose={closeModal}
+			transparent={ true }
+			visible={ isVisible }
+			onRequestClose={ closeModal }
 		>
-			<TouchableWithoutFeedback onPress={closeModal}>
+			<TouchableWithoutFeedback onPress={ closeModal }>
 				<View className='flex-1 bg-black/40 justify-end'>
-					<TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+					<TouchableWithoutFeedback onPress={ ( e ) => e.stopPropagation() }>
 						<Animated.View
-							style={{
-								transform: [{ translateY: panY }],
+							style={ {
+								transform: [ { translateY: panY } ],
 								shadowColor: "#000",
 								shadowOffset: { width: 0, height: -10 },
 								shadowOpacity: 0.25,
@@ -164,11 +163,11 @@ const ExerciseSelectionModal = ({
 								elevation: 10,
 								borderTopLeftRadius: 20,
 								borderTopRightRadius: 20,
-							}}
+							} }
 							className='bg-background p-5 h-4/5 w-full'
 						>
 							<View
-								{...panResponder.panHandlers}
+								{ ...panResponder.panHandlers }
 								className='flex justify-center items-center mb-3 h-4 w-full'
 							>
 								<View className='h-1 w-16 bg-primary-100 rounded-full'></View>
@@ -180,45 +179,45 @@ const ExerciseSelectionModal = ({
 								</Text>
 
 								<Text className='text-center text-primary-100 font-sregular mb-4'>
-									{selectedExercises.length} exercice
-									{selectedExercises.length > 1 ? "s" : ""} sélectionné
-									{selectedExercises.length > 1 ? "s" : ""}
+									{ selectedExercises.length } exercice
+									{ selectedExercises.length > 1 ? "s" : "" } sélectionné
+									{ selectedExercises.length > 1 ? "s" : "" }
 								</Text>
 
 								<CustomInput
 									label='Rechercher un exercice'
 									placeholder='Ex : Front, planche, ...'
-									onChangeText={handleSearch}
+									onChangeText={ handleSearch }
 									customStyles='mb-4'
 								/>
 
 								<FlatList
 									className='flex-1 mb-4'
-									data={filteredExercises}
-									showsVerticalScrollIndicator={false}
-									keyExtractor={(item) => item.$id}
-									renderItem={({ item }) => (
+									data={ filteredExercises }
+									showsVerticalScrollIndicator={ false }
+									keyExtractor={ ( item ) => item.$id }
+									renderItem={ ( { item } ) => (
 										<ExerciseItem
-											key={item.$id}
-											name={item.name}
-											type={item.type.name}
-											difficulty={item.difficulty}
-											selectable={true}
-											isSelected={isExerciseSelected(item.$id)}
-											onPress={() => handleExerciseToggle(item)}
+											key={ item.$id }
+											name={ item.name }
+											type={ item.type }
+											difficulty={ item.difficulty }
+											selectable={ true }
+											isSelected={ isExerciseSelected( item.$id ) }
+											onPress={ () => handleExerciseToggle( item ) }
 										/>
-									)}
+									) }
 								/>
 
 								<View className='flex-row gap-3'>
 									<CustomButton
 										title='Annuler'
 										variant='secondary'
-										onPress={closeModal}
+										onPress={ closeModal }
 									/>
 									<CustomButton
-										title={`Confirmer (${selectedExercises.length})`}
-										onPress={handleConfirmSelection}
+										title={ `Confirmer (${selectedExercises.length})` }
+										onPress={ handleConfirmSelection }
 									/>
 								</View>
 							</View>
