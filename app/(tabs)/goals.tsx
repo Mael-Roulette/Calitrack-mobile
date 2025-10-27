@@ -42,7 +42,7 @@ const Goals = () => {
 	const { progressGoals, finishedGoals } = useMemo(
 		() => ({
 			progressGoals: goals.filter((goal) => goal.state === "in-progress"),
-			finishedGoals: goals.filter((goal) => goal.state === "finish"),
+			finishedGoals: goals.filter((goal) => goal.state === "finished"),
 		}),
 		[goals]
 	);

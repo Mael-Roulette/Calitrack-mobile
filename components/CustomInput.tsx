@@ -13,7 +13,7 @@ const CustomInput = ({
 	editable = true,
 	customStyles = "",
 }: CustomInputProps) => {
-	const [isFocused, setIsFocused] = useState(false);
+	const [, setIsFocused] = useState(false);
 
 	return (
 		<View className='w-full gap-1'>

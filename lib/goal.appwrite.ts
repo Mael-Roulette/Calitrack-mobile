@@ -1,5 +1,5 @@
 import { MAX_GOALS } from "@/constants/value";
-import { createGoalParams, updatedGoalParams } from "@/types";
+import { CreateGoalParams, UpdatedGoalParams } from "@/types";
 import { ID, Models, Query } from "react-native-appwrite";
 import { appwriteConfig, databases } from "./appwrite";
 import { getCurrentUser } from "./user.appwrite";
@@ -14,7 +14,7 @@ export const createGoal = async ( {
 	title,
 	progress,
 	total,
-}: createGoalParams ): Promise<{ goal?: Models.DefaultDocument; message: { title: string; body: string; }; }> => {
+}: CreateGoalParams ): Promise<{ goal?: Models.DefaultDocument; message: { title: string; body: string; }; }> => {
 	try {
 		const currentUser = await getCurrentUser();
 		if ( !currentUser ) throw Error;
@@ -95,7 +95,7 @@ export const getGoalsFromUser = async (): Promise<Models.DefaultDocument[]> => {
  * @throws {Error} - Si la mise à jour a échoué
  */
 export const updateGoal = async (
-	{ $id, progress, updateDate }: updatedGoalParams
+	{ $id, progress, updateDate }: UpdatedGoalParams
 ): Promise<void> => {
 	try {
 		// récupérer l'objectif à mettre à jour
@@ -106,7 +106,7 @@ export const updateGoal = async (
 		);
 
 		// On vérifie que l'objectif est validé ou non
-		const newState = progress >= currentGoal.total ? "finish" : "in-progress";
+		const newState = progress >= currentGoal.total ? "finished" : "in-progress";
 
 		// On met à jour la progression de l'utilisateur
 		const progressHistoryArray = JSON.parse( currentGoal.progressHistory );

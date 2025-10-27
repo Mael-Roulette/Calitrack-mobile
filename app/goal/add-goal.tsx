@@ -2,40 +2,44 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { createGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
-import { createGoalParams } from "@/types";
+import { CreateGoalParams } from "@/types";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 
-const AddGoal = () => {
-	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
+interface FormState {
+	title: string;
+	total: string;
+	progress: string;
+}
 
-	const [ form, setForm ] = useState<createGoalParams>( {
+const AddGoal = () => {
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
+	const [ form, setForm ] = useState<FormState>( {
 		title: "",
-		total: 0,
-		progress: 0,
+		total: "",
+		progress: "",
 	} );
+
 	const { fetchUserGoals } = useGoalsStore();
 
-	const submit = async (): Promise<void> => {
+	const submit = async () => {
 		if ( !form.title || !form.total ) {
 			Alert.alert( "Erreur", "Veuillez remplir tous les champs" );
 			return;
 		}
 
-		const { title, total, progress } = form;
-
-
 		try {
 			setIsSubmitting( true );
-			await createGoal( {
-				title,
-				progress: progress || 0,
-				total,
-			} );
 
+			const goalData: CreateGoalParams = {
+				title: form.title,
+				total: parseInt( form.total, 10 ),
+				progress: form.progress ? parseInt( form.progress, 10 ) : 0,
+			};
+
+			await createGoal( goalData );
 			await fetchUserGoals();
-
 			router.push( "/goals" );
 		} catch ( err ) {
 			console.error( err );
@@ -45,42 +49,40 @@ const AddGoal = () => {
 		}
 	};
 
+	const handleNumericChange = ( field: 'total' | 'progress', value: string ) => {
+		// Permet uniquement les chiffres ou une chaîne vide
+		if ( value === "" || /^\d+$/.test( value ) ) {
+			setForm( prev => ( { ...prev, [ field ]: value } ) );
+		}
+	};
+
 	return (
-		<View className='bg-background min-h-full'>
-			<ScrollView className='px-5'>
-				<View className='gap-5 h-full'>
+		<View className="bg-background min-h-full">
+			<ScrollView className="px-5">
+				<View className="gap-5 h-full">
 					<CustomInput
 						label="Nom de l'objectif"
 						value={ form.title }
-						placeholder='10s straddle planche'
+						placeholder="10s straddle planche"
 						onChangeText={ ( text ) =>
-							setForm( ( prev ) => ( { ...prev, title: text } ) )
-						}
-					/>
-
-					<CustomInput
-						label='Max à atteindre'
-						value={ form.total.toString() }
-						placeholder='10'
-						keyboardType='numeric'
-						onChangeText={ ( number ) =>
-							setForm( ( prev ) => ( { ...prev, total: parseInt( number ) } ) )
+							setForm( prev => ( { ...prev, title: text } ) )
 						}
 					/>
 					<CustomInput
-						label='Max actuel'
-						value={ form.progress as any as string }
-						placeholder='2'
-						keyboardType='numeric'
-						onChangeText={ ( number ) =>
-							setForm( ( prev ) => ( {
-								...prev,
-								progress: number ? parseInt( number ) : 0,
-							} ) )
-						}
+						label="Max à atteindre"
+						value={ form.total }
+						placeholder="10"
+						keyboardType="numeric"
+						onChangeText={ ( value ) => handleNumericChange( 'total', value ) }
+					/>
+					<CustomInput
+						label="Max actuel"
+						value={ form.progress }
+						placeholder="2"
+						keyboardType="numeric"
+						onChangeText={ ( value ) => handleNumericChange( 'progress', value ) }
 					/>
 				</View>
-
 				<CustomButton
 					title="Ajouter l'objectif"
 					onPress={ submit }

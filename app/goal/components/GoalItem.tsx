@@ -36,7 +36,7 @@ const GoalItem = ({
 			await updateGoal($id, {
 				progress: progressValue,
 
-				state: progressValue >= total ? "finish" : "in-progress",
+				state: progressValue >= total ? "finished" : "in-progress",
 				updateDate: new Date().toISOString(),
 			});
 
@@ -76,7 +76,7 @@ const GoalItem = ({
 		switch (state) {
 			case "in-progress":
 				return renderProgress();
-			case "finish":
+			case "finished":
 				return null;
 			default:
 				return <Text>{state}</Text>;
@@ -97,7 +97,7 @@ const GoalItem = ({
 						<Text
 							className={`text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary`}
 						>
-							{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
+							{ state === 'finished' ? 'Validé' : state === 'in-progress' && 'En cours' }
 						</Text>
 					</View>
 					{renderContent()}

@@ -1,23 +1,23 @@
 export interface Goal {
 	$createdAt: string;
 	$updatedAt: string;
-	$id?: string;
+	$id: string;
 	title: string;
 	progress: number;
 	total: number;
 	progressHistory: number[];
-	state: "in-progress" | "finish";
+	state: "in-progress" | "finished";
 }
 
-export interface createGoalParams {
+export interface CreateGoalParams {
 	title: string;
 	progress?: number;
 	total: number;
 }
 
-export interface updatedGoalParams {
+export interface UpdatedGoalParams {
 	$id: string;
 	updateDate: string;
 	progress: number;
-	state?: "in-progress" | "finish";
+	state?: Goal[ "state" ];
 }
