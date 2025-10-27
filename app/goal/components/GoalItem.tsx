@@ -33,10 +33,9 @@ const GoalItem = ({
 				throw new Error("L'id n'est pas défini");
 			}
 
-			await updateGoal($id, {
+			await updateGoal( {
+				$id,
 				progress: progressValue,
-
-				state: progressValue >= total ? "finished" : "in-progress",
 				updateDate: new Date().toISOString(),
 			});
 
