@@ -114,11 +114,7 @@ const GoalItem = ( {
 			>
 				<View className='flex-1 justify-center items-center bg-black/50'>
 					<View className='bg-background w-[80%] p-5 rounded-xl'>
-						<Text className='text-2xl font-calsans text-primary mb-4'>
-							Mise à jour
-						</Text>
-
-						<Text className='font-sregular text-lg mb-2 text-primary'>
+						<Text className='text-xl font-calsans text-primary mb-4'>
 							{ exercise.name }
 						</Text>
 
