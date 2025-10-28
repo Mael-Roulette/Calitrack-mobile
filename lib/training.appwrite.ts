@@ -2,6 +2,7 @@ import { MAX_TRAININGS } from "@/constants/value";
 import { createTrainingParams, updateTrainingParams } from "@/types";
 import {
 	ID,
+	Models,
 	Query
 } from "react-native-appwrite";
 import { appwriteConfig, databases } from "./appwrite";
@@ -10,7 +11,7 @@ import { getCurrentUser } from "./user.appwrite";
 /**
  * Permet de créer un nouvel entraînement
  * @param param0 - name, days, duration
- * @returns {Promise<{training: Document, message: {title: string, body: string}}>} - L'entraînement créé et un message de succès
+ * @returns {Promise<{training: Models.Document, message: {title: string, body: string}}>} - L'entraînement créé et un message de succès
  * @throws {Error} - Si l'entraînement n'a pas pu être créé
  */
 export const createTraining = async ( {
@@ -18,7 +19,7 @@ export const createTraining = async ( {
 	days,
 	duration,
 	exercises,
-}: createTrainingParams ) => {
+}: createTrainingParams ): Promise<{ training?: Models.Document; message: { title: string; body: string; }; }> => {
 	try {
 		const currentUser = await getCurrentUser();
 		if ( !currentUser ) throw Error;
@@ -30,7 +31,7 @@ export const createTraining = async ( {
 				title: "Nombre maximum d'entraînements atteint",
 				body: "Vous ne pouvez pas ajouter plus de 10 entraînements.",
 			};
-			return message;
+			return { message };
 		}
 
 		let exercisesTab: any = [];
@@ -64,10 +65,10 @@ export const createTraining = async ( {
 
 /**
  * Permet de récupérer les entraînements de l'utilisateur actuellement connecté
- * @returns {Promise<Document[]>} - Liste des entraînements de l'utilisateur
+ * @returns {Promise<Models.Document[]>} - Liste des entraînements de l'utilisateur
  * @throws {Error} - Si les entraînements n'ont pas pu être récupérés
  */
-export const getTrainingsFromUser = async () => {
+export const getTrainingsFromUser = async (): Promise<Models.Document[]> => {
 	try {
 		const currentUser = await getCurrentUser();
 		if ( !currentUser ) throw Error;
@@ -87,10 +88,10 @@ export const getTrainingsFromUser = async () => {
 /**
  * Permet de récupérer les entraînements de l'utilisateur avec un jour spécifique
  * @param day - Le jour pour lequel récupérer les entraînements
- * @returns {Promise<Document[]>} - Liste des entraînements de l'utilisateur pour le jour spécifié
+ * @returns {Promise<Models.Document[]>} - Liste des entraînements de l'utilisateur pour le jour spécifié
  * @throws {Error} - Si les entraînements n'ont pas pu être récupérés
  */
-export const getTrainingFromUserByDay = async ( day: string ) => {
+export const getTrainingFromUserByDay = async ( day: string ): Promise<Models.Document[]> => {
 	try {
 		const currentUser = await getCurrentUser();
 		if ( !currentUser ) throw Error;
@@ -110,10 +111,10 @@ export const getTrainingFromUserByDay = async ( day: string ) => {
 /**
  * Permet de récupérer un entraînement par son ID
  * @param id - ID de l'entraînement à récupérer
- * @returns {Promise<Document>} - L'entraînement récupéré
+ * @returns {Promise<Models.Document>} - L'entraînement récupéré
  * @throws {Error} - Si l'entraînement n'a pas pu être récupéré
  */
-export const getTrainingById = async ( id: string ) => {
+export const getTrainingById = async ( id: string ): Promise<Models.Document> => {
 	try {
 		const training = await databases.getDocument(
 			appwriteConfig.databaseId,
@@ -140,7 +141,7 @@ export const updateTraining = async ( {
 	days,
 	duration,
 	exercises,
-}: updateTrainingParams ) => {
+}: updateTrainingParams ): Promise<void> => {
 	try {
 		await databases.updateDocument(
 			appwriteConfig.databaseId,
