@@ -4,7 +4,7 @@ import { Text, View } from "react-native";
 import GoalChart from "./GoalChart";
 
 const GoalStats: FC<Partial<Goal>> = ( {
-	title,
+	exercise,
 	state,
 	progressHistory = [],
 	total = 0,
@@ -23,7 +23,7 @@ const GoalStats: FC<Partial<Goal>> = ( {
 	return (
 		<View className="px-5 py-4 border border-secondary rounded-md mb-3">
 			<View className="flex-row items-center justify-between mb-2">
-				<Text className="text-lg font-sregular text-primary">{ title }</Text>
+				<Text className="text-lg font-sregular text-primary">{ exercise?.name || "Nom de l'objectif" }</Text>
 				<Text
 					className="text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary"
 				>

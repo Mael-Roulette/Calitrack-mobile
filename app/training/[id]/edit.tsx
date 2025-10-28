@@ -109,14 +109,14 @@ const Edit = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
-		const exerciseIds = selectedExercises.map( ( exercise ) => exercise.$id );
+		const exercises = selectedExercises.map( ( exercise ) => exercise.$id );
 
 		const trainingData = {
 			id: training.$id,
 			name: form.name,
 			days: form.days,
 			duration: totalDuration,
-			exercises: exerciseIds,
+			exercises: exercises,
 		};
 
 		try {

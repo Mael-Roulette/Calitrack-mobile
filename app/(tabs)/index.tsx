@@ -90,6 +90,8 @@ export default function Index () {
 		[ goals ]
 	);
 
+	console.log( progressGoals );
+
 	return (
 		<View className='bg-background min-h-full'>
 			{ isLoading ? (
@@ -164,8 +166,7 @@ export default function Index () {
 									<GoalItem
 										key={ item.$id }
 										$id={ item.$id }
-										title={ item.title }
-										type={ item.type }
+										exercise={ item.exercise }
 										progress={ item.progress }
 										progressHistory={ item.progressHistory }
 										total={ item.total }

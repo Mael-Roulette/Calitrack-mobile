@@ -50,7 +50,7 @@ const Goals = () => {
 	const renderGoalItem = ({ item }: { item: Goal }) => (
 		<GoalItem
 			$id={item.$id}
-			title={item.title}
+			exercise={item.exercise}
 			progress={item.progress}
 			progressHistory={item.progressHistory}
 			total={item.total}

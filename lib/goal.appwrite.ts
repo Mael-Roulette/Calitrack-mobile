@@ -6,12 +6,12 @@ import { getCurrentUser } from "./user.appwrite";
 
 /**
  * Permet de créer un nouvel objectif
- * @param param0 - title, progress, total
+ * @param param0 - exercise, progress, total
  * @returns {Promise<{goal: Models.DefaultDocument, message: {title: string, body: string}}>} - L'objectif créé et un message de succès
  * @throws {Error} - Si l'objectif n'a pas pu être créé
  */
 export const createGoal = async ( {
-	title,
+	exercise,
 	progress,
 	total,
 }: CreateGoalParams ): Promise<{ goal?: Models.DefaultDocument; message: { title: string; body: string; }; }> => {
@@ -45,7 +45,7 @@ export const createGoal = async ( {
 			{
 				createdAt: new Date().toISOString(),
 				user: currentUser.$id,
-				title,
+				exercise,
 				progress,
 				total,
 				progressHistory: JSON.stringify( [ progress || 0 ] ),
@@ -54,7 +54,7 @@ export const createGoal = async ( {
 
 		const message = {
 			title: "Nouvel objectif créé",
-			body: `Votre objectif "${title}" a été créé avec succès.`,
+			body: `Votre objectif =a été créé avec succès.`,
 		};
 
 		return { goal, message };

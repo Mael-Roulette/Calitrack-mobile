@@ -80,11 +80,11 @@ const ExerciseSelectionModal = ( {
 			resetPositionAnim.start();
 			setSelectedExercises( initialSelectedExercises );
 		}
-	}, [isVisible, initialSelectedExercises, panY, resetPositionAnim] );
+	}, [ isVisible, initialSelectedExercises, panY, resetPositionAnim ] );
 
 	const closeModal = useCallback( () => {
 		closeAnim.start( () => {
-			// Utiliser setTimeout pour éviter les mises à jour synchrones
+			// setTimeout pour éviter les mises à jour synchrones
 			setTimeout( () => {
 				onClose();
 			}, 0 );
@@ -125,8 +125,8 @@ const ExerciseSelectionModal = ( {
 	}, [] );
 
 	const isExerciseSelected = useCallback(
-		( exerciseId: string ) => {
-			return selectedExercises.some( ( ex ) => ex.$id === exerciseId );
+		( exercise: string ) => {
+			return selectedExercises.some( ( ex ) => ex.$id === exercise );
 		},
 		[ selectedExercises ]
 	);

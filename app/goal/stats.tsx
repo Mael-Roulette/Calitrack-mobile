@@ -14,7 +14,7 @@ const Stats = () => {
 					{ goals.map( ( goal ) => (
 						<GoalStats
 							key={ goal.$id }
-							title={ goal.title }
+							exercise={ goal.exercise }
 							state={ goal.state }
 							progressHistory={ goal.progressHistory }
 							total={ goal.total }

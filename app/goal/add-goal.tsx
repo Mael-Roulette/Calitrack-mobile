@@ -2,42 +2,73 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { createGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
-import { CreateGoalParams } from "@/types";
+import useExercicesStore from "@/store/exercises.stores";
+import { CreateGoalParams, Exercise } from "@/types";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import ExerciseItem from "../exercise/components/ExerciseItem";
 
 interface FormState {
-	title: string;
 	total: string;
 	progress: string;
 }
 
 const AddGoal = () => {
+	const { fetchUserGoals } = useGoalsStore();
+	const { exercices } = useExercicesStore();
+	const [ filteredExercises, setFilteredExercises ] = useState<Exercise[]>( [] );
+	const [ selectedExercise, setSelectedExercise ] = useState<Exercise | null>( null );
+	const [ showSuggestions, setShowSuggestions ] = useState( false );
 	const [ isSubmitting, setIsSubmitting ] = useState( false );
 	const [ form, setForm ] = useState<FormState>( {
-		title: "",
 		total: "",
 		progress: "",
 	} );
 
-	const { fetchUserGoals } = useGoalsStore();
+	/* ----- Recherche d'exercice ----- */
+	const handleSearch = ( text: string ) => {
+		if ( !text.trim() ) {
+			setFilteredExercises( [] );
+			setShowSuggestions( false );
+			return;
+		}
+		const query = text.toLowerCase();
+		const filtered = exercices.filter(
+			( exercise ) =>
+				exercise.name?.toLowerCase().includes( query ) ||
+				exercise.type?.toLowerCase().includes( query )
+		);
+		setFilteredExercises( filtered );
+		setShowSuggestions( true );
+	};
 
+	const handleExerciseSelect = ( exercise: Exercise ) => {
+		setSelectedExercise( exercise );
+		setShowSuggestions( false );
+		setFilteredExercises( [] );
+	};
+
+	const handleNumericChange = ( field: 'total' | 'progress', value: string ) => {
+		// Permet uniquement les chiffres ou une chaîne vide
+		if ( value === "" || /^\d+$/.test( value ) ) {
+			setForm( prev => ( { ...prev, [ field ]: value } ) );
+		}
+	};
+
+	// envoie du formulaire d'ajout d'un objectif
 	const submit = async () => {
-		if ( !form.title || !form.total ) {
+		if ( !selectedExercise || !form.total ) {
 			Alert.alert( "Erreur", "Veuillez remplir tous les champs" );
 			return;
 		}
-
 		try {
 			setIsSubmitting( true );
-
 			const goalData: CreateGoalParams = {
-				title: form.title,
+				exercise: selectedExercise.$id,
 				total: parseInt( form.total, 10 ),
 				progress: form.progress ? parseInt( form.progress, 10 ) : 0,
 			};
-
 			await createGoal( goalData );
 			await fetchUserGoals();
 			router.push( "/goals" );
@@ -49,25 +80,50 @@ const AddGoal = () => {
 		}
 	};
 
-	const handleNumericChange = ( field: 'total' | 'progress', value: string ) => {
-		// Permet uniquement les chiffres ou une chaîne vide
-		if ( value === "" || /^\d+$/.test( value ) ) {
-			setForm( prev => ( { ...prev, [ field ]: value } ) );
-		}
-	};
-
 	return (
 		<View className="bg-background min-h-full">
-			<ScrollView className="px-5">
-				<View className="gap-5 h-full">
-					<CustomInput
-						label="Nom de l'objectif"
-						value={ form.title }
-						placeholder="10s straddle planche"
-						onChangeText={ ( text ) =>
-							setForm( prev => ( { ...prev, title: text } ) )
-						}
-					/>
+			<View className="flex-1 px-5">
+				<View className="gap-5 mb-5">
+					<View>
+						<CustomInput
+							label='Rechercher un exercice'
+							placeholder='Ex : Front, planche, ...'
+							onChangeText={ handleSearch }
+							customStyles='mb-2'
+						/>
+
+						{/* Liste de suggestions */ }
+						{ showSuggestions && filteredExercises.length > 0 && (
+							<View className="bg-background border border-primary-100 rounded-md mb-4 max-h-48">
+								<FlatList
+									data={ filteredExercises }
+									keyExtractor={ ( item ) => item.$id || item.name }
+									nestedScrollEnabled
+									renderItem={ ( { item } ) => (
+										<TouchableOpacity
+											className="py-3 px-4 border-b border-primary-100 "
+											onPress={ () => handleExerciseSelect( item ) }
+										>
+											<Text className="font-sregular text-primary">{ item.name }</Text>
+										</TouchableOpacity>
+									) }
+								/>
+							</View>
+						) }
+
+						{/* Affichage de l'exercice sélectionné */ }
+						{ selectedExercise && (
+							<View>
+								<Text className="text-primary font-sregular mb-2">Exercice sélectionné :</Text>
+								<ExerciseItem
+									name={ selectedExercise.name }
+									type={ selectedExercise.type }
+									difficulty={ selectedExercise.difficulty }
+								/>
+							</View>
+						) }
+					</View>
+
 					<CustomInput
 						label="Max à atteindre"
 						value={ form.total }
@@ -88,7 +144,7 @@ const AddGoal = () => {
 					onPress={ submit }
 					isLoading={ isSubmitting }
 				/>
-			</ScrollView>
+			</View>
 		</View>
 	);
 };

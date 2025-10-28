@@ -1,8 +1,10 @@
+import { Exercise } from ".";
+
 export interface Goal {
 	$createdAt: string;
 	$updatedAt: string;
 	$id: string;
-	title: string;
+	exercise: Exercise;
 	progress: number;
 	total: number;
 	progressHistory: number[];
@@ -10,7 +12,7 @@ export interface Goal {
 }
 
 export interface CreateGoalParams {
-	title: string;
+	exercise: string;
 	progress?: number;
 	total: number;
 }
