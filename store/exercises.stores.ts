@@ -36,6 +36,7 @@ const useExercicesStore = create<ExerciseState>( ( set ) => ( {
 						description: doc.description,
 						type: doc.type,
 						difficulty: doc.difficulty,
+						format: doc.format,
 					} ) as Exercise
 			);
 			set( { exercices } );

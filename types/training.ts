@@ -29,4 +29,5 @@ export interface Exercise {
 	type: "push" | "pull";
 	difficulty: string;
 	image?: string;
+	format: "hold" | "repetition";
 }
