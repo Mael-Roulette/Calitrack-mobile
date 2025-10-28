@@ -51,7 +51,6 @@ const Goals = () => {
 		<GoalItem
 			$id={item.$id}
 			title={item.title}
-			type={item.type}
 			progress={item.progress}
 			progressHistory={item.progressHistory}
 			total={item.total}
