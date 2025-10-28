@@ -12,7 +12,7 @@ type ExerciseState = {
 	fetchExercises: () => Promise<void>;
 };
 
-const useExercicesStore = create<ExerciseState>( ( set, get ) => ( {
+const useExercicesStore = create<ExerciseState>( ( set ) => ( {
 	exercices: [],
 	isLoadingExercices: false,
 

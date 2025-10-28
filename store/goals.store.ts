@@ -14,7 +14,7 @@ type GoalState = {
 	updateGoal: ( goalId: string, updatedGoal: Partial<Goal> ) => void;
 };
 
-const useGoalsStore = create<GoalState>( ( set, get ) => ( {
+const useGoalsStore = create<GoalState>( ( set ) => ( {
 	goals: [],
 	isLoadingGoals: false,
 

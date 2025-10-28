@@ -3,10 +3,10 @@ import { Models } from "react-native-appwrite";
 
 /**
  * Permet de récupérer tous les exercices disponibles
- * @returns {Promise<Models.Document[]>} - Liste des exercices disponibles
+ * @returns {Promise<Models.DefaultDocument[]>} - Liste des exercices disponibles
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
-export const getAllExercises = async (): Promise<Models.Document[]> => {
+export const getAllExercises = async (): Promise<Models.DefaultDocument[]> => {
 	try {
 		const exercises = await databases.listDocuments(
 			appwriteConfig.databaseId,
@@ -22,10 +22,10 @@ export const getAllExercises = async (): Promise<Models.Document[]> => {
 /**
  * Permet de récupérer un exercice par son ID
  * @param id - id de l'exercice à récupérer
- * @returns {Promise<Models.Document>} - L'exercice correspondant à l'id
+ * @returns {Promise<Models.DefaultDocument>} - L'exercice correspondant à l'id
  * @throws {Error} - Si l'exercice n'a pas pu être récupéré
  */
-export const getExericseById = async ( id: string ): Promise<Models.Document> => {
+export const getExericseById = async ( id: string ): Promise<Models.DefaultDocument> => {
 	try {
 		const exercise = await databases.getDocument(
 			appwriteConfig.databaseId,
