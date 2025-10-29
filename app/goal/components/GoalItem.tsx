@@ -1,6 +1,5 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
-import { getExericseById } from "@/lib/exercise.appwrite";
 import { updateGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
 import { Goal } from "@/types";
