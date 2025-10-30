@@ -84,22 +84,23 @@ const Session = () => {
 
 	/* ----- Afficher les objectifs liés à l'entraînement ----- */
 	useEffect( () => {
-		if ( !trainingExercises.length || !goals.length ) return;
+		if ( !trainingExercises.length || !goals.length ) {
+			setRelatedGoals( [] );
+			return;
+		}
+		const exerciseTypes = new Set( trainingExercises.map( ex => ex.type ) );
 
-		const exerciseTypes = new Set(
-			trainingExercises.map( ( exercise ) =>
-				typeof exercise.type === "string"
-					? exercise.type
-					: exercise.type
-			)
-		);
+		// Filtrer les goals
+		const related = goals.filter( goal => exerciseTypes.has( goal.exercise.type ) );
+
+		setRelatedGoals( related );
 	}, [ trainingExercises, goals ] );
 
 	const renderGoalItem = ( { item }: { item: Goal } ) => (
 		<GoalItem
 			key={ item.$id }
 			$id={ item.$id }
-			title={ item.title }
+			exercise={ item.exercise }
 			progress={ item.progress }
 			progressHistory={ item.progressHistory }
 			total={ item.total }
@@ -180,7 +181,7 @@ const Session = () => {
 								<FlatList
 									data={ relatedGoals }
 									renderItem={ renderGoalItem }
-									keyExtractor={ ( item ) => item.title }
+									keyExtractor={ ( item ) => item.exercise.name }
 									scrollEnabled={ false }
 									showsVerticalScrollIndicator={ false }
 								/>

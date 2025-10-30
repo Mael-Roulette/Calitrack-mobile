@@ -112,7 +112,6 @@ const ExerciseSelectionModal = ( {
 	const handleExerciseToggle = useCallback( ( exercise: Exercise ) => {
 		setSelectedExercises( ( prev ) => {
 			const isAlreadySelected = prev.some( ( ex ) => ex.$id === exercise.$id );
-			console.log( isAlreadySelected )
 
 			if ( isAlreadySelected ) {
 				// Désélectionner l'exercice
