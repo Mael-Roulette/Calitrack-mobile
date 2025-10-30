@@ -78,7 +78,6 @@ const ExerciseSelectionModal = ( {
 		if ( isVisible ) {
 			panY.setValue( 0 );
 			resetPositionAnim.start();
-			setSelectedExercises( initialSelectedExercises );
 		}
 	}, [ isVisible, initialSelectedExercises, panY, resetPositionAnim ] );
 
@@ -113,6 +112,7 @@ const ExerciseSelectionModal = ( {
 	const handleExerciseToggle = useCallback( ( exercise: Exercise ) => {
 		setSelectedExercises( ( prev ) => {
 			const isAlreadySelected = prev.some( ( ex ) => ex.$id === exercise.$id );
+			console.log( isAlreadySelected )
 
 			if ( isAlreadySelected ) {
 				// Désélectionner l'exercice
@@ -129,7 +129,7 @@ const ExerciseSelectionModal = ( {
 			return selectedExercises.some( ( ex ) => ex.$id === exercise );
 		},
 		[ selectedExercises ]
-	);
+	)
 
 	/* ----- Confirmer la sélection ----- */
 	const handleConfirmSelection = useCallback( () => {
