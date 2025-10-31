@@ -4,7 +4,7 @@ import useAuthStore from "@/store/auth.store";
 import { TabBarIconProps } from "@/types";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, Tabs } from "expo-router";
-import { Image, StatusBar, TouchableOpacity } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
 
 const TabIcon = ({ icon }: TabBarIconProps) => (
 	<Image source={icon} style={{ width: 24, height: 24 }} />
@@ -16,7 +16,6 @@ const TabsLayout = () => {
 	if (!isAuthenticated) return <Redirect href={"/sign-in"} />;
 	return (
 		<>
-			<StatusBar barStyle='dark-content' />
 			<Tabs
 				screenOptions={{
 					headerShadowVisible: false,

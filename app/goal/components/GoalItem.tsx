@@ -18,7 +18,6 @@ const GoalItem = ( {
 	const [ newProgress, setNewProgress ] = useState<string>();
 	const [ isUpdating, setIsUpdating ] = useState( false );
 	const { fetchUserGoals } = useGoalsStore();
-	// const exercise = getExericseById( exercise );
 
 	const handleUpdateProgress = async () => {
 		if ( !newProgress ) {

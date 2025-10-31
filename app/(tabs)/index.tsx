@@ -51,11 +51,12 @@ export default function Index () {
 	};
 
 	// Date du jour
-	const today = new Date()
-		.toLocaleDateString( "en-EN", {
-			weekday: "long",
-		} )
-		.toLowerCase();
+	const date = new Date();
+	console.log( date );
+
+	const today = date.toLocaleDateString( "en-EN", {
+		weekday: "long",
+	} ).toLowerCase();
 
 	// Récupérer le training du jour
 	useEffect( () => {

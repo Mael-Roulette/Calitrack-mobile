@@ -3,9 +3,10 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { StatusBar, View } from "react-native";
 import "./globals.css";
 import * as Notifications from 'expo-notifications';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 Notifications.setNotificationHandler( {
 	handleNotification: async () => ( {
@@ -38,8 +39,9 @@ export default function RootLayout () {
 	}
 
 	return (
-		<View className='bg-background flex-1'>
+		<SafeAreaView className='bg-background flex-1'>
+			<StatusBar barStyle='dark-content' />
 			<Stack screenOptions={ { headerShown: false } } />
-		</View>
+		</SafeAreaView>
 	);
 };
