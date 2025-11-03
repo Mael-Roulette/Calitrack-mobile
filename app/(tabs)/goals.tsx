@@ -37,6 +37,7 @@ const Goals = () => {
 				</TouchableOpacity>
 			),
 		});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [navigation, goals.length]);
 
 	const { progressGoals, finishedGoals } = useMemo(
