@@ -12,7 +12,7 @@ const CustomHeader = ({
 	icon?: any;
 }) => {
 	return (
-		<View className='flex-row items-center justify-between flex-1 w-full'>
+		<View className='flex-row items-center justify-between w-full'>
 			<Text className='title'>{title}</Text>
 
 			{link && (

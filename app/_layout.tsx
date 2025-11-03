@@ -1,12 +1,12 @@
 import { useAuthStore } from "@/store";
 import { useFonts } from "expo-font";
+import * as Notifications from 'expo-notifications';
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { StatusBar, View } from "react-native";
-import "./globals.css";
-import * as Notifications from 'expo-notifications';
+import { StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import "./globals.css";
 
 Notifications.setNotificationHandler( {
 	handleNotification: async () => ( {
@@ -32,6 +32,7 @@ export default function RootLayout () {
 
 	useEffect( () => {
 		fetchAuthenticatedUser();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
 
 	if ( !fontsLoaded || isLoading ) {

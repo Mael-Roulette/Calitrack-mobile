@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { getExerciseImage } from '@/constants/exercises';
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseDetails = () => {
 	const { id } = useLocalSearchParams();
@@ -65,7 +64,7 @@ const ExerciseDetails = () => {
 	}
 
 	return (
-		<SafeAreaView className='flex-1 bg-background'>
+		<View className='flex-1 bg-background'>
 			<View className='flex-1'>
 				{ loading ? (
 					<View className='flex-1 items-center justify-center'>
@@ -112,7 +111,7 @@ const ExerciseDetails = () => {
 					</ScrollView>
 				) }
 			</View>
-		</SafeAreaView>
+		</View>
 	);
 };
 
