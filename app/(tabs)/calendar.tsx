@@ -6,9 +6,7 @@ import cn from 'clsx';
 import { useMemo } from "react";
 import CustomCalendar from "../calendar/components/CustomCalendar";
 import TrainingItem from "../training/components/TrainingItem";
-
-const DAYS_EN = [ "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ];
-const DAYS_FR = [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ];
+import { DAYS_EN, DAYS_FR } from "@/constants/value";
 
 const getDayInEnglish = ( date: Date ) => DAYS_EN[ date.getDay() ];
 const formatDate = ( date: Date ) => DAYS_FR[ date.getDay() ];

@@ -1,6 +1,6 @@
 import CustomButton from "@/components/CustomButton";
 import { useAuthStore, useGoalsStore, useTrainingsStore } from "@/store";
-import { Goal } from "@/types";
+import { Goal, Training } from "@/types";
 import Feather from "@expo/vector-icons/Feather";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -10,6 +10,7 @@ import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
 import TrainingItem from "../training/components/TrainingItem";
 import useExercicesStore from "@/store/exercises.stores";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DAYS_EN } from "@/constants/value";
 
 const FIRST_LAUNCH_KEY = '@first_launch_done';
 
@@ -51,18 +52,13 @@ export default function Index () {
 	};
 
 	// Date du jour
-	const date = new Date();
-	console.log( date );
 
-	const today = date.toLocaleDateString( "en-EN", {
-		weekday: "long",
-	} ).toLowerCase();
-
+	const currentDate = DAYS_EN[ new Date().getDay() ];
 	// Récupérer le training du jour
 	useEffect( () => {
 		const fetchTodayTraining = async () => {
 			try {
-				const training = await getTrainingFromUserByDay( today );
+				const training = await getTrainingFromUserByDay( currentDate );
 				if ( training.length > 0 ) {
 					setTodayTraining( training[ 0 ] );
 				}
@@ -72,7 +68,7 @@ export default function Index () {
 		};
 
 		fetchTodayTraining();
-	}, [ today ] );
+	}, [ currentDate ] );
 
 	const goToCalendar = () => {
 		router.push( "/calendar" );
