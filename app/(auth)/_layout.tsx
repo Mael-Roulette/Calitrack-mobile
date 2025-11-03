@@ -4,6 +4,7 @@ import {
 	Image,
 	KeyboardAvoidingView,
 	ScrollView,
+	StatusBar,
 	View,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";

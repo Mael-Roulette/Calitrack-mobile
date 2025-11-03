@@ -4,7 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { StatusBar } from "react-native";
+import { StatusBar, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "./globals.css";
 
@@ -18,7 +18,7 @@ Notifications.setNotificationHandler( {
 } );
 
 export default function RootLayout () {
-	const { fetchAuthenticatedUser, isLoading } = useAuthStore();
+	const { isAuthenticated, fetchAuthenticatedUser, isLoading } = useAuthStore();
 
 	const [ fontsLoaded, error ] = useFonts( {
 		"CalSans-Regular": require( "../assets/fonts/CalSans-Regular.ttf" ),
@@ -32,7 +32,8 @@ export default function RootLayout () {
 
 	useEffect( () => {
 		fetchAuthenticatedUser();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
 
 	if ( !fontsLoaded || isLoading ) {
@@ -40,9 +41,16 @@ export default function RootLayout () {
 	}
 
 	return (
-		<SafeAreaView className='bg-background flex-1'>
-			<StatusBar barStyle='dark-content' />
-			<Stack screenOptions={ { headerShown: false } } />
-		</SafeAreaView>
+		<View  className='bg-background flex-1'>
+			<Stack screenOptions={ { headerShown: false } }>
+				<Stack.Protected guard={ !isAuthenticated }>
+					<Stack.Screen name="(auth)" />
+				</Stack.Protected>
+
+				<Stack.Protected guard={ isAuthenticated }>
+					<Stack.Screen name="(tabs)" />
+				</Stack.Protected>
+			</Stack>
+		</View>
 	);
 };
