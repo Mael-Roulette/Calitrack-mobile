@@ -27,7 +27,7 @@ const GoalStats: FC<Partial<Goal>> = ( {
 					{ total + ( exercise?.format === 'hold' ? "s " : " " ) + ( exercise?.name || "Nom de l'objectif" ) }
 				</Text>
 				<Text className="text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary">
-					{ state === 'finished' ? 'Validé' : state === 'in-progress' && 'En cours' }
+					{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
 				</Text>
 			</View>
 			<Text className="text-primary-100 font-sregular mb-7">

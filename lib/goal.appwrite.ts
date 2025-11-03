@@ -105,8 +105,13 @@ export const updateGoal = async (
 			$id
 		);
 
+		console.log( progress )
+		console.log( currentGoal.total )
+
 		// On vérifie que l'objectif est validé ou non
-		const newState = progress >= currentGoal.total ? "finished" : "in-progress";
+		const newState = progress >= currentGoal.total ? "finish" : "in-progress";
+
+		console.log( newState );
 
 		// On met à jour la progression de l'utilisateur
 		const progressHistoryArray = JSON.parse( currentGoal.progressHistory );

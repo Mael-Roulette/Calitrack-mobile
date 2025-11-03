@@ -75,7 +75,7 @@ const GoalItem = ( {
 		switch ( state ) {
 			case "in-progress":
 				return renderProgress();
-			case "finished":
+			case "finish":
 				return null;
 			default:
 				return <Text>{ state }</Text>;
@@ -96,7 +96,7 @@ const GoalItem = ( {
 						<Text
 							className={ `text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary` }
 						>
-							{ state === 'finished' ? 'Validé' : state === 'in-progress' && 'En cours' }
+							{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
 						</Text>
 					</View>
 					{ renderContent() }

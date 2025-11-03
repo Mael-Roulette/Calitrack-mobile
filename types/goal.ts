@@ -8,7 +8,7 @@ export interface Goal {
 	progress: number;
 	total: number;
 	progressHistory: number[];
-	state: "in-progress" | "finished";
+	state: "in-progress" | "finish";
 }
 
 export interface CreateGoalParams {
