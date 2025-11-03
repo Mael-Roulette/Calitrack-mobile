@@ -18,7 +18,7 @@ const Profile = () => {
 	};
 
 	return (
-		<View className='bg-background flex-1'>
+		<View className='bg-background flex-1 pt-5'>
 			{ isLoading ? (
 				<View>
 					<Text className='text-xl font-calsans text-primary'>

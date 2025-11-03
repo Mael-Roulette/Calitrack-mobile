@@ -99,7 +99,7 @@ const Goals = () => {
 	}, [progressGoals, finishedGoals]);
 
 	return (
-		<View className='px-5 bg-background flex-1'>
+		<View className='px-5 bg-background flex-1 pt-5'>
 			<View className='mb-6'>
 				<Text className='indicator-text'>
 					Nombre d&apos;objectifs en cours : {progressGoals.length}/{MAX_GOALS}.
