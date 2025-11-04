@@ -24,7 +24,7 @@ const TabsLayout = () => {
 					},
 					headerTitleStyle: {
 						fontFamily: "CalSans-Regular",
-						fontSize: 26,
+						fontSize: 24,
 						color: "#132541",
 					},
 					headerTitleAlign: "left",

@@ -43,6 +43,7 @@ const Session = () => {
 			}
 		};
 		fetchTraining();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ id, router ] );
 
 	/* ----- Modification du custom header ----- */

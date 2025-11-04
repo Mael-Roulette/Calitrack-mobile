@@ -1,16 +1,16 @@
 import CustomButton from "@/components/CustomButton";
+import { DAYS_EN } from "@/constants/value";
+import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
 import { useAuthStore, useGoalsStore, useTrainingsStore } from "@/store";
-import { Goal, Training } from "@/types";
+import useExercicesStore from "@/store/exercises.stores";
+import { Goal } from "@/types";
 import Feather from "@expo/vector-icons/Feather";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Modal, ScrollView, Text, View } from "react-native";
 import GoalItem from "../goal/components/GoalItem";
-import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
 import TrainingItem from "../training/components/TrainingItem";
-import useExercicesStore from "@/store/exercises.stores";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DAYS_EN } from "@/constants/value";
 
 const FIRST_LAUNCH_KEY = '@first_launch_done';
 

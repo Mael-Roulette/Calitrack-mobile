@@ -5,8 +5,8 @@ import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { getTrainingById, updateTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { createTrainingParams, Exercise } from "@/types";
-import { useLocalSearchParams, useNavigation, router } from "expo-router";
+import { Exercise, createTrainingParams } from "@/types";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
 	ActivityIndicator,
@@ -46,14 +46,14 @@ const Edit = () => {
 				setTraining( response );
 
 				setForm( {
-					name: response.name,
-					days: response.days,
-					hours: Math.floor( response.duration / 60 ),
-					minutes: response.duration % 60,
+					name: training.name,
+					days: training.days,
+					hours: Math.floor( training.duration / 60 ),
+					minutes: training.duration % 60,
 				} );
 
-				setSelectedDays( response.days );
-				setSelectedExercises( response.exercise );
+				setSelectedDays( training.days );
+				setSelectedExercises( training.exercise );
 			} catch ( error ) {
 				console.error(
 					"Erreur lors de la récupération de l'entraînement",
@@ -66,6 +66,7 @@ const Edit = () => {
 		};
 
 		fetchTraining();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ id, router ] );
 
 	/* ----- Modification du custom header ----- */
@@ -80,7 +81,7 @@ const Edit = () => {
 				</Text>
 			),
 		} );
-	}, [ navigation, training, id, router ] );
+	}, [ navigation, training, id ] );
 
 	/* -------------------------------------------------- */
 	/* ---------- Gestion de la modal d'exercices ---------- */

@@ -43,7 +43,7 @@ const Index = () => {
 			}
 		};
 		fetchTraining();
-	}, [ id, router ] );
+	}, [ id ] );
 
 	const handleDelete = () => {
 		setShowMenu( false );
@@ -115,6 +115,7 @@ const Index = () => {
 				</View>
 			),
 		} );
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ navigation, training, id, router, showMenu ] );
 
 	useEffect( () => {
