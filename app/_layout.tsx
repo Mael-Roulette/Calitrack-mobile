@@ -36,9 +36,7 @@ export default function RootLayout () {
 		// Configuration de la barre de navigation pour Android
 		if ( Platform.OS === 'android' ) {
 			( async () => {
-				await NavigationBar.setBackgroundColorAsync( '#0E0E10' );
-				await NavigationBar.setButtonStyleAsync( 'light' );
-				await NavigationBar.setBehaviorAsync( 'overlay-swipe' );
+				await NavigationBar.setButtonStyleAsync( 'dark' );
 			} )();
 		}
 
