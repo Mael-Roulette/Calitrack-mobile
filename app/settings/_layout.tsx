@@ -36,12 +36,6 @@ export default function SettingsLayout () {
 					} }
 				/>
 				<Stack.Screen
-					name='subscription/index'
-					options={ {
-						title: "Abonnement",
-					} }
-				/>
-				<Stack.Screen
 					name='about'
 					options={ {
 						title: "À propos",
