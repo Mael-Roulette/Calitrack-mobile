@@ -35,7 +35,7 @@ export default function RootLayout () {
 
 		// Configuration de la barre de navigation pour Android
 		if ( Platform.OS === 'android' ) {
-			NavigationBar.setBehaviorAsync('overlay-swipe');
+			NavigationBar.setVisibilityAsync('hidden');
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
