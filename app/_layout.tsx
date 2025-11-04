@@ -35,8 +35,7 @@ export default function RootLayout () {
 
 		// Configuration de la barre de navigation pour Android
 		if ( Platform.OS === 'android' ) {
-			NavigationBar.setBackgroundColorAsync( '#FFF9F7' );
-			NavigationBar.setButtonStyleAsync( 'dark' );
+			NavigationBar.setBehaviorAsync('overlay-swipe');
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
