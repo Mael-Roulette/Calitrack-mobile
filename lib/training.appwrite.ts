@@ -1,5 +1,5 @@
 import { MAX_TRAININGS } from "@/constants/value";
-import { createTrainingParams, updateTrainingParams } from "@/types";
+import { Training, createTrainingParams, updateTrainingParams } from "@/types";
 import {
 	ID,
 	Models,
@@ -18,7 +18,7 @@ export const createTraining = async ( {
 	name,
 	days,
 	duration,
-	exercises,
+	exercise,
 }: createTrainingParams ): Promise<{ training?: Models.Document; message: { title: string; body: string; }; }> => {
 	try {
 		const currentUser = await getCurrentUser();
@@ -34,9 +34,9 @@ export const createTraining = async ( {
 			return { message };
 		}
 
-		let exercisesTab: any = [];
-		if ( exercises && exercises.length !== 0 ) {
-			exercisesTab = exercises;
+		let exerciseTab: any = [];
+		if ( exercise && exercise.length !== 0 ) {
+			exerciseTab = exercise;
 		}
 
 		const training = await databases.createDocument(
@@ -48,7 +48,7 @@ export const createTraining = async ( {
 				name: name,
 				days: days,
 				duration: duration,
-				exercise: exercisesTab,
+				exercise: exerciseTab,
 			}
 		);
 
@@ -114,14 +114,13 @@ export const getTrainingFromUserByDay = async ( day: string ): Promise<Models.Do
  * @returns {Promise<Models.Document>} - L'entraînement récupéré
  * @throws {Error} - Si l'entraînement n'a pas pu être récupéré
  */
-export const getTrainingById = async ( id: string ): Promise<Models.Document> => {
+export const getTrainingById = async ( id: string ): Promise<Training> => {
 	try {
 		const training = await databases.getDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.trainingCollectionId,
 			id
-		);
-
+		) as Training;
 		return training;
 	} catch ( e ) {
 		throw new Error( e as string );
@@ -140,7 +139,7 @@ export const updateTraining = async ( {
 	name,
 	days,
 	duration,
-	exercises,
+	exercise,
 }: updateTrainingParams ): Promise<void> => {
 	try {
 		await databases.updateDocument(
@@ -151,7 +150,7 @@ export const updateTraining = async ( {
 				name: name,
 				days: days,
 				duration: duration,
-				exercise: exercises,
+				exercise: exercise,
 			}
 		);
 	} catch ( e ) {

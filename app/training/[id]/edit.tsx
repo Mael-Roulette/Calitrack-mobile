@@ -46,14 +46,14 @@ const Edit = () => {
 				setTraining( response );
 
 				setForm( {
-					name: training.name,
-					days: training.days,
-					hours: Math.floor( training.duration / 60 ),
-					minutes: training.duration % 60,
+					name: response.name,
+					days: response.days,
+					hours: Math.floor( response.duration / 60 ),
+					minutes: response.duration % 60,
 				} );
 
-				setSelectedDays( training.days );
-				setSelectedExercises( training.exercise );
+				setSelectedDays( response.days || [] );
+				setSelectedExercises( response.exercise || [] );
 			} catch ( error ) {
 				console.error(
 					"Erreur lors de la récupération de l'entraînement",
@@ -66,7 +66,7 @@ const Edit = () => {
 		};
 
 		fetchTraining();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ id, router ] );
 
 	/* ----- Modification du custom header ----- */
@@ -134,7 +134,7 @@ const Edit = () => {
 	};
 
 	return (
-		<View className='bg-background min-h-full px-5'>
+		<View className='flex-1 bg-background min-h-full px-5'>
 			{ loading ? (
 				<View className='flex-1 justify-center items-center'>
 					<ActivityIndicator size='large' color='#FC7942' />

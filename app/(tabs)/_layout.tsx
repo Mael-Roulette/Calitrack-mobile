@@ -14,7 +14,7 @@ const TabsLayout = () => {
 	const { user } = useAuthStore();
 
 	return (
-		<SafeAreaView className='bg-background flex-1'>
+		<SafeAreaView className='bg-background flex-1' edges={['bottom']}>
 			<StatusBar barStyle='dark-content' />
 			<Tabs
 				screenOptions={ {

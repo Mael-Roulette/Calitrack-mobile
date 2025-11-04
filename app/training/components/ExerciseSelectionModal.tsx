@@ -14,6 +14,7 @@ import {
 	TouchableWithoutFeedback,
 	View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseSelectionModal = ( {
 	isVisible,
@@ -144,13 +145,14 @@ const ExerciseSelectionModal = ( {
 
 	return (
 		<Modal
+			statusBarTranslucent={ true }
 			animationType='slide'
 			transparent={ true }
 			visible={ isVisible }
 			onRequestClose={ closeModal }
 		>
 			<TouchableWithoutFeedback onPress={ closeModal }>
-				<View className='flex-1 bg-black/40 justify-end'>
+				<SafeAreaView className='flex-1 bg-black/40 justify-end' edges={['bottom']}>
 					<TouchableWithoutFeedback onPress={ ( e ) => e.stopPropagation() }>
 						<Animated.View
 							style={ {
@@ -222,7 +224,7 @@ const ExerciseSelectionModal = ( {
 							</View>
 						</Animated.View>
 					</TouchableWithoutFeedback>
-				</View>
+				</SafeAreaView>
 			</TouchableWithoutFeedback>
 		</Modal>
 	);

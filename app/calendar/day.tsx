@@ -41,7 +41,7 @@ const Day = () => {
 				</Text>
 			),
 		} );
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ navigation ] );
 
 	/* -------------------------------------------------- */
@@ -89,36 +89,39 @@ const Day = () => {
 		<View className='flex-1 bg-background px-5'>
 			<View className='flex-1'>
 				{ isLoading ? (
-					<Text>Chargement des entraînements...</Text>
+					<Text className="py-5">Chargement des entraînements...</Text>
 				) : dayTrainings.length > 0 ? (
-					dayTrainings.map( ( training, index ) => (
-						<TrainingItem
-							id={ training.$id }
-							key={ `${training.$id}-${index}` }
-							title={ training.name }
-							days={ training.days }
-							duration={ training.duration }
-						/>
-					) )
+					<View className="flex-1">
+						{ dayTrainings.map( ( training, index ) => (
+							<TrainingItem
+								id={ training.$id }
+								key={ `${training.$id}-${index}` }
+								title={ training.name }
+								days={ training.days }
+								duration={ training.duration }
+							/>
+						) ) }
+					</View>
 				) : (
-					<>
-						<View className='flex-1 items-center justify-center'>
-							<Text className='indicator-text text-center'>
-								Aucun entraînement prévu pour cette journée
-							</Text>
-						</View>
-						<View className="flex-col gap-5 mb-10">
-							<CustomButton
-								title='Modifier un entraînement'
-								variant='secondary'
-								onPress={ () => router.push( "/trainings" ) }
-							/>
-							<CustomButton
-								title='Créer un entraînement'
-								onPress={ () => router.push( "/training/add-training" ) }
-							/>
-						</View>
-					</>
+					<View className='flex-1 items-center justify-center'>
+						<Text className='indicator-text text-center'>
+							Aucun entraînement prévu pour cette journée
+						</Text>
+					</View>
+				) }
+
+				{ !isLoading && (
+					<View className="flex-col gap-5 mb-10">
+						<CustomButton
+							title='Modifier un entraînement'
+							variant='secondary'
+							onPress={ () => router.push( "/trainings" ) }
+						/>
+						<CustomButton
+							title='Créer un entraînement'
+							onPress={ () => router.push( "/training/add-training" ) }
+						/>
+					</View>
 				) }
 			</View>
 		</View>

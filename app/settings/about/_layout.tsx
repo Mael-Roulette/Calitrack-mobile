@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AboutLayout = () => {
 	return (
-		<SafeAreaView className='bg-background flex-1'>
+		<SafeAreaView className='bg-background flex-1' edges={ [ 'bottom' ] }>
 			<Stack
 				screenOptions={ {
 					headerShown: true,

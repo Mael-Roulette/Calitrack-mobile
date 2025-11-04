@@ -88,7 +88,7 @@ export default function Index () {
 	);
 
 	return (
-		<View className='bg-background min-h-full pt-5'>
+		<View className='bg-background min-h-full'>
 			{ isLoading ? (
 				<View>
 					<Text className='title'>Chargement...</Text>

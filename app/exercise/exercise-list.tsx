@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import React from "react";
 import { FlatList, View } from "react-native";
 import ExerciseItem from "./components/ExerciseItem";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const ExerciseList = () => {
@@ -16,7 +17,7 @@ const ExerciseList = () => {
 	};
 
 	return (
-		<View className='px-5 bg-background flex-1'>
+		<SafeAreaView className='bg-background flex-1 px-5 ' edges={ [ 'bottom' ] }>
 			<View>
 				<FlatList
 					data={ exercices }
@@ -32,7 +33,7 @@ const ExerciseList = () => {
 					showsVerticalScrollIndicator={ false }
 				/>
 			</View>
-		</View>
+		</SafeAreaView>
 	);
 };
 
