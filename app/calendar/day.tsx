@@ -36,11 +36,12 @@ const Day = () => {
 	useLayoutEffect( () => {
 		navigation.setOptions( {
 			headerTitle: () => (
-				<Text className='text-2xl font-calsans text-primary'>
+				<Text className='title-2'>
 					{ formatDate() }
 				</Text>
 			),
 		} );
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ navigation ] );
 
 	/* -------------------------------------------------- */

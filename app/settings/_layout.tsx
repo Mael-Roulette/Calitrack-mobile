@@ -1,12 +1,11 @@
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function SettingsLayout() {
+export default function SettingsLayout () {
 	return (
-
 		<SafeAreaView className='bg-background flex-1'>
 			<Stack
-				screenOptions={{
+				screenOptions={ {
 					headerShown: true,
 					headerStyle: {
 						backgroundColor: "#FFF9F7",
@@ -16,38 +15,38 @@ export default function SettingsLayout() {
 						fontFamily: "CalSans-Regular",
 					},
 					headerShadowVisible: false,
-				}}
+				} }
 			>
 				<Stack.Screen
 					name='index'
-					options={{
+					options={ {
 						title: "Paramètres",
-					}}
+					} }
 				/>
 				<Stack.Screen
 					name='account/index'
-					options={{
+					options={ {
 						title: "Compte",
-					}}
+					} }
 				/>
 				<Stack.Screen
 					name='notifications/index'
-					options={{
+					options={ {
 						title: "Notifications",
-					}}
+					} }
 				/>
 				<Stack.Screen
 					name='subscription/index'
-					options={{
+					options={ {
 						title: "Abonnement",
-					}}
+					} }
 				/>
 				<Stack.Screen
 					name='about'
-					options={{
+					options={ {
 						title: "À propos",
 						headerShown: false,
-					}}
+					} }
 				/>
 			</Stack>
 		</SafeAreaView>

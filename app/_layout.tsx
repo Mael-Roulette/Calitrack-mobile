@@ -51,7 +51,7 @@ export default function RootLayout () {
 	}
 
 	return (
-		<View className='bg-background flex-1'>
+		<View style={{ flex: 1, backgroundColor: '#FFF9F7' }}>
 			<Stack screenOptions={ { headerShown: false } }>
 				<Stack.Protected guard={ !isAuthenticated }>
 					<Stack.Screen name="(auth)" />
