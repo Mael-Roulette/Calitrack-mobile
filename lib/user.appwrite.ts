@@ -101,6 +101,11 @@ export const updateUser = async ( data: Partial<User> ): Promise<Models.Document
 			}
 		}
 
+
+		if ( data.name ) {
+			await account.updateName( data.name );
+		}
+
 		const updatedUser = await databases.updateDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.userCollectionId,

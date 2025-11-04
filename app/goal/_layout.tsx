@@ -1,33 +1,36 @@
 import { Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function GoalLayout() {
+export default function GoalLayout () {
 	return (
-		<Stack
-			screenOptions={{
-				headerShown: true,
-				headerStyle: {
-					backgroundColor: "#FFF9F7",
-				},
-				headerTintColor: "#132541",
-				headerTitleStyle: {
-					fontFamily: "CalSans-Regular",
-          fontSize: 24,
-				},
-				headerShadowVisible: false,
-			}}
-		>
-			<Stack.Screen
-				name='add-goal'
-				options={{
-					title: "Ajouter un objectif",
-				}}
-			/>
-			<Stack.Screen
-				name='stats'
-				options={{
-					title: "Statistiques",
-				}}
-			/>
-		</Stack>
+		<SafeAreaView className='bg-background flex-1'>
+			<Stack
+				screenOptions={ {
+					headerShown: true,
+					headerStyle: {
+						backgroundColor: "#FFF9F7",
+					},
+					headerTintColor: "#132541",
+					headerTitleStyle: {
+						fontFamily: "CalSans-Regular",
+						fontSize: 24,
+					},
+					headerShadowVisible: false,
+				} }
+			>
+				<Stack.Screen
+					name='add-goal'
+					options={ {
+						title: "Ajouter un objectif",
+					} }
+				/>
+				<Stack.Screen
+					name='stats'
+					options={ {
+						title: "Statistiques",
+					} }
+				/>
+			</Stack>
+		</SafeAreaView>
 	);
 }
