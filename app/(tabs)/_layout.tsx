@@ -21,13 +21,11 @@ const TabsLayout = () => {
 					headerShadowVisible: false,
 					headerStyle: {
 						backgroundColor: "#FFF9F7",
-						height: 60,
 					},
 					headerTitleStyle: {
 						fontFamily: "CalSans-Regular",
 						fontSize: 26,
 						color: "#132541",
-						lineHeight: 24,
 					},
 					headerTitleAlign: "left",
 					tabBarShowLabel: false,

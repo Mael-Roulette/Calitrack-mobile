@@ -8,11 +8,11 @@
 	}
 
 	.title-2 {
-		@apply text-2xl text-primary font-calsans mt-3;
+		@apply text-2xl text-primary font-calsans;
 	}
 
 	.title-3 {
-		@apply text-xl text-primary font-calsans mt-3;
+		@apply text-xl text-primary font-calsans;
 	}
 
 	.title-4 {
