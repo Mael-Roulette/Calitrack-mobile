@@ -1,33 +1,36 @@
 import { Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TrainingLayout () {
 	return (
-		<Stack
-			screenOptions={ {
-				headerShown: true,
-				headerStyle: {
-					backgroundColor: "#FFF9F7",
-				},
-				headerTintColor: "#132541",
-				headerTitleStyle: {
-					fontFamily: "CalSans-Regular",
-					fontSize: 24,
-				},
-				headerShadowVisible: false,
-			} }
-		>
-			<Stack.Screen
-				name='add-training'
-				options={ {
-					title: "Ajouter un entraînement",
+		<SafeAreaView className='bg-background flex-1'>
+			<Stack
+				screenOptions={ {
+					headerShown: true,
+					headerStyle: {
+						backgroundColor: "#FFF9F7",
+					},
+					headerTintColor: "#132541",
+					headerTitleStyle: {
+						fontFamily: "CalSans-Regular",
+						fontSize: 24,
+					},
+					headerShadowVisible: false,
 				} }
-			/>
-			<Stack.Screen
-				name='[id]'
-				options={ {
-					headerShown: false,
-				} }
-			/>
-		</Stack>
+			>
+				<Stack.Screen
+					name='add-training'
+					options={ {
+						title: "Ajouter un entraînement",
+					} }
+				/>
+				<Stack.Screen
+					name='[id]'
+					options={ {
+						headerShown: false,
+					} }
+				/>
+			</Stack>
+		</SafeAreaView>
 	);
 }
