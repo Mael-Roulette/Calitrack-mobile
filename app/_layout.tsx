@@ -1,11 +1,11 @@
 import { useAuthStore } from "@/store";
 import { useFonts } from "expo-font";
+import * as NavigationBar from 'expo-navigation-bar';
 import * as Notifications from 'expo-notifications';
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { StatusBar, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Platform, View } from "react-native";
 import "./globals.css";
 
 Notifications.setNotificationHandler( {
@@ -33,6 +33,12 @@ export default function RootLayout () {
 	useEffect( () => {
 		fetchAuthenticatedUser();
 
+		// Configuration de la barre de navigation pour Android
+		if ( Platform.OS === 'android' ) {
+			NavigationBar.setBackgroundColorAsync( '#FFF9F7' );
+			NavigationBar.setButtonStyleAsync( 'dark' );
+		}
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
 
@@ -41,7 +47,7 @@ export default function RootLayout () {
 	}
 
 	return (
-		<View  className='bg-background flex-1'>
+		<View className='bg-background flex-1'>
 			<Stack screenOptions={ { headerShown: false } }>
 				<Stack.Protected guard={ !isAuthenticated }>
 					<Stack.Screen name="(auth)" />
