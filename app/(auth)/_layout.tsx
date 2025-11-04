@@ -1,14 +1,13 @@
-import { Slot, Redirect } from "expo-router";
+import useAuthStore from "@/store/auth.store";
+import { Redirect, Slot } from "expo-router";
 import {
 	Dimensions,
 	Image,
 	KeyboardAvoidingView,
 	ScrollView,
-	StatusBar,
-	View,
+	View
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import useAuthStore from "@/store/auth.store";
 
 const AuthLayout = () => {
 	const { isAuthenticated } = useAuthStore();

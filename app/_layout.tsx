@@ -35,11 +35,16 @@ export default function RootLayout () {
 
 		// Configuration de la barre de navigation pour Android
 		if ( Platform.OS === 'android' ) {
-			NavigationBar.setStyle( 'auto' )
+			( async () => {
+				await NavigationBar.setBackgroundColorAsync( '#0E0E10' );
+				await NavigationBar.setButtonStyleAsync( 'light' );
+				await NavigationBar.setBehaviorAsync( 'overlay-swipe' );
+			} )();
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
+
 
 	if ( !fontsLoaded || isLoading ) {
 		return null;
