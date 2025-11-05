@@ -170,13 +170,13 @@ const GoalItem = ( {
 						activeOpacity={ 1 }
 						onPress={ () => setShowDelete( false ) }
 					>
-						<View className="w-4/5 h-fit flex-col justify-center items-center gap-2 py-4 px-6 bg-background rounded-md">
+						<View className="w-4/5 h-fit flex-col justify-center items-center gap-4 py-4 px-6 bg-background rounded-md">
 							<View>
 								<Text className="text-center font-sora">Êtes-vous sûr de supprimer cet objectif ? Cette action est irréversible.</Text>
 							</View>
 							<TouchableOpacity
 								onPress={ handleDelete }
-								className='flex-row items-center px-4 py-3'
+								className='flex-row items-center justify-center px-4 py-3 w-full border border-secondary rounded-md'
 							>
 								<Feather name='trash-2' size={ 18 } color='#ef4444' />
 								<Text className='ml-3 text-base text-red-500 font-sregular'>

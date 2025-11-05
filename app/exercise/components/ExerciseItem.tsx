@@ -39,9 +39,9 @@ const ExerciseItem = ( {
 
 	return (
 		<TouchableOpacity
-			className={ `flex-row items-center justify-between p-4 mb-3 rounded-md border ${isSelected
-				? "border-secondary bg-secondary/10"
-				: "border-primary-100 bg-background"
+			className={ `flex-row items-center justify-between p-4 mb-3 rounded-md border border-secondary  ${isSelected
+				? "border-2 bg-secondary/10"
+				: "bg-background"
 				}` }
 			onPress={ onPress }
 			disabled={ !onPress }

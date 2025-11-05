@@ -5,7 +5,7 @@ import { useGoalsStore } from "@/store";
 import { CreateGoalParams, Exercise, Goal } from "@/types";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, View, Text } from "react-native";
 import ExerciseItem from "../exercise/components/ExerciseItem";
 import ExerciseSelectionModal from "../exercise/components/ExerciseSelectionModal";
 
@@ -122,11 +122,14 @@ const AddGoal = () => {
 				<View className="gap-5 mb-5">
 					{/* Bouton de recherche d'exercice */ }
 					<View>
-						<CustomButton
-							title="Choisis ton mouvement"
-							variant="secondary"
-							onPress={ openExerciseModal }
-						/>
+						<View>
+							<Text className="font-sregular text-lg text-primary mb-2">Sélectionne un mouvement</Text>
+							<CustomButton
+								title="Choisir maintenant"
+								variant="secondary"
+								onPress={ openExerciseModal }
+							/>
+						</View>
 
 						{/* Affichage de l'exercice sélectionné */ }
 						{ selectedExercise.length > 0 && (
