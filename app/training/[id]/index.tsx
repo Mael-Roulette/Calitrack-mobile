@@ -24,7 +24,7 @@ const Index = () => {
 	const [ trainingExercises, setTrainingExercises ] = useState<Exercise[]>( [] );
 	const [ showMenu, setShowMenu ] = useState( false );
 	const navigation = useNavigation();
-	const { fetchUserTrainings } = useTrainingsStore();
+	const { fetchUserTrainings, deleteTrainingStore } = useTrainingsStore();
 
 	useEffect( () => {
 		const fetchTraining = async () => {
@@ -48,7 +48,7 @@ const Index = () => {
 	const handleDelete = () => {
 		setShowMenu( false );
 		deleteTraining( training.$id )
-			.then( () => fetchUserTrainings() )
+			.then( () => deleteTrainingStore( training.$id ) )
 			.then( () => router.push( "/trainings" ) );
 	};
 
@@ -115,7 +115,7 @@ const Index = () => {
 				</View>
 			),
 		} );
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ navigation, training, id, router, showMenu ] );
 
 	useEffect( () => {

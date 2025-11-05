@@ -1,5 +1,5 @@
 import { MAX_TRAININGS } from "@/constants/value";
-import { Training, createTrainingParams, updateTrainingParams } from "@/types";
+import { Exercise, Training, createTrainingParams, updateTrainingParams } from "@/types";
 import {
 	ID,
 	Models,
@@ -65,21 +65,27 @@ export const createTraining = async ( {
 
 /**
  * Permet de récupérer les entraînements de l'utilisateur actuellement connecté
- * @returns {Promise<Models.Document[]>} - Liste des entraînements de l'utilisateur
+ * @returns {Promise<Training[]>} - Liste des entraînements de l'utilisateur
  * @throws {Error} - Si les entraînements n'ont pas pu être récupérés
  */
-export const getTrainingsFromUser = async (): Promise<Models.Document[]> => {
+export const getTrainingsFromUser = async (): Promise<Training[]> => {
 	try {
 		const currentUser = await getCurrentUser();
 		if ( !currentUser ) throw Error;
-
 		const trainings = await databases.listDocuments(
 			appwriteConfig.databaseId,
 			appwriteConfig.trainingCollectionId,
 			[ Query.equal( "user", currentUser.$id ) ]
 		);
 
-		return trainings.documents;
+		return trainings.documents.map( ( doc ) => ( {
+			$id: doc.$id,
+			user: doc.user as string,
+			name: doc.name as string,
+			days: doc.days as string[] | undefined,
+			duration: doc.duration as number,
+			exercise: doc.exercise as Exercise[] | undefined,
+		} ) );
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
@@ -114,13 +120,13 @@ export const getTrainingFromUserByDay = async ( day: string ): Promise<Models.Do
  * @returns {Promise<Models.Document>} - L'entraînement récupéré
  * @throws {Error} - Si l'entraînement n'a pas pu être récupéré
  */
-export const getTrainingById = async ( id: string ): Promise<Training> => {
+export const getTrainingById = async ( id: string ): Promise<Models.Document> => {
 	try {
 		const training = await databases.getDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.trainingCollectionId,
 			id
-		) as Training;
+		);
 		return training;
 	} catch ( e ) {
 		throw new Error( e as string );

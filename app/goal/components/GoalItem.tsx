@@ -1,10 +1,11 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
-import { updateGoal } from "@/lib/goal.appwrite";
+import { deleteGoal, updateGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
 import { Goal } from "@/types";
+import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
+import { Alert, GestureResponderEvent, Modal, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
 
 const GoalItem = ( {
@@ -17,7 +18,8 @@ const GoalItem = ( {
 	const [ modalVisible, setModalVisible ] = useState( false );
 	const [ newProgress, setNewProgress ] = useState<string>();
 	const [ isUpdating, setIsUpdating ] = useState( false );
-	const { fetchUserGoals } = useGoalsStore();
+	const [ showDelete, setShowDelete ] = useState( false );
+	const { updateGoalStore, deleteGoalStore } = useGoalsStore();
 
 	const handleUpdateProgress = async () => {
 		if ( !newProgress ) {
@@ -36,10 +38,9 @@ const GoalItem = ( {
 			await updateGoal( {
 				$id,
 				progress: progressValue,
-				updateDate: new Date().toISOString(),
 			} );
 
-			await fetchUserGoals();
+			await updateGoalStore( $id, { progress: progressValue } );
 			setModalVisible( false );
 		} catch ( error ) {
 			console.error( error );
@@ -82,6 +83,12 @@ const GoalItem = ( {
 		}
 	};
 
+	function handleDelete ( event: GestureResponderEvent ): void {
+		setShowDelete( false );
+		deleteGoal( $id )
+			.then( () => deleteGoalStore( $id ) );
+	}
+
 	return (
 		<>
 			<TouchableOpacity
@@ -91,13 +98,24 @@ const GoalItem = ( {
 				<View
 					className={ `w-full px-5 py-4 mb-4 border-[1px] rounded-xl border-secondary` }
 				>
-					<View className='flex-row justify-between items-center gap-2'>
-						<Text className='font-sregular text-primary text-lg'>{ exercise.name }</Text>
-						<Text
-							className={ `text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary` }
-						>
-							{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
-						</Text>
+					<View className='flex-row justify-between items-start gap-4'>
+						<View className="flex-row gap-2 items-center gap-5">
+							<Text className='font-sregular text-primary text-lg'>{ exercise.name }</Text>
+							<Text
+								className={ `text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary` }
+							>
+								{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
+							</Text>
+						</View>
+						{ state === 'in-progress' && (
+							<TouchableOpacity
+								onPress={ () => setShowDelete( !showDelete ) }
+								accessibilityLabel='Voir les options'
+								style={ { paddingLeft: 24 } }
+							>
+								<Feather name='trash-2' size={ 20 } color='#ef4444' />
+							</TouchableOpacity>
+						) }
 					</View>
 					{ renderContent() }
 				</View>
@@ -139,6 +157,36 @@ const GoalItem = ( {
 					</View>
 				</View>
 			</Modal>
+
+			{ showDelete && (
+				<Modal
+					transparent={ true }
+					visible={ showDelete }
+					animationType='fade'
+					onRequestClose={ () => setShowDelete( false ) }
+				>
+					<TouchableOpacity
+						style={ { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' } }
+						activeOpacity={ 1 }
+						onPress={ () => setShowDelete( false ) }
+					>
+						<View className="w-4/5 h-fit flex-col justify-center items-center gap-2 py-4 px-6 bg-background rounded-md">
+							<View>
+								<Text className="text-center font-sora">Êtes-vous sûr de supprimer cet objectif ? Cette action est irréversible.</Text>
+							</View>
+							<TouchableOpacity
+								onPress={ handleDelete }
+								className='flex-row items-center px-4 py-3'
+							>
+								<Feather name='trash-2' size={ 18 } color='#ef4444' />
+								<Text className='ml-3 text-base text-red-500 font-sregular'>
+									Supprimer
+								</Text>
+							</TouchableOpacity>
+						</View>
+					</TouchableOpacity>
+				</Modal>
+			) }
 		</>
 	);
 };

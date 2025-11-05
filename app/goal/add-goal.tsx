@@ -3,7 +3,7 @@ import CustomInput from "@/components/CustomInput";
 import { createGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
 import useExercicesStore from "@/store/exercises.stores";
-import { CreateGoalParams, Exercise } from "@/types";
+import { CreateGoalParams, Exercise, Goal } from "@/types";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -35,7 +35,7 @@ const LABEL_CONFIGS: Record<string, LabelConfig> = {
 };
 
 const AddGoal = () => {
-	const { fetchUserGoals } = useGoalsStore();
+	const { addGoalStore } = useGoalsStore();
 	const { exercices } = useExercicesStore();
 	const [ searchQuery, setSearchQuery ] = useState( "" );
 	const [ selectedExercise, setSelectedExercise ] = useState<Exercise | null>( null );
@@ -86,7 +86,6 @@ const AddGoal = () => {
 
 	// Validation et soumission du formulaire
 	const submit = useCallback( async () => {
-		// Validation
 		if ( !selectedExercise ) {
 			Alert.alert( "Erreur", "Veuillez sélectionner un exercice" );
 			return;
@@ -104,8 +103,22 @@ const AddGoal = () => {
 				progress: form.progress ? parseInt( form.progress, 10 ) : 0,
 			};
 
-			await createGoal( goalData );
-			await fetchUserGoals();
+			const response = await createGoal( goalData );
+
+			if ( response.goal ) {
+				const newGoal: Goal = {
+					$id: response.goal.$id,
+					$createdAt: response.goal.$createdAt,
+					$updatedAt: response.goal.$updatedAt,
+					exercise: selectedExercise,
+					progress: response.goal.progress as number,
+					total: response.goal.total as number,
+					progressHistory: JSON.parse( response.goal.progressHistory as string || "[]" ),
+					state: response.goal.state as Goal[ "state" ],
+				};
+				addGoalStore( newGoal );
+			}
+
 			router.push( "/goals" );
 		} catch ( err ) {
 			console.error( "Erreur lors de la création de l'objectif:", err );
@@ -113,7 +126,7 @@ const AddGoal = () => {
 		} finally {
 			setIsSubmitting( false );
 		}
-	}, [ selectedExercise, form, fetchUserGoals ] );
+	}, [ selectedExercise, form, addGoalStore ] );
 
 	// Render item optimisé pour FlatList
 	const renderExerciseItem = useCallback( ( { item }: { item: Exercise } ) => (

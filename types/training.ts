@@ -1,5 +1,3 @@
-import { Models } from "react-native-appwrite";
-
 export interface createTrainingParams {
 	name: string;
 	days?: string[];
@@ -17,7 +15,7 @@ export interface updateTrainingParams {
 	exercise?: Exercise[];
 }
 
-export interface Training extends Models.Document {
+export interface Training {
 	$id: string;
 	user: string;
 	name: string;

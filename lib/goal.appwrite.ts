@@ -43,7 +43,7 @@ export const createGoal = async ( {
 			appwriteConfig.goalCollectionId,
 			ID.unique(),
 			{
-				createdAt: new Date().toISOString(),
+				$createdAt: new Date().toISOString(),
 				user: currentUser.$id,
 				exercise,
 				progress,
@@ -95,7 +95,7 @@ export const getGoalsFromUser = async (): Promise<Models.DefaultDocument[]> => {
  * @throws {Error} - Si la mise à jour a échoué
  */
 export const updateGoal = async (
-	{ $id, progress, updateDate }: UpdatedGoalParams
+	{ $id, progress }: UpdatedGoalParams
 ): Promise<void> => {
 	try {
 		// récupérer l'objectif à mettre à jour
@@ -105,13 +105,8 @@ export const updateGoal = async (
 			$id
 		);
 
-		console.log( progress )
-		console.log( currentGoal.total )
-
 		// On vérifie que l'objectif est validé ou non
 		const newState = progress >= currentGoal.total ? "finish" : "in-progress";
-
-		console.log( newState );
 
 		// On met à jour la progression de l'utilisateur
 		const progressHistoryArray = JSON.parse( currentGoal.progressHistory );
@@ -126,8 +121,23 @@ export const updateGoal = async (
 				progress,
 				progressHistory: JSON.stringify( progressHistoryArray ),
 				state: newState,
-				updateAt: updateDate,
 			}
+		);
+	} catch ( e ) {
+		throw new Error( e as string );
+	}
+};
+
+/**
+ * Permet de supprimer un objectif
+ * @param id id de l'objectif à supprimer
+ */
+export const deleteGoal = async ( id: string ) => {
+	try {
+		await databases.deleteDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.goalCollectionId,
+			id
 		);
 	} catch ( e ) {
 		throw new Error( e as string );

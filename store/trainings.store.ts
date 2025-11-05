@@ -15,6 +15,7 @@ type TrainingState = {
 		trainingId: string,
 		updatedTraining: Partial<Training>
 	) => void;
+	deleteTrainingStore: ( trainingId: string )=> void;
 };
 
 const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
@@ -33,7 +34,7 @@ const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 		try {
 			const documents = await getTrainingsFromUser();
 			const trainings = documents.map(
-				( doc ) =>
+				( doc: Training ) =>
 					( {
 						$id: doc.$id,
 						user: doc.user,
@@ -41,7 +42,7 @@ const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 						days: doc.days,
 						duration: doc.duration,
 						training: doc.exercise || [],
-					} ) as Training
+					} )
 			);
 			set( { trainings } );
 		} catch ( error ) {
@@ -65,6 +66,12 @@ const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 			),
 		} ) );
 	},
+
+	deleteTrainingStore: ( trainingId: string ) => {
+		set( ( state ) => ( {
+			trainings: state.trainings.filter( ( training ) => training.$id !== trainingId )
+		} ) );
+	}
 } ) );
 
 export default useTrainingsStore;

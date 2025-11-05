@@ -10,8 +10,9 @@ type GoalState = {
 	setGoals: ( goals: Goal[] ) => void;
 	setIsLoadingGoals: ( value: boolean ) => void;
 	fetchUserGoals: () => Promise<void>;
-	addGoal: ( goal: Goal ) => void;
-	updateGoal: ( goalId: string, updatedGoal: Partial<Goal> ) => void;
+	addGoalStore: ( goal: Goal ) => void;
+	updateGoalStore: ( goalId: string, updatedGoal: Partial<Goal> ) => void;
+	deleteGoalStore: ( goalId: string ) => void;
 };
 
 const useGoalsStore = create<GoalState>( ( set ) => ( {
@@ -51,17 +52,23 @@ const useGoalsStore = create<GoalState>( ( set ) => ( {
 		}
 	},
 
-	addGoal: ( goal: Goal ) => {
+	addGoalStore: ( goal: Goal ) => {
 		set( ( state ) => ( { goals: [ ...state.goals, goal ] } ) );
 	},
 
-	updateGoal: ( goalId: string, updatedGoal: Partial<Goal> ) => {
+	updateGoalStore: ( goalId: string, updatedGoal: Partial<Goal> ) => {
 		set( ( state ) => ( {
 			goals: state.goals.map( ( goal ) =>
 				goal.$id === goalId ? { ...goal, ...updatedGoal } : goal
 			),
 		} ) );
 	},
+
+	deleteGoalStore: ( goalId: string ) => {
+		set( ( state ) => ( {
+			goals: state.goals.filter( ( goal ) => goal.$id !== goalId )
+		} ) );
+	}
 } ) );
 
 export default useGoalsStore;

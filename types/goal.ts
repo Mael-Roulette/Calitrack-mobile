@@ -19,7 +19,6 @@ export interface CreateGoalParams {
 
 export interface UpdatedGoalParams {
 	$id: string;
-	updateDate: string;
 	progress: number;
 	state?: Goal[ "state" ];
 }
