@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 
 import ExerciseItem from "../exercise/components/ExerciseItem";
-import ExerciseSelectionModal from "./components/ExerciseSelectionModal";
+import ExerciseSelectionModal from "../exercise/components/ExerciseSelectionModal";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );

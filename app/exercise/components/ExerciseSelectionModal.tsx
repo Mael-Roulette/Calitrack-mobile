@@ -21,11 +21,13 @@ const ExerciseSelectionModal = ( {
 	onClose,
 	onExerciseSelected,
 	initialSelectedExercises = [],
+	selectableExercise,
 }: {
 	isVisible: boolean;
 	onClose: () => void;
 	onExerciseSelected?: ( exercises: Exercise[] ) => void;
 	initialSelectedExercises?: Exercise[];
+	selectableExercise?: number
 } ) => {
 	const { exercices } = useExercicesStore();
 
@@ -118,11 +120,16 @@ const ExerciseSelectionModal = ( {
 				// Désélectionner l'exercice
 				return prev.filter( ( ex ) => ex.$id !== exercise.$id );
 			} else {
-				// Sélectionner l'exercice
+				// Si une limite est définie et atteinte, retirer le premier exercice
+				if ( selectableExercise && prev.length >= selectableExercise ) {
+					// Retirer le premier exercice et ajouter le nouveau
+					return [ ...prev.slice( 1 ), exercise ];
+				}
+				// Sinon, ajouter simplement l'exercice
 				return [ ...prev, exercise ];
 			}
 		} );
-	}, [] );
+	}, [ selectableExercise ] );
 
 	const isExerciseSelected = useCallback(
 		( exercise: string ) => {
@@ -152,7 +159,7 @@ const ExerciseSelectionModal = ( {
 			onRequestClose={ closeModal }
 		>
 			<TouchableWithoutFeedback onPress={ closeModal }>
-				<SafeAreaView className='flex-1 bg-black/40 justify-end' edges={['bottom']}>
+				<SafeAreaView className='flex-1 bg-black/40 justify-end' edges={ [ 'bottom' ] }>
 					<TouchableWithoutFeedback onPress={ ( e ) => e.stopPropagation() }>
 						<Animated.View
 							style={ {

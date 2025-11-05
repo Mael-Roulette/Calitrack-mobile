@@ -15,7 +15,7 @@ import {
 	Text,
 	View,
 } from "react-native";
-import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
+import ExerciseSelectionModal from "@/app/exercise/components/ExerciseSelectionModal";
 
 
 const Edit = () => {

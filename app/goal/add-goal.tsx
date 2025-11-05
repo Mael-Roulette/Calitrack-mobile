@@ -2,12 +2,12 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { createGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
-import useExercicesStore from "@/store/exercises.stores";
 import { CreateGoalParams, Exercise, Goal } from "@/types";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Alert, View } from "react-native";
 import ExerciseItem from "../exercise/components/ExerciseItem";
+import ExerciseSelectionModal from "../exercise/components/ExerciseSelectionModal";
 
 interface FormState {
 	total: string;
@@ -36,9 +36,8 @@ const LABEL_CONFIGS: Record<string, LabelConfig> = {
 
 const AddGoal = () => {
 	const { addGoalStore } = useGoalsStore();
-	const { exercices } = useExercicesStore();
-	const [ searchQuery, setSearchQuery ] = useState( "" );
-	const [ selectedExercise, setSelectedExercise ] = useState<Exercise | null>( null );
+	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
+	const [ selectedExercise, setSelectedExercise ] = useState<Exercise[]>( [] );
 	const [ isSubmitting, setIsSubmitting ] = useState( false );
 	const [ form, setForm ] = useState<FormState>( {
 		total: "",
@@ -47,35 +46,22 @@ const AddGoal = () => {
 
 	// Calcul des labels basé sur l'exercice sélectionné
 	const labels = useMemo( () => {
-		if ( !selectedExercise?.format ) return LABEL_CONFIGS.default;
-		return LABEL_CONFIGS[ selectedExercise.format ] || LABEL_CONFIGS.default;
-	}, [ selectedExercise?.format ] );
+		if ( !selectedExercise?.[ 0 ]?.format ) return LABEL_CONFIGS.default;
+		return LABEL_CONFIGS[ selectedExercise[ 0 ].format ] || LABEL_CONFIGS.default;
+	}, [ selectedExercise ] );
 
-	// Filtrage des exercices mémorisé
-	const filteredExercises = useMemo( () => {
-		if ( !searchQuery.trim() ) return [];
+	const openExerciseModal = () => {
+		setIsModalVisible( true );
+	};
 
-		const query = searchQuery.toLowerCase();
-		return exercices.filter(
-			( exercise ) =>
-				exercise.name?.toLowerCase().includes( query ) ||
-				exercise.type?.toLowerCase().includes( query )
-		);
-	}, [ searchQuery, exercices ] );
+	const closeExerciseModal = () => {
+		setIsModalVisible( false );
+	};
 
-	// Affichage des suggestions uniquement si recherche active
-	const showSuggestions = searchQuery.trim() !== "" && filteredExercises.length > 0;
-
-	// Gestion de la recherche
-	const handleSearch = useCallback( ( text: string ) => {
-		setSearchQuery( text );
-	}, [] );
-
-	// Sélection d'un exercice
-	const handleExerciseSelect = useCallback( ( exercise: Exercise ) => {
-		setSelectedExercise( exercise );
-		setSearchQuery( "" ); // Réinitialise la recherche
-	}, [] );
+	const handleExerciseSelection = ( exercises: Exercise[] ) => {
+		setSelectedExercise( exercises );
+		setIsModalVisible( false );
+	};
 
 	// Gestion des changements numériques
 	const handleNumericChange = useCallback( ( field: keyof FormState, value: string ) => {
@@ -86,7 +72,7 @@ const AddGoal = () => {
 
 	// Validation et soumission du formulaire
 	const submit = useCallback( async () => {
-		if ( !selectedExercise ) {
+		if ( !selectedExercise || selectedExercise.length === 0 ) {
 			Alert.alert( "Erreur", "Veuillez sélectionner un exercice" );
 			return;
 		}
@@ -95,10 +81,12 @@ const AddGoal = () => {
 			return;
 		}
 
+		let exercise = selectedExercise[ 0 ];
+
 		setIsSubmitting( true );
 		try {
 			const goalData: CreateGoalParams = {
-				exercise: selectedExercise.$id,
+				exercise: exercise.$id,
 				total: parseInt( form.total, 10 ),
 				progress: form.progress ? parseInt( form.progress, 10 ) : 0,
 			};
@@ -110,7 +98,7 @@ const AddGoal = () => {
 					$id: response.goal.$id,
 					$createdAt: response.goal.$createdAt,
 					$updatedAt: response.goal.$updatedAt,
-					exercise: selectedExercise,
+					exercise: exercise,
 					progress: response.goal.progress as number,
 					total: response.goal.total as number,
 					progressHistory: JSON.parse( response.goal.progressHistory as string || "[]" ),
@@ -128,60 +116,29 @@ const AddGoal = () => {
 		}
 	}, [ selectedExercise, form, addGoalStore ] );
 
-	// Render item optimisé pour FlatList
-	const renderExerciseItem = useCallback( ( { item }: { item: Exercise } ) => (
-		<TouchableOpacity
-			className="py-3 px-4 border-b border-primary-100"
-			onPress={ () => handleExerciseSelect( item ) }
-			activeOpacity={ 0.7 }
-		>
-			<Text className="font-sregular text-primary">{ item.name }</Text>
-		</TouchableOpacity>
-	), [ handleExerciseSelect ] );
-
-	// Key extractor optimisé
-	const keyExtractor = useCallback( ( item: Exercise ) => item.$id || item.name, [] );
-
 	return (
 		<View className="bg-background min-h-full">
 			<View className="flex-1 px-5">
 				<View className="gap-5 mb-5">
-					{/* Recherche d'exercice */ }
+					{/* Bouton de recherche d'exercice */ }
 					<View>
-						<CustomInput
-							label="Rechercher un exercice"
-							placeholder="Ex : Front, planche, ..."
-							value={ searchQuery }
-							onChangeText={ handleSearch }
-							customStyles="mb-2"
+						<CustomButton
+							title="Choisis ton mouvement"
+							variant="secondary"
+							onPress={ openExerciseModal }
 						/>
 
-						{/* Liste de suggestions */ }
-						{ showSuggestions && (
-							<View className="bg-background border border-primary-100 rounded-md mb-4 max-h-48">
-								<FlatList
-									data={ filteredExercises }
-									keyExtractor={ keyExtractor }
-									renderItem={ renderExerciseItem }
-									nestedScrollEnabled
-									initialNumToRender={ 10 }
-									maxToRenderPerBatch={ 10 }
-									windowSize={ 5 }
-								/>
-							</View>
-						) }
-
 						{/* Affichage de l'exercice sélectionné */ }
-						{ selectedExercise && (
-							<View>
-								<Text className="text-primary font-sregular mb-2">
-									Exercice sélectionné :
-								</Text>
-								<ExerciseItem
-									name={ selectedExercise.name }
-									type={ selectedExercise.type }
-									difficulty={ selectedExercise.difficulty }
-								/>
+						{ selectedExercise.length > 0 && (
+							<View className='mt-4'>
+								{ selectedExercise.map( ( exercise ) => (
+									<ExerciseItem
+										key={ exercise.$id }
+										name={ exercise.name }
+										type={ exercise.type }
+										difficulty={ exercise.difficulty }
+									/>
+								) ) }
 							</View>
 						) }
 					</View>
@@ -209,6 +166,14 @@ const AddGoal = () => {
 					isLoading={ isSubmitting }
 				/>
 			</View>
+
+			<ExerciseSelectionModal
+				isVisible={ isModalVisible }
+				onClose={ closeExerciseModal }
+				onExerciseSelected={ handleExerciseSelection }
+				initialSelectedExercises={ selectedExercise }
+				selectableExercise={ 1 }
+			/>
 		</View>
 	);
 };
