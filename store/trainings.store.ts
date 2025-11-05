@@ -18,7 +18,7 @@ type TrainingState = {
 	deleteTrainingStore: ( trainingId: string )=> void;
 };
 
-const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
+const useTrainingsStore = create<TrainingState>( ( set ) => ( {
 	trainings: [],
 	isLoadingTrainings: false,
 
@@ -32,18 +32,8 @@ const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 		set( { isLoadingTrainings: true } );
 
 		try {
-			const documents = await getTrainingsFromUser();
-			const trainings = documents.map(
-				( doc: Training ) =>
-					( {
-						$id: doc.$id,
-						user: doc.user,
-						name: doc.name,
-						days: doc.days,
-						duration: doc.duration,
-						training: doc.exercise || [],
-					} )
-			);
+			const trainings = await getTrainingsFromUser();
+			// Les données sont déjà correctement typées par getTrainingsFromUser
 			set( { trainings } );
 		} catch ( error ) {
 			console.error( "Erreur lors de la récupération des entraînements:", error );

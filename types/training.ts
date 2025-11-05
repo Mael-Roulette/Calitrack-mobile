@@ -2,7 +2,7 @@ export interface createTrainingParams {
 	name: string;
 	days?: string[];
 	duration: number;
-	exercise?: string[];
+	exercises?: string[]; // IDs des exercices
 	hours?: number;
 	minutes?: number;
 }
@@ -12,7 +12,7 @@ export interface updateTrainingParams {
 	name?: string;
 	days?: string[];
 	duration?: number;
-	exercise?: string[];
+	exercises?: string[]; // IDs des exercices
 }
 
 export interface Training {
@@ -21,13 +21,14 @@ export interface Training {
 	name: string;
 	days?: string[];
 	duration: number;
-	exercise?: string[];
+	exercise?: Exercise[];
 }
 
 export interface Exercise {
 	$id: string;
 	name: string;
-	type: "push" | "pull";
+	description?: string;
+	type: string;
 	difficulty: string;
 	image?: string;
 	format: "hold" | "repetition";

@@ -5,7 +5,7 @@ import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { getTrainingById, updateTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { Exercise, Training, createTrainingParams } from "@/types";
+import { Exercise, createTrainingParams } from "@/types";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -66,8 +66,7 @@ const Edit = () => {
 		};
 
 		fetchTraining();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ id, router ] );
+	}, [ id ] );
 
 	/* ----- Modification du custom header ----- */
 	useLayoutEffect( () => {
@@ -110,6 +109,7 @@ const Edit = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
+		// Extraire uniquement les IDs des exercices
 		const exerciseIds = selectedExercises.map( exercise => exercise.$id );
 
 		const trainingData = {
@@ -123,11 +123,18 @@ const Edit = () => {
 		try {
 			setIsSubmitting( true );
 			await updateTraining( trainingData );
-			updateTrainingStore( training.$id, trainingData );
+
+			updateTrainingStore( training.$id, {
+				name: form.name,
+				days: form.days,
+				duration: totalDuration,
+				exercise: selectedExercises,
+			} );
+
 			router.push( "/trainings" );
 		} catch ( err ) {
 			console.error( err );
-			Alert.alert( "Erreur", "Échec de l'ajout. Réessayez." );
+			Alert.alert( "Erreur", "Échec de la mise à jour. Réessayez." );
 		} finally {
 			setIsSubmitting( false );
 		}
@@ -203,7 +210,7 @@ const Edit = () => {
 										</Text>
 									) }
 
-									{ selectedExercises.map( ( exercise, index ) => (
+									{ selectedExercises.map( ( exercise ) => (
 										<ExerciseItem
 											key={ exercise.$id }
 											image={ exercise.image }

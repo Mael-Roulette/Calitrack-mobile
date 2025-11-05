@@ -10,7 +10,7 @@ import { getCurrentUser } from "./user.appwrite";
 
 /**
  * Permet de créer un nouvel entraînement
- * @param param0 - name, days, duration
+ * @param param0 - name, days, duration, exercises
  * @returns {Promise<{training: Models.Document, message: {title: string, body: string}}>} - L'entraînement créé et un message de succès
  * @throws {Error} - Si l'entraînement n'a pas pu être créé
  */
@@ -18,7 +18,7 @@ export const createTraining = async ( {
 	name,
 	days,
 	duration,
-	exercise,
+	exercises,
 }: createTrainingParams ): Promise<{ training?: Models.Document; message: { title: string; body: string; }; }> => {
 	try {
 		const currentUser = await getCurrentUser();
@@ -44,7 +44,7 @@ export const createTraining = async ( {
 				name,
 				days,
 				duration,
-				exercise,
+				exercise: exercises || [], // Appwrite utilise "exercise" (singulier)
 			}
 		);
 
@@ -80,7 +80,7 @@ export const getTrainingsFromUser = async (): Promise<Training[]> => {
 			name: doc.name as string,
 			days: doc.days as string[] | undefined,
 			duration: doc.duration as number,
-			exercise: doc.exercise as Exercise[] | undefined,
+			exercise: doc.exercise as Exercise[] | undefined, // Relation Appwrite retourne des objets complets
 		} ) );
 	} catch ( e ) {
 		throw new Error( e as string );
@@ -132,8 +132,8 @@ export const getTrainingById = async ( id: string ): Promise<Models.Document> =>
 /**
  * Permet de mettre à jour un entraînement existant
  * @param id - ID de l'entraînement à modifier
- * @param param1 - name, days, duration
- * @returns {Promise<void>} - Si la mise à jour a réussi
+ * @param param1 - name, days, duration, exercises
+ * @returns {Promise<Models.Document>} - L'entraînement mis à jour
  * @throws {Error} - Si la mise à jour a échoué
  */
 export const updateTraining = async ( {
@@ -141,19 +141,21 @@ export const updateTraining = async ( {
 	name,
 	days,
 	duration,
-	exercise,
-}: updateTrainingParams ): Promise<void> => {
+	exercises,
+}: updateTrainingParams ): Promise<Models.Document> => {
 	try {
+		const updateData: any = {};
+
+		if ( name !== undefined ) updateData.name = name;
+		if ( days !== undefined ) updateData.days = days;
+		if ( duration !== undefined ) updateData.duration = duration;
+		if ( exercises !== undefined ) updateData.exercise = exercises;
+
 		const training = await databases.updateDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.trainingCollectionId,
 			id,
-			{
-				name: name,
-				days: days,
-				duration: duration,
-				exercise: exercise,
-			}
+			updateData
 		);
 
 		return training;

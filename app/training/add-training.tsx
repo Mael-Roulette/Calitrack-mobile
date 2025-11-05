@@ -54,13 +54,14 @@ const AddTraining = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
+		// Extraire uniquement les IDs des exercices
 		const exerciseIds = selectedExercises.map( exercise => exercise.$id );
 
-		const trainingData = {
+		const trainingData: createTrainingParams = {
 			name: form.name,
 			days: form.days,
 			duration: totalDuration,
-			exercise: exerciseIds,
+			exercises: exerciseIds,
 		};
 
 		try {
@@ -74,7 +75,7 @@ const AddTraining = () => {
 					name: response.training.name,
 					days: response.training.days,
 					duration: response.training.duration,
-					exercise: response.training.exercise,
+					exercise: selectedExercises,
 				};
 				addTrainingStore( newTraining );
 			}
@@ -148,7 +149,7 @@ const AddTraining = () => {
 								</Text>
 							) }
 
-							{ selectedExercises.map( ( exercise, index ) => (
+							{ selectedExercises.map( ( exercise ) => (
 								<ExerciseItem
 									key={ exercise.$id }
 									image={ exercise.image }
