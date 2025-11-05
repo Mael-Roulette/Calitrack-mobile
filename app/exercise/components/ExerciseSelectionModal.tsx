@@ -208,7 +208,6 @@ const ExerciseSelectionModal = ( {
 										<ExerciseItem
 											key={ item.$id }
 											name={ item.name }
-											type={ item.type }
 											difficulty={ item.difficulty }
 											selectable={ true }
 											isSelected={ isExerciseSelected( item.$id ) }

@@ -2,17 +2,19 @@
 import React from "react";
 import { TouchableOpacity, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { getExerciseImage } from "@/constants/exercises";
 
 const ExerciseItem = ( {
+	image,
 	name,
-	type,
 	difficulty,
 	selectable = false,
 	isSelected = false,
 	onPress,
 }: {
+	image?: string,
 	name: string;
-	type: string;
 	difficulty: string;
 	selectable?: boolean;
 	isSelected?: boolean;
@@ -39,26 +41,30 @@ const ExerciseItem = ( {
 
 	return (
 		<TouchableOpacity
-			className={ `flex-row items-center justify-between p-4 mb-3 rounded-md border border-secondary  ${isSelected
+			className={ `flex-row items-center justify-start gap-3 p-4 mb-3 rounded-md border border-secondary  ${isSelected
 				? "border-2 bg-secondary/10"
 				: "bg-background"
 				}` }
 			onPress={ onPress }
 			disabled={ !onPress }
 		>
+			{ image && (
+				<View className="h-16 aspect-square bg-secondary rounded-md p-1">
+					<Image
+						source={ getExerciseImage( image ) }
+						style={ { width: '100%', height: '100%' } }
+						contentFit="contain"
+					/>
+				</View>
+			) }
 			<View className='flex-1'>
 				<Text className='text-primary font-sregular text-lg mb-1'>{ name }</Text>
-				<View className='flex-row items-center gap-3'>
-					<Text className='text-primary-100 text-sm font-sregular'>
-						Type : { type }
+				<Text className='text-sm font-medium text-primary-100 font-sregular'>
+					Difficulté :{ " " }
+					<Text style={ { color: difficultyInfo.color } }>
+						{ difficultyInfo.traduction }
 					</Text>
-					<Text className='text-sm font-medium text-primary-100 font-sregular'>
-						Difficulté :{ " " }
-						<Text style={ { color: difficultyInfo.color } }>
-							{ difficultyInfo.traduction }
-						</Text>
-					</Text>
-				</View>
+				</Text>
 			</View>
 
 			{ onPress && selectable && (

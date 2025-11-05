@@ -69,7 +69,7 @@ const Trainings = () => {
 
 			<View className="mt-4 mb-5">
 				<CustomButton
-					title="Voir les exercices"
+					title="Voir les mouvements"
 					variant="secondary"
 					onPress={ () => router.push( "/exercise/exercise-list" ) }
 				/>

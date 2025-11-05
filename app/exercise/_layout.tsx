@@ -20,7 +20,7 @@ const ExerciseLayout = () => {
 			<Stack.Screen
 				name='exercise-list'
 				options={{
-					title: "Les exercices",
+					title: "Les mouvements",
 				}}
 			/>
 		</Stack>
