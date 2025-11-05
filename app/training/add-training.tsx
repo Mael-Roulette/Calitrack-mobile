@@ -143,7 +143,7 @@ const AddTraining = () => {
 								Exercices sélectionnés ({ selectedExercises.length })
 							</Text>
 							{ selectedExercises.length > 4 && (
-								<Text className='indicator-text'>
+								<Text className='indicator-text mt-2 mb-4'>
 									Avoir trop d&apos;exercices dans son entraînement n&apos;est
 									pas forcément une bonne chose
 								</Text>

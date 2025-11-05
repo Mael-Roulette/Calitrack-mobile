@@ -2,19 +2,20 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { deleteGoal, updateGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
-import { Goal } from "@/types";
+import { GoalItemProps } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import { Alert, GestureResponderEvent, Modal, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
 
 const GoalItem = ( {
+	canDelete = false,
 	$id,
 	exercise,
 	progress,
 	total,
 	state,
-}: Goal ) => {
+}: GoalItemProps & { canDelete?: boolean } ) => {
 	const [ modalVisible, setModalVisible ] = useState( false );
 	const [ newProgress, setNewProgress ] = useState<string>();
 	const [ isUpdating, setIsUpdating ] = useState( false );
@@ -107,7 +108,7 @@ const GoalItem = ( {
 								{ state === 'finish' ? 'Validé' : state === 'in-progress' && 'En cours' }
 							</Text>
 						</View>
-						{ state === 'in-progress' && (
+						{ state === 'in-progress' && canDelete && (
 							<TouchableOpacity
 								onPress={ () => setShowDelete( !showDelete ) }
 								accessibilityLabel='Voir les options'

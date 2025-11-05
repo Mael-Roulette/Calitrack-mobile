@@ -22,3 +22,11 @@ export interface UpdatedGoalParams {
 	progress: number;
 	state?: Goal[ "state" ];
 }
+
+export interface GoalItemProps {
+	$id: string;
+	exercise: Exercise;
+	progress: number;
+	total: number;
+	state: "in-progress" | "finish";
+}

@@ -43,7 +43,7 @@ const Session = () => {
 			}
 		};
 		fetchTraining();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ id, router ] );
 
 	/* ----- Modification du custom header ----- */
@@ -69,8 +69,8 @@ const Session = () => {
 
 	const renderExerciseItem = ( { item }: { item: Exercise } ) => (
 		<ExerciseItem
+			image={ item.image }
 			name={ item.name }
-			type={ item.type }
 			difficulty={ item.difficulty }
 			onPress={ () => goToExerciseDetails( item.$id ) }
 		/>
@@ -89,10 +89,11 @@ const Session = () => {
 			setRelatedGoals( [] );
 			return;
 		}
+
 		const exerciseTypes = new Set( trainingExercises.map( ex => ex.type ) );
 
 		// Filtrer les goals
-		const related = goals.filter( goal => exerciseTypes.has( goal.exercise.type ) );
+		const related = goals.filter( goal => ( exerciseTypes.has( goal.exercise.type ) && goal.state === "in-progress" ) );
 
 		setRelatedGoals( related );
 	}, [ trainingExercises, goals ] );
@@ -103,11 +104,8 @@ const Session = () => {
 			$id={ item.$id }
 			exercise={ item.exercise }
 			progress={ item.progress }
-			progressHistory={ item.progressHistory }
 			total={ item.total }
 			state={ item.state }
-			$createdAt={ item.$createdAt }
-			$updatedAt={ item.$updatedAt }
 		/>
 	);
 

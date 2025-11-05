@@ -163,11 +163,8 @@ export default function Index () {
 										$id={ item.$id }
 										exercise={ item.exercise }
 										progress={ item.progress }
-										progressHistory={ item.progressHistory }
 										total={ item.total }
 										state={ item.state }
-										$createdAt={ item.$createdAt }
-										$updatedAt={ item.$updatedAt }
 									/>
 								) ) }
 								{ progressGoals.length === 0 && (
