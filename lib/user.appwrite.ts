@@ -80,7 +80,7 @@ export const getCurrentUser = async (): Promise<User> => {
  * @returns {Promise<Models.Document>} - L'utilisateur mis à jour
  * @throws {Error} - Si la mise à jour a échoué ou si l'email est déjà utilisé
  */
-export const updateUser = async ( data: Partial<User> ): Promise<Models.Document> => {
+export const updateUser = async ( data: Partial<User>, password?: string ): Promise<Models.Document> => {
 	try {
 		const currentUser = await getCurrentUser();
 
@@ -104,6 +104,10 @@ export const updateUser = async ( data: Partial<User> ): Promise<Models.Document
 
 		if ( data.name ) {
 			await account.updateName( data.name );
+		}
+
+		if ( data.email && password ) {
+			await account.updateEmail( data.email, password )
 		}
 
 		const updatedUser = await databases.updateDocument(

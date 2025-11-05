@@ -14,7 +14,7 @@ const TabsLayout = () => {
 	const { user } = useAuthStore();
 
 	return (
-		<SafeAreaView className='bg-background flex-1' edges={['bottom']}>
+		<SafeAreaView className='bg-background flex-1' edges={ [ 'bottom' ] }>
 			<StatusBar barStyle='dark-content' />
 			<Tabs
 				screenOptions={ {
@@ -102,13 +102,8 @@ const TabsLayout = () => {
 						title: "Profil",
 						headerTitle: "Profil",
 						headerRight: () => (
-							<Link href="/settings" asChild>
-								<TouchableOpacity
-									style={ { marginRight: 20 } }
-									accessibilityLabel="Paramètres"
-								>
-									<Ionicons name='settings-outline' size={ 30 } color='#132541' />
-								</TouchableOpacity>
+							<Link href="/settings" accessibilityLabel="Paramètres" style={ { marginRight: 20 } }>
+								<Ionicons name='settings-outline' size={ 30 } color='#132541' />
 							</Link>
 						),
 						tabBarIcon: ( { focused } ) => (

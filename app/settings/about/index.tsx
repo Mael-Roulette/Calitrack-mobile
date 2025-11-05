@@ -1,71 +1,14 @@
 import { APP_VERSION } from "@/constants/value";
-import { deleteAccount } from "@/lib/user.appwrite";
-import { useAuthStore } from "@/store";
-import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
-import { Link, router } from "expo-router";
-import { useState } from "react";
+import { Link } from "expo-router";
 import {
-	Alert,
 	ScrollView,
 	Text,
-	TouchableOpacity,
-	View,
+	View
 } from "react-native";
 
 
 const Index = () => {
-	const [ isLoading, setIsLoading ] = useState( false );
-	const { setIsAuthenticated, setUser } = useAuthStore();
-
-	const handleDeleteAccount = async () => {
-		Alert.alert(
-			"Supprimer votre compte",
-			"Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
-			[
-				{ text: "Annuler", style: "cancel" },
-				{
-					text: "Supprimer",
-					style: "destructive",
-					onPress: async () => {
-						setIsLoading( true );
-						try {
-							await deleteAccount();
-
-							setIsAuthenticated( false );
-							setUser( null );
-
-							router.replace( "/(auth)" );
-
-							Alert.alert(
-								"Compte supprimé",
-								"Votre compte a été supprimé avec succès."
-							);
-						} catch ( error ) {
-							const errorMessage =
-								error instanceof Error ? error.message : String( error );
-							Alert.alert(
-								"Erreur",
-								"Une erreur est survenue lors de la suppression de votre compte."
-							);
-							console.error( "Delete account error:", errorMessage );
-						} finally {
-							setIsLoading( false );
-						}
-					},
-				},
-			]
-		);
-	};
-
-	if ( isLoading ) {
-		return (
-			<View className='bg-background flex-1 justify-center items-center'>
-				<Text className='text-primary text-lg'>Suppression en cours...</Text>
-			</View>
-		)
-	}
-
 
 	return (
 		<View className='bg-background flex-1'>
@@ -106,21 +49,6 @@ const Index = () => {
 							</Link>
 						</View>
 					) ) }
-				</View>
-				<View className='px-5'>
-					<Text className='indicator-text mb-4 mt-8'>
-						La suppression de votre compte est irréversible et entraînera la
-						perte de toutes vos données.
-					</Text>
-					<TouchableOpacity
-						onPress={ handleDeleteAccount }
-						className='flex-row items-center py-3'
-					>
-						<Ionicons name='log-out-outline' size={ 24 } color='#F43F5E' />
-						<Text className='ml-3 text-lg text-rose-500 font-medium'>
-							Supprimer mon compte
-						</Text>
-					</TouchableOpacity>
 				</View>
 			</ScrollView>
 		</View>
