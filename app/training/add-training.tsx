@@ -54,13 +54,11 @@ const AddTraining = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
-		const exercises = selectedExercises.map( ( exercise ) => exercise.$id );
-
 		const trainingData = {
 			name: form.name,
 			days: form.days,
 			duration: totalDuration,
-			exercises: exercises,
+			exercise: selectedExercises,
 		};
 
 		try {
@@ -140,8 +138,8 @@ const AddTraining = () => {
 							{ selectedExercises.map( ( exercise, index ) => (
 								<ExerciseItem
 									key={ exercise.$id }
+									image={ exercise.image }
 									name={ exercise.name }
-									type={ exercise.type }
 									difficulty={ exercise.difficulty }
 								/>
 							) ) }

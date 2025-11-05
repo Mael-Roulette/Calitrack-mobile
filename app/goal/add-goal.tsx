@@ -137,8 +137,8 @@ const AddGoal = () => {
 								{ selectedExercise.map( ( exercise ) => (
 									<ExerciseItem
 										key={ exercise.$id }
+										image={ exercise.image }
 										name={ exercise.name }
-										type={ exercise.type }
 										difficulty={ exercise.difficulty }
 									/>
 								) ) }

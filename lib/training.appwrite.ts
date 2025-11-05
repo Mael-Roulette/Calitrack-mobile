@@ -34,21 +34,16 @@ export const createTraining = async ( {
 			return { message };
 		}
 
-		let exerciseTab: any = [];
-		if ( exercise && exercise.length !== 0 ) {
-			exerciseTab = exercise;
-		}
-
 		const training = await databases.createDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.trainingCollectionId,
 			ID.unique(),
 			{
 				user: currentUser.$id,
-				name: name,
-				days: days,
-				duration: duration,
-				exercise: exerciseTab,
+				name,
+				days,
+				duration,
+				exercise,
 			}
 		);
 

@@ -129,6 +129,7 @@ const ExerciseSelectionModal = ( {
 				return [ ...prev, exercise ];
 			}
 		} );
+
 	}, [ selectableExercise ] );
 
 	const isExerciseSelected = useCallback(
@@ -207,6 +208,7 @@ const ExerciseSelectionModal = ( {
 									renderItem={ ( { item } ) => (
 										<ExerciseItem
 											key={ item.$id }
+											image={ item.image }
 											name={ item.name }
 											difficulty={ item.difficulty }
 											selectable={ true }

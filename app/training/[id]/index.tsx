@@ -24,7 +24,7 @@ const Index = () => {
 	const [ trainingExercises, setTrainingExercises ] = useState<Exercise[]>( [] );
 	const [ showMenu, setShowMenu ] = useState( false );
 	const navigation = useNavigation();
-	const { fetchUserTrainings, deleteTrainingStore } = useTrainingsStore();
+	const { deleteTrainingStore } = useTrainingsStore();
 
 	useEffect( () => {
 		const fetchTraining = async () => {
@@ -126,8 +126,8 @@ const Index = () => {
 
 	const renderExerciseItem = ( { item }: { item: Exercise } ) => (
 		<ExerciseItem
+			image={ item.image }
 			name={ item.name }
-			type={ item.type }
 			difficulty={ item.difficulty }
 			onPress={ () => goToExerciseDetails( item.$id ) }
 		/>
