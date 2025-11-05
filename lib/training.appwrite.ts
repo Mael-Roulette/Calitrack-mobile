@@ -39,6 +39,7 @@ export const createTraining = async ( {
 			appwriteConfig.trainingCollectionId,
 			ID.unique(),
 			{
+				$createdAt: new Date().toISOString(),
 				user: currentUser.$id,
 				name,
 				days,
@@ -143,7 +144,7 @@ export const updateTraining = async ( {
 	exercise,
 }: updateTrainingParams ): Promise<void> => {
 	try {
-		await databases.updateDocument(
+		const training = await databases.updateDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.trainingCollectionId,
 			id,
@@ -154,6 +155,8 @@ export const updateTraining = async ( {
 				exercise: exercise,
 			}
 		);
+
+		return training;
 	} catch ( e ) {
 		throw new Error( e as string );
 	}

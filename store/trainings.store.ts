@@ -10,8 +10,8 @@ type TrainingState = {
 	setTrainings: ( trainings: Training[] ) => void;
 	setIsLoadingTrainings: ( value: boolean ) => void;
 	fetchUserTrainings: () => Promise<void>;
-	addTraining: ( training: Training ) => void;
-	updateTraining: (
+	addTrainingStore: ( training: Training ) => void;
+	updateTrainingStore: (
 		trainingId: string,
 		updatedTraining: Partial<Training>
 	) => void;
@@ -53,11 +53,11 @@ const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 		}
 	},
 
-	addTraining: ( training: Training ) => {
+	addTrainingStore: ( training: Training ) => {
 		set( ( state ) => ( { trainings: [ ...state.trainings, training ] } ) );
 	},
 
-	updateTraining: ( trainingId: string, updatedTraining: Partial<Training> ) => {
+	updateTrainingStore: ( trainingId: string, updatedTraining: Partial<Training> ) => {
 		set( ( state ) => ( {
 			trainings: state.trainings.map( ( training ) =>
 				training.$id === trainingId

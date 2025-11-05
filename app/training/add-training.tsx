@@ -4,7 +4,7 @@ import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { createTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { createTrainingParams, Exercise } from "@/types";
+import { createTrainingParams, Exercise, Training } from "@/types";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
@@ -23,7 +23,7 @@ const AddTraining = () => {
 		hours: 0,
 		minutes: 0,
 	} );
-	const { fetchUserTrainings } = useTrainingsStore();
+	const { addTrainingStore } = useTrainingsStore();
 
 	const openExerciseModal = () => {
 		setIsModalVisible( true );
@@ -54,17 +54,30 @@ const AddTraining = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
+		const exerciseIds = selectedExercises.map( exercise => exercise.$id );
+
 		const trainingData = {
 			name: form.name,
 			days: form.days,
 			duration: totalDuration,
-			exercise: selectedExercises,
+			exercise: exerciseIds,
 		};
 
 		try {
 			setIsSubmitting( true );
-			await createTraining( trainingData );
-			await fetchUserTrainings();
+			const response = await createTraining( trainingData );
+
+			if ( response.training ) {
+				const newTraining: Training = {
+					$id: response.training.$id,
+					user: response.training.user,
+					name: response.training.name,
+					days: response.training.days,
+					duration: response.training.duration,
+					exercise: response.training.exercise,
+				};
+				addTrainingStore( newTraining );
+			}
 			router.push( "/trainings" );
 		} catch ( err ) {
 			console.error( err );

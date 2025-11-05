@@ -5,7 +5,7 @@ import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { getTrainingById, updateTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { Exercise, createTrainingParams } from "@/types";
+import { Exercise, Training, createTrainingParams } from "@/types";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -33,7 +33,7 @@ const Edit = () => {
 		hours: 0,
 		minutes: 0,
 	} );
-	const { fetchUserTrainings } = useTrainingsStore();
+	const { updateTrainingStore } = useTrainingsStore();
 
 	/* -------------------------------------------------- */
 	/* ---------- Récupérer les informations déjà présentent ---------- */
@@ -110,20 +110,20 @@ const Edit = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
-		const exercises = selectedExercises.map( ( exercise ) => exercise.$id );
+		const exerciseIds = selectedExercises.map( exercise => exercise.$id );
 
 		const trainingData = {
 			id: training.$id,
 			name: form.name,
 			days: form.days,
 			duration: totalDuration,
-			exercises: exercises,
+			exercises: exerciseIds,
 		};
 
 		try {
 			setIsSubmitting( true );
 			await updateTraining( trainingData );
-			await fetchUserTrainings();
+			updateTrainingStore( training.$id, trainingData );
 			router.push( "/trainings" );
 		} catch ( err ) {
 			console.error( err );
@@ -206,8 +206,8 @@ const Edit = () => {
 									{ selectedExercises.map( ( exercise, index ) => (
 										<ExerciseItem
 											key={ exercise.$id }
+											image={ exercise.image }
 											name={ exercise.name }
-											type={ exercise.type }
 											difficulty={ exercise.difficulty }
 										/>
 									) ) }

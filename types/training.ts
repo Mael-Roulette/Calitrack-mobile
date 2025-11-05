@@ -2,7 +2,7 @@ export interface createTrainingParams {
 	name: string;
 	days?: string[];
 	duration: number;
-	exercise?: Exercise[];
+	exercise?: string[];
 	hours?: number;
 	minutes?: number;
 }
@@ -12,7 +12,7 @@ export interface updateTrainingParams {
 	name?: string;
 	days?: string[];
 	duration?: number;
-	exercise?: Exercise[];
+	exercise?: string[];
 }
 
 export interface Training {
@@ -21,7 +21,7 @@ export interface Training {
 	name: string;
 	days?: string[];
 	duration: number;
-	exercise?: Exercise[];
+	exercise?: string[];
 }
 
 export interface Exercise {
