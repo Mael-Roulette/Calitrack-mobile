@@ -34,7 +34,7 @@
 	}
 
 	.custom-input {
-		@apply bg-background border border-primary-100 rounded-md pl-4 text-lg text-primary font-sregular min-h-[50px];
+		@apply bg-background border border-primary-100 rounded-md pl-4 text-lg text-primary font-sregular;
 	}
 
 	.custom-option {

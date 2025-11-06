@@ -4,19 +4,17 @@ import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { createTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { createTrainingParams, Exercise, Training } from "@/types";
+import { createTrainingParams, Training } from "@/types";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
-
-import ExerciseItem from "../exercise/components/ExerciseItem";
-import ExerciseSelectionModal from "../exercise/components/ExerciseSelectionModal";
+import { Alert, ScrollView, View, Text } from "react-native";
+import SeriesFormModal from "./components/SeriesFormModal";
+import SeriesItem from "./components/SeriesItem";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
 	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
-	const [ selectedExercises, setSelectedExercises ] = useState<Exercise[]>( [] );
 	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
 		name: "",
 		days: [],
@@ -25,18 +23,9 @@ const AddTraining = () => {
 	} );
 	const { addTrainingStore } = useTrainingsStore();
 
-	const openExerciseModal = () => {
-		setIsModalVisible( true );
-	};
-
-	const closeExerciseModal = () => {
-		setIsModalVisible( false );
-	};
-
-	const handleExerciseSelection = ( exercises: Exercise[] ) => {
-		setSelectedExercises( exercises );
-		setIsModalVisible( false );
-	};
+	const handleModalVisibility = () => {
+		setIsModalVisible( !isModalVisible );
+	}
 
 	const submit = async (): Promise<void> => {
 		if ( !form.name || !form.days ) {
@@ -54,14 +43,10 @@ const AddTraining = () => {
 
 		const totalDuration = form.hours * 60 + form.minutes;
 
-		// Extraire uniquement les IDs des exercices
-		const exerciseIds = selectedExercises.map( exercise => exercise.$id );
-
 		const trainingData: createTrainingParams = {
 			name: form.name,
 			days: form.days,
 			duration: totalDuration,
-			exercises: exerciseIds,
 		};
 
 		try {
@@ -76,7 +61,6 @@ const AddTraining = () => {
 					name: training.name,
 					days: training.days,
 					duration: training.duration,
-					exercise: selectedExercises,
 				};
 				addTrainingStore( newTraining );
 			}
@@ -138,49 +122,30 @@ const AddTraining = () => {
 						allowCustomTags={ false }
 					/>
 
-					{ selectedExercises.length > 0 && (
-						<View className='mb-4'>
-							<Text className='text-primary font-calsans text-lg mb-1'>
-								Exercices sélectionnés ({ selectedExercises.length })
-							</Text>
-							{ selectedExercises.length > 4 && (
-								<Text className='indicator-text mt-2 mb-4'>
-									Avoir trop d&apos;exercices dans son entraînement n&apos;est
-									pas forcément une bonne chose
-								</Text>
-							) }
-
-							{ selectedExercises.map( ( exercise ) => (
-								<ExerciseItem
-									key={ exercise.$id }
-									image={ exercise.image }
-									name={ exercise.name }
-									difficulty={ exercise.difficulty }
-								/>
-							) ) }
-						</View>
-					) }
+					<View>
+						<Text className="text">Mes séries (0)</Text>
+						{/* <SeriesItem
+							state="view"
+						/> */}
+					</View>
 				</View>
-
-				<CustomButton
-					title={ `${selectedExercises.length > 0 ? "Modifier les" : "Ajouter des"} exercices${selectedExercises.length > 0 ? ` (${selectedExercises.length})` : ""}` }
-					variant='secondary'
-					onPress={ openExerciseModal }
-				/>
 			</ScrollView>
+
+			<CustomButton
+				title='Ajouter une série'
+				variant='secondary'
+				onPress={ handleModalVisibility }
+			/>
 
 			<CustomButton
 				title="Créer l'entraînement"
 				onPress={ submit }
 				isLoading={ isSubmitting }
-				customStyles='mt-5 mb-10'
+				customStyles='my-5'
 			/>
-
-			<ExerciseSelectionModal
+			<SeriesFormModal
 				isVisible={ isModalVisible }
-				onClose={ closeExerciseModal }
-				onExerciseSelected={ handleExerciseSelection }
-				initialSelectedExercises={ selectedExercises }
+				closeModal={ handleModalVisibility }
 			/>
 		</View>
 	);

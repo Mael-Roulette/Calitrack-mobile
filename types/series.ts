@@ -1,20 +1,22 @@
-export interface CreateSeriesParams {
-  exercise: string;
+import { Exercise } from ".";
+
+export interface SeriesParams {
+  $id: string;
+  exercise: Exercise;
   targetValue: number;
   sets: number;
-  restime?: number;
+  restTime?: number;
   note?: string;
   order: number;
   training: string;
 }
 
-export interface SeriesParams {
-  $id: string;
-  exercise: string;
-  targetValue: number;
-  sets: number;
-  restime?: number;
-  note?: string;
-  order: number;
-  training: string;
+export interface CreateSeriesParams {
+  exercise: SeriesParams[ 'exercise' ];
+  targetValue: SeriesParams[ 'targetValue' ];
+  sets: SeriesParams[ 'sets' ];
+  restTime?: SeriesParams[ 'restTime' ];
+  note?: SeriesParams[ 'note' ];
+  order: SeriesParams[ 'order' ];
+  training: SeriesParams[ 'training' ];
 }

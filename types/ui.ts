@@ -22,6 +22,8 @@ export interface CustomInputProps {
 	keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
 	editable?: boolean;
 	customStyles?: string;
+	multiline?: boolean;
+	numberOfLines?: number;
 }
 
 export interface CustomTagsProps {
