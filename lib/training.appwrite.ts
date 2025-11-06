@@ -44,7 +44,7 @@ export const createTraining = async ( {
 				name,
 				days,
 				duration,
-				exercise: exercises || [], // Appwrite utilise "exercise" (singulier)
+				exercise: exercises || [],
 			}
 		);
 
@@ -80,7 +80,7 @@ export const getTrainingsFromUser = async (): Promise<Training[]> => {
 			name: doc.name as string,
 			days: doc.days as string[] | undefined,
 			duration: doc.duration as number,
-			exercise: doc.exercise as Exercise[] | undefined, // Relation Appwrite retourne des objets complets
+			exercise: doc.exercise as Exercise[] | undefined,
 		} ) );
 	} catch ( e ) {
 		throw new Error( e as string );

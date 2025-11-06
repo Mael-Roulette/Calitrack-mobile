@@ -67,14 +67,15 @@ const AddTraining = () => {
 		try {
 			setIsSubmitting( true );
 			const response = await createTraining( trainingData );
+			const training = response.training as any as Training;
 
-			if ( response.training ) {
+			if ( training ) {
 				const newTraining: Training = {
-					$id: response.training.$id,
-					user: response.training.user,
-					name: response.training.name,
-					days: response.training.days,
-					duration: response.training.duration,
+					$id: training.$id,
+					user: training.user,
+					name: training.name,
+					days: training.days,
+					duration: training.duration,
 					exercise: selectedExercises,
 				};
 				addTrainingStore( newTraining );
