@@ -167,8 +167,14 @@ const SeriesItem = ( { state, seriesData, onDelete }: SeriesItemProps ) => {
                   </View>
                   <View className="flex-row flex-wrap items-start justify-between">
                     <View>
-                      <Text className="title-3">Temps de hold</Text>
-                      <Text className="text">{ seriesData.targetValue } secondes</Text>
+                      <Text className="title-3">
+                        { seriesData.exercise.format === 'hold' ? (
+                          "Temps de hold"
+                        ) : seriesData.exercise.format === 'repetition' ? (
+                          "Nombre de répétition"
+                        ) : "Valeur à atteindre" }
+                      </Text>
+                      <Text className="text">{ seriesData.targetValue } { seriesData.exercise.format === 'hold' && 'seconde(s)'} </Text>
                     </View>
 
                     <View>
