@@ -33,7 +33,6 @@ const useTrainingsStore = create<TrainingState>( ( set ) => ( {
 
 		try {
 			const trainings = await getTrainingsFromUser();
-			// Les données sont déjà correctement typées par getTrainingsFromUser
 			set( { trainings } );
 		} catch ( error ) {
 			console.error( "Erreur lors de la récupération des entraînements:", error );
