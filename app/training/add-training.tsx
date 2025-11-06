@@ -12,6 +12,7 @@ import SeriesFormModal from "./components/SeriesFormModal";
 import { CreateSeriesParams, SeriesParams } from "@/types/series";
 import { createSeries } from "@/lib/series.appwrite";
 import useSeriesStore from "@/store/series.store";
+import SeriesItemEdit from "./components/SeriesItemEdit";
 // import SeriesItem from "./components/SeriesItem";
 
 const AddTraining = () => {
@@ -38,6 +39,11 @@ const AddTraining = () => {
 		};
 		setSeriesList( prev => [ ...prev, newSeries ] );
 	};
+
+	const handleDeleteSeries = ( index: number ) => {
+		setSeriesList( ( prev ) => prev.filter( ( _, i ) => i !== index ) );
+	};
+
 
 	const submit = async (): Promise<void> => {
 		if ( !form.name || !form.days ) {
@@ -68,11 +74,11 @@ const AddTraining = () => {
 
 			for ( const series of seriesList ) {
 				let seriesOrder = 1;
-				const response = await createSeries({
+				const response = await createSeries( {
 					...series,
 					training: training.$id,
 					order: seriesOrder
-				})
+				} )
 
 				seriesOrder++;
 
@@ -166,13 +172,13 @@ const AddTraining = () => {
 								</View>
 
 								<View>
-									{/* { seriesList.map( ( series, index ) => (
-										<SeriesItem
+									{ seriesList.map( ( series, index ) => (
+										<SeriesItemEdit
 											key={ index }
-											state='edit'
 											seriesData={ series }
+											onDelete={ () => handleDeleteSeries( index ) }
 										/>
-									) ) } */}
+									) ) }
 								</View>
 							</View>
 						) }
