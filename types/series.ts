@@ -12,7 +12,7 @@ export interface SeriesParams {
 }
 
 export interface CreateSeriesParams {
-  exercise: SeriesParams[ 'exercise' ];
+  exercise: string;
   targetValue: SeriesParams[ 'targetValue' ];
   sets: SeriesParams[ 'sets' ];
   restTime?: SeriesParams[ 'restTime' ];

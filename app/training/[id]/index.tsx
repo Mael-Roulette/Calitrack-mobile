@@ -1,8 +1,7 @@
-import ExerciseItem from "@/app/exercise/components/ExerciseItem";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { deleteTraining, getTrainingById } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { Exercise } from "@/types";
+import { SeriesParams } from "@/types/series";
 import Feather from "@expo/vector-icons/Feather";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -15,13 +14,14 @@ import {
 	TouchableOpacity,
 	View
 } from "react-native";
+import SeriesItem from "../components/SeriesItem";
 
 
 const Index = () => {
 	const { id } = useLocalSearchParams();
 	const [ training, setTraining ] = useState<any>( null );
 	const [ loading, setLoading ] = useState( true );
-	const [ trainingExercises, setTrainingExercises ] = useState<Exercise[]>( [] );
+	const [ trainingSeries, setTrainingSeries ] = useState<SeriesParams[]>( [] );
 	const [ showMenu, setShowMenu ] = useState( false );
 	const navigation = useNavigation();
 	const { deleteTrainingStore } = useTrainingsStore();
@@ -119,26 +119,17 @@ const Index = () => {
 	}, [ navigation, training, id, router, showMenu ] );
 
 	useEffect( () => {
-		if ( training && training.exercise ) {
-			setTrainingExercises( training.exercise );
+		if ( training && training.series ) {
+			setTrainingSeries( training.series );
 		}
 	}, [ training ] );
 
-	const renderExerciseItem = ( { item }: { item: Exercise } ) => (
-		<ExerciseItem
-			image={ item.image }
-			name={ item.name }
-			difficulty={ item.difficulty }
-			onPress={ () => goToExerciseDetails( item.$id ) }
+	const renderSeriesItem = ( { item }: { item: SeriesParams } ) => (
+		<SeriesItem
+			state="view"
+			seriesData={ item }
 		/>
 	);
-
-	const goToExerciseDetails = ( id: string ) => {
-		router.push( {
-			pathname: "/exercise/[id]",
-			params: { id },
-		} );
-	};
 
 	return (
 		<ScrollView className='bg-background min-h-full' contentContainerStyle={ { paddingBottom: 20 } }>
@@ -172,13 +163,13 @@ const Index = () => {
 						</ScrollView>
 					) }
 					<FlatList
-						data={ trainingExercises }
-						renderItem={ renderExerciseItem }
-						keyExtractor={ ( item ) => item.name }
+						data={ trainingSeries }
+						renderItem={ renderSeriesItem }
+						keyExtractor={ ( item ) => item.$id }
 						showsVerticalScrollIndicator={ true }
 						scrollEnabled={ false }
 						ListEmptyComponent={
-							<Text className='indicator-text'>Aucun exercice</Text>
+							<Text className='indicator-text'>Aucune série</Text>
 						}
 					/>
 				</View>

@@ -7,14 +7,18 @@ import { useTrainingsStore } from "@/store";
 import { createTrainingParams, Training } from "@/types";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, View, Text } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import SeriesFormModal from "./components/SeriesFormModal";
-import SeriesItem from "./components/SeriesItem";
+import { CreateSeriesParams, SeriesParams } from "@/types/series";
+import { createSeries } from "@/lib/series.appwrite";
+import useSeriesStore from "@/store/series.store";
+// import SeriesItem from "./components/SeriesItem";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
 	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
+	const [ seriesList, setSeriesList ] = useState<Omit<CreateSeriesParams, 'training' | 'order'>[]>( [] );
 	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
 		name: "",
 		days: [],
@@ -22,10 +26,18 @@ const AddTraining = () => {
 		minutes: 0,
 	} );
 	const { addTrainingStore } = useTrainingsStore();
+	const { addSeriesStore } = useSeriesStore();
 
 	const handleModalVisibility = () => {
 		setIsModalVisible( !isModalVisible );
 	}
+
+	const handleSeriesCreated = ( series: Omit<CreateSeriesParams, 'training' | 'order'> ) => {
+		const newSeries = {
+			...series
+		};
+		setSeriesList( prev => [ ...prev, newSeries ] );
+	};
 
 	const submit = async (): Promise<void> => {
 		if ( !form.name || !form.days ) {
@@ -53,6 +65,21 @@ const AddTraining = () => {
 			setIsSubmitting( true );
 			const response = await createTraining( trainingData );
 			const training = response.training as any as Training;
+
+			for ( const series of seriesList ) {
+				let seriesOrder = 1;
+				const response = await createSeries({
+					...series,
+					training: training.$id,
+					order: seriesOrder
+				})
+
+				seriesOrder++;
+
+				const newSeries: SeriesParams = response.series;
+
+				addSeriesStore( newSeries );
+			}
 
 			if ( training ) {
 				const newTraining: Training = {
@@ -123,10 +150,33 @@ const AddTraining = () => {
 					/>
 
 					<View>
-						<Text className="text">Mes séries (0)</Text>
-						{/* <SeriesItem
-							state="view"
-						/> */}
+						<Text className="text">Mes séries ( { seriesList.length } )</Text>
+
+						{ seriesList.length > 0 && (
+							<View>
+								<View>
+									{
+										seriesList.length > 4 && (
+											<Text className='indicator-text mt-2 mb-4'>
+												Avoir trop d&apos;exercices dans son entraînement n&apos;est
+												pas forcément une bonne chose
+											</Text>
+										)
+									}
+								</View>
+
+								<View>
+									{/* { seriesList.map( ( series, index ) => (
+										<SeriesItem
+											key={ index }
+											state='edit'
+											seriesData={ series }
+										/>
+									) ) } */}
+								</View>
+							</View>
+						) }
+
 					</View>
 				</View>
 			</ScrollView>
@@ -146,6 +196,7 @@ const AddTraining = () => {
 			<SeriesFormModal
 				isVisible={ isModalVisible }
 				closeModal={ handleModalVisibility }
+				onSeriesCreated={ handleSeriesCreated }
 			/>
 		</View>
 	);
