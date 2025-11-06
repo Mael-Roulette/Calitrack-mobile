@@ -22,8 +22,8 @@ const useTrainingsStore = create<TrainingState>( ( set ) => ( {
 	trainings: [],
 	isLoadingTrainings: false,
 
-	setTrainings: ( trainings: Training[] ) => set( { trainings } ),
-	setIsLoadingTrainings: ( value: boolean ) => set( { isLoadingTrainings: value } ),
+	setTrainings: ( trainings ) => set( { trainings } ),
+	setIsLoadingTrainings: ( value ) => set( { isLoadingTrainings: value } ),
 
 	fetchUserTrainings: async () => {
 		const { isAuthenticated } = useAuthStore.getState();
@@ -33,7 +33,6 @@ const useTrainingsStore = create<TrainingState>( ( set ) => ( {
 
 		try {
 			const trainings = await getTrainingsFromUser();
-			// Les données sont déjà correctement typées par getTrainingsFromUser
 			set( { trainings } );
 		} catch ( error ) {
 			console.error( "Erreur lors de la récupération des entraînements:", error );
@@ -43,11 +42,11 @@ const useTrainingsStore = create<TrainingState>( ( set ) => ( {
 		}
 	},
 
-	addTrainingStore: ( training: Training ) => {
+	addTrainingStore: ( training ) => {
 		set( ( state ) => ( { trainings: [ ...state.trainings, training ] } ) );
 	},
 
-	updateTrainingStore: ( trainingId: string, updatedTraining: Partial<Training> ) => {
+	updateTrainingStore: ( trainingId, updatedTraining ) => {
 		set( ( state ) => ( {
 			trainings: state.trainings.map( ( training ) =>
 				training.$id === trainingId
@@ -57,7 +56,7 @@ const useTrainingsStore = create<TrainingState>( ( set ) => ( {
 		} ) );
 	},
 
-	deleteTrainingStore: ( trainingId: string ) => {
+	deleteTrainingStore: ( trainingId ) => {
 		set( ( state ) => ( {
 			trainings: state.trainings.filter( ( training ) => training.$id !== trainingId )
 		} ) );
