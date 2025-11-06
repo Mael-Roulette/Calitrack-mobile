@@ -76,7 +76,7 @@ const AddTraining = () => {
 
 				seriesOrder++;
 
-				const newSeries: SeriesParams = response.series;
+				const newSeries = response.series as any as SeriesParams;
 
 				addSeriesStore( newSeries );
 			}
@@ -158,7 +158,7 @@ const AddTraining = () => {
 									{
 										seriesList.length > 4 && (
 											<Text className='indicator-text mt-2 mb-4'>
-												Avoir trop d&apos;exercices dans son entraînement n&apos;est
+												Attention, avoir trop d&apos;exercices différents dans son entraînement n&apos;est
 												pas forcément une bonne chose
 											</Text>
 										)
