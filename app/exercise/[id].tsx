@@ -97,7 +97,7 @@ const ExerciseDetails = () => {
 
 						<View className='px-5 mt-6 mb-4'>
 							<Text className="title-2 mb-4">{ exercise.name }</Text>
-							<View className='flex-row items-center justify-between mb-3'>
+							<View className='flex-row flex-wrap items-center justify-between mb-3'>
 								<Text className='text'>
 									Type :{ " " }
 									<Text className='text-secondary'>{ exercise.type }</Text>
