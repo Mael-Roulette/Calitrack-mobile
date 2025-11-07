@@ -1,15 +1,13 @@
 import { getExericseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
-import { CreateSeriesParams, SeriesParams } from "@/types/series";
 import { Feather } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useEffect, useState } from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
-
-type MixedSeriesType = SeriesParams | Omit<CreateSeriesParams, "training" | "order">;
+import { MixSeriesType } from "./TrainingForm";
 
 interface SeriesItemProps {
-  seriesData: MixedSeriesType;
+  seriesData: MixSeriesType;
   onDrag: () => void;
   onDelete: () => void;
   onEdit: () => void;

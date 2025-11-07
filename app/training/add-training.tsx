@@ -1,84 +1,22 @@
-import CustomButton from "@/components/CustomButton";
-import CustomInput from "@/components/CustomInput";
-import CustomTags from "@/components/CustomTags";
-import CustomTimePicker from "@/components/CustomTimePicker";
-import { DAYS_TRANSLATION } from "@/constants/value";
 import { createSeries } from "@/lib/series.appwrite";
 import { createTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
 import { createTrainingParams, Training } from "@/types";
-import { CreateSeriesParams, SeriesParams } from "@/types/series";
+import { SeriesParams } from "@/types/series";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, Text, View } from "react-native";
-import SeriesFormModal from "./components/SeriesFormModal";
-import SeriesItemList from "./components/SeriesItemList";
+import { Alert, View } from "react-native";
+import TrainingForm, { MixSeriesType } from "./components/TrainingForm";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
-	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
-
-
-	// Info trainings
-	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
-		name: "",
-		days: [],
-		duration: 0,
-	} );
-	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
-	const [ seriesList, setSeriesList ] = useState<Omit<CreateSeriesParams, "training" | "order">[]>( [] );
-	const [ editingSeries, setEditingSeries ] = useState<Omit<CreateSeriesParams, "training" | "order"> | null>( null );
-	const [ editingIndex, setEditingIndex ] = useState<number | null>( null );
-
 
 	// Fonction store
 	const { addTrainingStore } = useTrainingsStore();
 
 
-	// Gestion de la modal d'ajout de série
-	//Permet de gérer la visibilité de la modal
-	const handleModalVisibility = () => {
-		if ( !isModalVisible ) {
-			setEditingSeries( null );
-			setEditingIndex( null );
-		}
-		setIsModalVisible( !isModalVisible );
-	};
-
-	// Ajout de la création créer dans la liste
-	const handleSeriesCreated = ( series: Omit<CreateSeriesParams, "training" | "order"> ) => {
-		setSeriesList( ( prev ) => [ ...prev, series ] );
-	};
-
-	// Mise à jour d'une série dans la liste
-	const handleSeriesUpdated = (
-		series: Omit<CreateSeriesParams, "training" | "order">,
-		index: number
-	) => {
-		setSeriesList( ( prev ) => {
-			const newList = [ ...prev ];
-			newList[ index ] = series;
-			return newList;
-		} );
-	};
-
-	// Permet d'ouvrir la modal avec les infos d'une série
-	const handleEditSeries = ( index: number ) => {
-		setEditingSeries( seriesList[ index ] );
-		setEditingIndex( index );
-		setIsModalVisible( true );
-	};
-
-	// Permet de modifier l'ordre de la liste
-	const handleSeriesListChange = (
-		newList: Omit<CreateSeriesParams, "training" | "order">[]
-	) => {
-		setSeriesList( newList );
-	};
-
-
 	// Envoie du formulaire pour la création de l'entraînement
-	const submit = async (): Promise<void> => {
+	const submit = async ( { form, seriesList }: { form: Partial<createTrainingParams>, seriesList: MixSeriesType[] } ): Promise<void> => {
 		// Vérification des champs aléatoires
 		if ( !form.name || !form.days || form.days.length === 0 ) {
 			Alert.alert( "Erreur", "Veuillez remplir tous les champs obligatoires" );
@@ -137,86 +75,10 @@ const AddTraining = () => {
 
 	return (
 		<View className="flex-1 bg-background min-h-full px-5">
-			<View className="flex-1">
-				<View className=" flex-1 flex-col gap-5 pb-5">
-					<CustomInput
-						label="Nom de l'entraînement"
-						value={ form.name }
-						placeholder="Ex : Planche + combo"
-						onChangeText={ ( t: string ) =>
-							setForm( ( p ) => ( { ...p, name: t } ) )
-						}
-					/>
-
-					<CustomTimePicker
-						label="Durée de la séance"
-						value={ form.duration || 0 }
-						onChange={ ( durationMinutes ) =>
-							setForm( ( p ) => ( { ...p, duration: durationMinutes } ) )
-						}
-						showSeconds={ false }
-						minutesInterval={ 5 }
-					/>
-
-					<CustomTags
-						label="Jours de disponibilité"
-						placeholder="Sélectionnez vos jours d'entraînement..."
-						suggestions={ DAYS_TRANSLATION }
-						value={ selectedDays }
-						onChangeText={ ( days ) => {
-							setSelectedDays( days );
-							setForm( ( prev ) => ( { ...prev, days } ) );
-						} }
-						maxTags={ 7 }
-						allowCustomTags={ false }
-					/>
-
-					<View className="flex-1">
-						<Text className="text-primary font-sregular text-lg mb-3">
-							Mes séries ({ seriesList.length })
-						</Text>
-
-						{ seriesList.length > 4 && (
-							<Text className="text-sm text-primary-100 font-sregular mb-4">
-								Attention, avoir trop d&apos;exercices différents dans son
-								entraînement n&apos;est pas forcément une bonne chose
-							</Text>
-						) }
-
-						{ seriesList.length > 0 ? (
-							<SeriesItemList
-								seriesList={ seriesList }
-								onSeriesListChange={ handleSeriesListChange }
-								onEditSeries={ handleEditSeries }
-							/>
-						) : (
-							<Text className="indicator-text">Aucune série ajoutée</Text>
-						) }
-					</View>
-				</View>
-			</View>
-
-			<View className="pb-5">
-				<CustomButton
-					title="Ajouter une série"
-					variant="secondary"
-					onPress={ handleModalVisibility }
-					customStyles="mb-3 mt-6"
-				/>
-				<CustomButton
-					title="Créer l'entraînement"
-					onPress={ submit }
-					isLoading={ isSubmitting }
-				/>
-			</View>
-
-			<SeriesFormModal
-				isVisible={ isModalVisible }
-				closeModal={ handleModalVisibility }
-				onSeriesCreated={ handleSeriesCreated }
-				editingSeries={ editingSeries }
-				editingIndex={ editingIndex }
-				onSeriesUpdated={ handleSeriesUpdated }
+			<TrainingForm
+				onSubmit={ () => submit() }
+				submitButtonText="Créer l'entraînement"
+				isSubmitting={ isSubmitting }
 			/>
 		</View>
 	);

@@ -1,19 +1,17 @@
 import { SeriesParams } from "./series";
 
 export interface createTrainingParams {
-	name: string;
-	days?: string[];
-	duration: number;
+	name: Training[ 'name' ];
+	days?: Training[ 'days' ];
+	duration: Training[ 'duration' ];
 	series?: string[];
-	hours?: number;
-	minutes?: number;
 }
 
 export interface updateTrainingParams {
-	id: string;
-	name?: string;
-	days?: string[];
-	duration?: number;
+	id: Training[ '$id' ];
+	name?: Training[ 'name' ];
+	days?: Training[ 'days' ];
+	duration?: Training[ 'duration' ];
 	series?: string[];
 }
 

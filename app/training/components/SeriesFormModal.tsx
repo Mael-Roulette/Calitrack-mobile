@@ -9,6 +9,7 @@ import { CreateSeriesParams } from "@/types/series";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Modal, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MixSeriesType } from "./TrainingForm";
 
 const LABEL_CONFIGS = {
   hold: "Temps de hold",
@@ -19,10 +20,10 @@ const LABEL_CONFIGS = {
 interface SeriesFormModalProps {
   isVisible: boolean;
   closeModal: () => void;
-  onSeriesCreated: ( series: Omit<CreateSeriesParams, 'training' | 'order'> ) => void;
-  editingSeries?: Omit<CreateSeriesParams, 'training' | 'order'> | null;
+  onSeriesCreated: ( series: MixSeriesType ) => void;
+  editingSeries?: MixSeriesType | null;
   editingIndex?: number | null;
-  onSeriesUpdated?: ( series: Omit<CreateSeriesParams, 'training' | 'order'>, index: number ) => void;
+  onSeriesUpdated?: ( series: MixSeriesType, index: number ) => void;
 }
 
 const SeriesFormModal = ( {
@@ -47,7 +48,7 @@ const SeriesFormModal = ( {
     const loadEditingData = async () => {
       if ( editingSeries && isVisible ) {
         try {
-          const exercise = await getExericseById( editingSeries.exercise ) as any as Exercise;
+          const exercise = await getExericseById( typeof editingSeries.exercise === 'string' ? editingSeries.exercise : editingSeries.exercise.$id ) as any as Exercise;
           setSelectedExercise( [ exercise ] );
           setForm( {
             targetValue: editingSeries.targetValue.toString(),

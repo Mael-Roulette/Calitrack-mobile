@@ -1,12 +1,12 @@
-import { CreateSeriesParams } from '@/types/series';
 import React from 'react';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import SeriesItemEdit from './SeriesItemEdit';
+import { MixSeriesType } from './TrainingForm';
 
 interface SeriesItemListProps {
-  seriesList: Omit<CreateSeriesParams, 'training' | 'order'>[];
-  onSeriesListChange: ( newList: Omit<CreateSeriesParams, 'training' | 'order'>[] ) => void;
+  seriesList: MixSeriesType[];
+  onSeriesListChange: ( newList: MixSeriesType[] ) => void;
   onEditSeries: ( index: number ) => void;
 }
 
@@ -16,13 +16,13 @@ const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: Serie
     onSeriesListChange( updatedList );
   };
 
-  const renderItem = ( { item, drag, isActive, getIndex }: RenderItemParams<Omit<CreateSeriesParams, 'training' | 'order'>> ) => {
+  const renderItem = ( { item, drag, isActive, getIndex }: RenderItemParams<MixSeriesType> ) => {
     const index = getIndex();
     return (
       <ScaleDecorator activeScale={ 1.05 }>
         <SeriesItemEdit
           seriesData={ item }
-          onDelete={ () => handleDeleteSeries( item.exercise ) }
+          onDelete={ () => handleDeleteSeries( typeof item.exercise === 'string' ? item.exercise : item.exercise.$id ) }
           onDrag={ drag }
           onEdit={ () => onEditSeries( index ?? 0 ) }
           isActive={ isActive }
@@ -36,7 +36,7 @@ const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: Serie
       <DraggableFlatList
         data={ seriesList }
         onDragEnd={ ( { data } ) => onSeriesListChange( data ) }
-        keyExtractor={ ( item ) => item.exercise }
+        keyExtractor={ ( item ) => typeof item.exercise === 'string' ? item.exercise : item.exercise.$id }
         renderItem={ renderItem }
         activationDistance={ 10 }
       />
