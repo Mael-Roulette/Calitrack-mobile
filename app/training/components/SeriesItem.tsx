@@ -31,34 +31,35 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
   };
 
   return (
-    <View className="px-5 py-4 mb-3 rounded-md border border-secondary flex-row items-center justify-between">
-      {/* Numéro de série */ }
-      <View className="w-8 h-8 rounded-full bg-secondary items-center justify-center mr-3">
-        <Text className="text-background font-sbold text-sm">{ seriesData.order }</Text>
-      </View>
+    <>
+      <TouchableOpacity
+        onPress={ () => setShowDetailsModal( !showDetailsModal ) }
+        accessibilityLabel='Voir la série'
+      >
+        <View className="px-5 py-4 mb-3 rounded-md border border-secondary flex-row items-center justify-between">
+          {/* Numéro de série */ }
+          <View className="w-8 h-8 rounded-full bg-secondary items-center justify-center mr-3">
+            <Text className="text-background font-sbold text-sm">{ seriesData.order }</Text>
+          </View>
 
-      {/* Informations de la série */ }
-      <View className="flex-1">
-        <Text className="text-primary font-sregular text-base mb-1">
-          { seriesData.exercise.name }
-        </Text>
-        <Text className="text-primary-100 font-sregular text-sm">
-          { seriesData.sets } x { formatValue() }
-          { seriesData.restTime && `  •  ${seriesData.restTime / 60}min repos` }
-        </Text>
-      </View>
+          {/* Informations de la série */ }
+          <View className="flex-1">
+            <Text className="text-primary font-sregular text-base mb-1">
+              { seriesData.exercise.name }
+            </Text>
+            <Text className="text-primary-100 font-sregular text-sm">
+              { seriesData.sets } x { formatValue() }
+              { seriesData.restTime && `  •  ${seriesData.restTime / 60}min repos` }
+            </Text>
+          </View>
 
-      {/* Actions */ }
-      <View>
-        <TouchableOpacity
-          onPress={ () => setShowDetailsModal( !showDetailsModal ) }
-          accessibilityLabel='Voir la série'
-          style={ { paddingLeft: 24 } }
-        >
-          <Entypo name="chevron-small-right" size={ 44 } color="#FC7942" />
-        </TouchableOpacity>
-      </View>
+          {/* Actions */ }
+          <View>
+            <Entypo name="chevron-small-right" size={ 44 } color="#FC7942" />
+          </View>
 
+        </View>
+      </TouchableOpacity>
       { showDetailsModal && (
         <Modal
           statusBarTranslucent={ true }
@@ -124,7 +125,7 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
           </SafeAreaView>
         </Modal>
       ) }
-    </View>
+    </>
   );
 };
 
