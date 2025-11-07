@@ -22,13 +22,14 @@ const SeriesItemList = ( { seriesList, onSeriesListChange }: SeriesItemListProps
           seriesData={ item }
           onDelete={ () => handleDeleteSeries( item.exercise ) }
           onDrag={ drag }
+          isActive={ isActive }
         />
       </ScaleDecorator>
     );
   };
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={ { flex: 1 } }>
       <DraggableFlatList
         data={ seriesList }
         onDragEnd={ ( { data } ) => onSeriesListChange( data ) }

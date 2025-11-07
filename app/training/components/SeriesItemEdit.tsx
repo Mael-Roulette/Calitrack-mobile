@@ -10,9 +10,10 @@ interface SeriesItemProps {
   seriesData: Omit<CreateSeriesParams, 'training' | 'order'>;
   onDrag: () => void;
   onDelete: () => void;
+  isActive?: boolean;
 }
 
-const SeriesItemEdit = ( { seriesData, onDrag, onDelete }: SeriesItemProps ) => {
+const SeriesItemEdit = ( { seriesData, onDrag, onDelete, isActive }: SeriesItemProps ) => {
   const [ showDelete, setShowDelete ] = useState<boolean>( false );
   const [ , setLoading ] = useState<boolean>( true );
   const [ exercise, setExercise ] = useState<Exercise>();
@@ -32,10 +33,6 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete }: SeriesItemProps ) => 
     fetchExercise();
   }, [ seriesData.exercise ] );
 
-  const handleDrag = () => {
-    onDrag();
-  }
-
   const handleDelete = () => {
     setShowDelete( false );
     onDelete();
@@ -53,7 +50,13 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete }: SeriesItemProps ) => 
   return (
     <View className="py-4 mb-3 bg-background rounded-md border border-secondary flex-row items-center justify-between">
       {/* Indicateur de drag pour l'édition */ }
-      <TouchableOpacity style={ { paddingHorizontal: 18, paddingVertical: 12 } } onPress={ handleDrag }>
+      <TouchableOpacity
+        onLongPress={ onDrag }
+        disabled={ isActive }
+        delayLongPress={ 80 }
+        style={ { paddingHorizontal: 18, paddingVertical: 12 } }
+        activeOpacity={ 0.6 }
+      >
         <MaterialIcons name="drag-indicator" size={ 28 } color="#132541" />
       </TouchableOpacity>
 
