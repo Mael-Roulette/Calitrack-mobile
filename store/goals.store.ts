@@ -6,6 +6,7 @@ import useAuthStore from "./auth.store";
 type GoalState = {
 	goals: Goal[];
 	isLoadingGoals: boolean;
+	loaded: boolean;
 
 	setGoals: ( goals: Goal[] ) => void;
 	setIsLoadingGoals: ( value: boolean ) => void;
@@ -15,9 +16,10 @@ type GoalState = {
 	deleteGoalStore: ( goalId: string ) => void;
 };
 
-const useGoalsStore = create<GoalState>( ( set ) => ( {
+const useGoalsStore = create<GoalState>( ( set, get ) => ( {
 	goals: [],
 	isLoadingGoals: false,
+	loaded: false,
 
 	setGoals: ( goals: Goal[] ) => set( { goals } ),
 	setIsLoadingGoals: ( value: boolean ) => set( { isLoadingGoals: value } ),
@@ -25,6 +27,8 @@ const useGoalsStore = create<GoalState>( ( set ) => ( {
 	fetchUserGoals: async () => {
 		const { isAuthenticated } = useAuthStore.getState();
 		if ( !isAuthenticated ) return;
+
+		if ( get().loaded ) return;
 
 		set( { isLoadingGoals: true } );
 
@@ -43,7 +47,7 @@ const useGoalsStore = create<GoalState>( ( set ) => ( {
 						state: doc.state,
 					} ) as Goal
 			);
-			set( { goals } );
+			set( { goals, loaded: true } );
 		} catch ( error ) {
 			console.error( "Erreur lors de la récupération des objectifs:", error );
 			set( { goals: [] } );

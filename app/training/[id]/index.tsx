@@ -15,6 +15,7 @@ import {
 	View
 } from "react-native";
 import SeriesItem from "../components/SeriesItem";
+import { Training } from "@/types";
 
 
 const Index = () => {
@@ -24,27 +25,50 @@ const Index = () => {
 	const [ trainingSeries, setTrainingSeries ] = useState<SeriesParams[]>( [] );
 	const [ showMenu, setShowMenu ] = useState( false );
 	const navigation = useNavigation();
-	const { deleteTrainingStore } = useTrainingsStore();
+	const { deleteTrainingStore, getById, addTrainingStore } = useTrainingsStore();
 
+	// Chargement de l'entrainement
 	useEffect( () => {
-		const fetchTraining = async () => {
-			setLoading( true );
+		const load = async () => {
+			const cached = getById( id as string );
+
+			if ( cached ) {
+				setTraining( cached );
+				setLoading( false );
+				return;
+			}
+
+			// Fallback API si pas encore chargé
 			try {
-				const response = await getTrainingById( id as string );
-				setTraining( response );
-			} catch ( error ) {
-				console.error(
-					"Erreur lors de la récupération de l'entraînement",
-					error
-				);
+				setLoading( true );
+				const training = await getTrainingById( id as string ) as any as Training;
+				setTraining( training );
+
+				// mise dans le store
+				addTrainingStore( training );
+
+			} catch {
 				router.push( "/trainings" );
 			} finally {
 				setLoading( false );
 			}
 		};
-		fetchTraining();
-	}, [ id ] );
 
+		load();
+	}, [ addTrainingStore, getById, id ] );
+
+	// Triage des série dans l'ordre
+	useEffect( () => {
+		if ( training && training.series ) {
+			setTrainingSeries(
+				training.series.sort(
+					( a: SeriesParams, b: SeriesParams ) => a.order - b.order
+				)
+			);
+		}
+	}, [ training ] );
+
+	// Gère la supression de l'entrainement
 	const handleDelete = () => {
 		setShowMenu( false );
 		deleteTraining( training.$id )
@@ -52,11 +76,14 @@ const Index = () => {
 			.then( () => router.push( "/trainings" ) );
 	};
 
+	// Gère l'édition de l'entrainement
 	const handleEdit = () => {
 		setShowMenu( false );
 		router.push( `/training/${id}/edit` );
 	};
 
+
+	// Header
 	useLayoutEffect( () => {
 		navigation.setOptions( {
 			headerTitle: () => (
@@ -118,16 +145,18 @@ const Index = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ navigation, training, id, router, showMenu ] );
 
-	useEffect( () => {
-		if ( training && training.series ) {
-			setTrainingSeries(
-				training.series.sort(
-					( a: SeriesParams, b: SeriesParams ) => a.order - b.order
-				)
-			);
-		}
-	}, [ training ] );
 
+	// Temps de l'entrainement formaté
+	const durationSeconds = training?.duration ?? 0;
+	const hours = Math.floor( durationSeconds / 3600 );
+	const minutes = Math.floor( ( durationSeconds % 3600 ) / 60 );
+
+	const formattedDuration = hours > 0
+		? `${hours}h${minutes > 0 ? minutes : ""}`
+		: `${minutes} min`;
+
+
+	// Render item pour une série
 	const renderSeriesItem = ( { item }: { item: SeriesParams } ) => (
 		<SeriesItem
 			seriesData={ item }
@@ -144,10 +173,7 @@ const Index = () => {
 			) : (
 				<View className="px-5">
 					<Text className='text-lg font-sregular text-primary mb-2'>
-						Durée:{ " " }
-						{ training?.duration < 60
-							? `${training?.duration} minutes`
-							: `${Math.floor( ( training?.duration ?? 0 ) / 60 )}h${( training?.duration ?? 0 ) % 60 === 0 ? "" : ( training?.duration ?? 0 ) % 60}` }
+						Durée: { formattedDuration }
 					</Text>
 					{ training.days.length > 0 && (
 						<ScrollView

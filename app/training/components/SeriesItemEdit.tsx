@@ -79,7 +79,7 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: Ser
         </Text>
         <Text className="text-primary-100 font-sregular text-sm">
           { seriesData.sets } x { formatValue() }
-          { seriesData.restTime && `  •  ${seriesData.restTime}min repos` }
+          { seriesData.restTime && `  •  ${seriesData.restTime / 60}min repos` }
         </Text>
       </TouchableOpacity>
 

@@ -44,7 +44,7 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
         </Text>
         <Text className="text-primary-100 font-sregular text-sm">
           { seriesData.sets } x { formatValue() }
-          { seriesData.restTime && `  •  ${seriesData.restTime}min repos` }
+          { seriesData.restTime && `  •  ${seriesData.restTime / 60}min repos` }
         </Text>
       </View>
 
@@ -104,7 +104,7 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
                   </View>
                   <View>
                     <Text className="title-3">Temps de repos entre les séries</Text>
-                    <Text className="text">{ seriesData.restTime === null ? "0" : seriesData.restTime } minutes</Text>
+                    <Text className="text">{ seriesData.restTime !== undefined ? seriesData.restTime / 60 : "0" } minutes</Text>
                   </View>
                   <View>
                     <Text className="title-3">Note personnelle</Text>

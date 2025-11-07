@@ -27,11 +27,12 @@ const TrainingItem = ( {
 		}
 	};
 
-	const formatDuration = ( duration: number ) => {
-		return duration < 60
-			? `${duration} minutes`
-			: `${Math.floor( duration / 60 )}h${duration % 60 === 0 ? "" : duration % 60}`;
-	};
+	const hours = Math.floor( duration / 3600 );
+	const minutes = Math.floor( ( duration % 3600 ) / 60 );
+
+	const formattedDuration = hours > 0
+		? `${hours}h${minutes > 0 ? minutes : ""}`
+		: `${minutes} min`;
 
 	const TrainingContent = () => (
 		<>
@@ -52,7 +53,7 @@ const TrainingItem = ( {
 						className={ `font-sregular text-base ${isTrainingDay ? "text-background" : "text-primary"
 							}` }
 					>
-						{ formatDuration( duration ) }
+						{ formattedDuration }
 					</Text>
 				</View>
 			</View>

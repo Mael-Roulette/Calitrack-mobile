@@ -38,7 +38,7 @@ const SeriesFormModal = ( {
   const [ form, setForm ] = useState( {
     targetValue: "",
     sets: "",
-    restTime: "0",
+    restTime: 0,
     note: "",
   } );
 
@@ -52,7 +52,7 @@ const SeriesFormModal = ( {
           setForm( {
             targetValue: editingSeries.targetValue.toString(),
             sets: editingSeries.sets.toString(),
-            restTime: editingSeries.restTime?.toString() || "0",
+            restTime: editingSeries.restTime || 0,
             note: editingSeries.note || "",
           } );
         } catch ( error ) {
@@ -68,7 +68,7 @@ const SeriesFormModal = ( {
     setForm( {
       targetValue: "",
       sets: "",
-      restTime: "0",
+      restTime: 0,
       note: "",
     } );
   };
@@ -98,7 +98,7 @@ const SeriesFormModal = ( {
 
     const targetValue = parseInt( form.targetValue );
     const sets = parseInt( form.sets );
-    const restTime = form.restTime ? parseInt( form.restTime ) : undefined;
+    const restTime = form.restTime ? form.restTime : undefined;
 
     if ( !form.targetValue || !form.sets ) {
       Alert.alert( "Erreur", "Veuillez remplir la valeur cible et le nombre de séries" );
@@ -201,9 +201,9 @@ const SeriesFormModal = ( {
 
               <CustomTimePicker
                 label="Temps de repos (en minutes)"
-                value={ parseInt( form.restTime ) }
+                value={ form.restTime }
                 showHours={ false }
-                onChange={ ( number ) => setForm( prev => ( { ...prev, restTime: number.toString() } ) ) }
+                onChange={ ( number ) => setForm( prev => ( { ...prev, restTime: number } ) ) }
               />
 
               <CustomInput

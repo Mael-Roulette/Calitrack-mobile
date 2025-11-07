@@ -7,6 +7,7 @@ import {
 } from "react-native-appwrite";
 import { appwriteConfig, databases } from "./appwrite";
 import { getCurrentUser } from "./user.appwrite";
+import { SeriesParams } from "@/types/series";
 
 /**
  * Permet de créer un nouvel entraînement
@@ -18,7 +19,7 @@ export const createTraining = async ( {
 	name,
 	days,
 	duration,
-	exercises,
+	series,
 }: createTrainingParams ): Promise<{ training?: Models.Document; message: { title: string; body: string; }; }> => {
 	try {
 		const currentUser = await getCurrentUser();
@@ -44,7 +45,7 @@ export const createTraining = async ( {
 				name,
 				days,
 				duration,
-				exercise: exercises || [],
+				series: series || [],
 			}
 		);
 
@@ -81,6 +82,7 @@ export const getTrainingsFromUser = async (): Promise<Training[]> => {
 			days: doc.days as string[] | undefined,
 			duration: doc.duration as number,
 			exercise: doc.exercise as Exercise[] | undefined,
+			series: doc.series as SeriesParams[] | undefined,
 		} ) );
 	} catch ( e ) {
 		throw new Error( e as string );
@@ -141,7 +143,7 @@ export const updateTraining = async ( {
 	name,
 	days,
 	duration,
-	exercises,
+	series,
 }: updateTrainingParams ): Promise<Models.Document> => {
 	try {
 		const updateData: any = {};
@@ -149,7 +151,7 @@ export const updateTraining = async ( {
 		if ( name !== undefined ) updateData.name = name;
 		if ( days !== undefined ) updateData.days = days;
 		if ( duration !== undefined ) updateData.duration = duration;
-		if ( exercises !== undefined ) updateData.exercise = exercises;
+		if ( series !== undefined ) updateData.series = series;
 
 		const training = await databases.updateDocument(
 			appwriteConfig.databaseId,
