@@ -86,7 +86,7 @@ const Index = () => {
 		setShowMenu( false );
 		deleteTraining( training.$id )
 			.then( () => deleteTrainingStore( training.$id ) )
-			.then( () => router.push( "/trainings" ) );
+			.then( () => router.push( "/(tabs)/trainings" ) );
 	};
 
 
