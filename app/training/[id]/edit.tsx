@@ -5,7 +5,7 @@ import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { getTrainingById, updateTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { Exercise, createTrainingParams } from "@/types";
+import { Exercise, Training, createTrainingParams } from "@/types";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -42,7 +42,7 @@ const Edit = () => {
 			setLoading( true );
 
 			try {
-				const response = await getTrainingById( id as string );
+				const response = await getTrainingById( id as string ) as any as Training;
 				setTraining( response );
 
 				setForm( {
