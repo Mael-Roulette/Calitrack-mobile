@@ -68,7 +68,7 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
           onRequestClose={ () => setShowDetailsModal( false ) }
         >
           <SafeAreaView className='flex-1 bg-black/40 justify-end' edges={ [ 'bottom' ] }>
-            <View className='bg-background p-5 h-4/5 w-full' style={ { borderTopLeftRadius: 20, borderTopRightRadius: 20, } }>
+            <View className='bg-background py-5 h-4/5 w-full' style={ { borderTopLeftRadius: 20, borderTopRightRadius: 20, } }>
               <ScrollView className="px-5">
                 <View className="w-full flex justify-center items-end">
                   <TouchableWithoutFeedback className="w-fit" onPress={ () => setShowDetailsModal( false ) }>
