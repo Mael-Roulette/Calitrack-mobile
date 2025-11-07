@@ -3,9 +3,10 @@ import ExerciseSelectionModal from "@/app/exercise/components/ExerciseSelectionM
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import CustomTimePicker from "@/components/CustomTimePicker";
+import { getExericseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { CreateSeriesParams } from "@/types/series";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Modal, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,9 +20,19 @@ interface SeriesFormModalProps {
   isVisible: boolean;
   closeModal: () => void;
   onSeriesCreated: ( series: Omit<CreateSeriesParams, 'training' | 'order'> ) => void;
+  editingSeries?: Omit<CreateSeriesParams, 'training' | 'order'> | null; // Nouvelle prop
+  editingIndex?: number | null; // Nouvelle prop
+  onSeriesUpdated?: ( series: Omit<CreateSeriesParams, 'training' | 'order'>, index: number ) => void; // Nouvelle prop
 }
 
-const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesFormModalProps ) => {
+const SeriesFormModal = ( {
+  isVisible,
+  closeModal,
+  onSeriesCreated,
+  editingSeries,
+  editingIndex,
+  onSeriesUpdated
+}: SeriesFormModalProps ) => {
   const [ isExerciseModalVisible, setIsExerciseModalVisible ] = useState<boolean>( false );
   const [ selectedExercise, setSelectedExercise ] = useState<Exercise[]>( [] );
   const [ form, setForm ] = useState( {
@@ -31,12 +42,33 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
     note: "",
   } );
 
+  // Charger les données d'édition
+  useEffect( () => {
+    const loadEditingData = async () => {
+      if ( editingSeries && isVisible ) {
+        try {
+          const exercise = await getExericseById( editingSeries.exercise ) as any as Exercise;
+          setSelectedExercise( [ exercise ] );
+          setForm( {
+            targetValue: editingSeries.targetValue.toString(),
+            sets: editingSeries.sets.toString(),
+            restTime: editingSeries.restTime?.toString() || "0",
+            note: editingSeries.note || "",
+          } );
+        } catch ( error ) {
+          console.error( "Erreur lors du chargement de l'exercice", error );
+        }
+      }
+    };
+    loadEditingData();
+  }, [ editingSeries, isVisible ] );
+
   const resetForm = () => {
     setSelectedExercise( [] );
     setForm( {
       targetValue: "",
       sets: "",
-      restTime: "",
+      restTime: "0",
       note: "",
     } );
   };
@@ -92,10 +124,17 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
       exercise: selectedExercise[ 0 ].$id,
       targetValue: targetValue,
       sets: sets,
+      restTime: restTime,
       note: form.note
     }
 
-    onSeriesCreated( newSeries );
+    // Si on édite, appeler onSeriesUpdated, sinon onSeriesCreated
+    if ( editingSeries && editingIndex !== null && editingIndex !== undefined && onSeriesUpdated ) {
+      onSeriesUpdated( newSeries, editingIndex );
+    } else {
+      onSeriesCreated( newSeries );
+    }
+
     resetForm();
     closeSeriesModal();
   }
@@ -104,6 +143,8 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
     if ( !selectedExercise?.[ 0 ]?.format ) return LABEL_CONFIGS.default;
     return LABEL_CONFIGS[ selectedExercise[ 0 ].format ] || LABEL_CONFIGS.default;
   }, [ selectedExercise ] );
+
+  const isEditing = editingSeries !== null && editingSeries !== undefined;
 
   return (
     <Modal
@@ -115,7 +156,9 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
       <SafeAreaView className='flex-1 bg-black/40'>
         <View className="h-full bg-background">
           <ScrollView className="px-5 pt-5">
-            <Text className="title-2 mb-5">Ajouter une série</Text>
+            <Text className="title-2 mb-5">
+              { isEditing ? "Modifier la série" : "Ajouter une série" }
+            </Text>
             <View className="flex-col gap-5">
               <View>
                 <Text className="font-sregular text-lg text-primary mb-2">Rechercher un exercice</Text>
@@ -185,7 +228,7 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
               onPress={ closeSeriesModal }
             />
             <CustomButton
-              title="Confirmer"
+              title={ isEditing ? "Mettre à jour" : "Confirmer" }
               variant="primary"
               customStyles="flex-1"
               onPress={ handleConfirm }

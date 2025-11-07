@@ -23,6 +23,10 @@ const AddTraining = () => {
 		Omit<CreateSeriesParams, "training" | "order">[]
 	>( [] );
 
+	// États pour l'édition
+	const [ editingSeries, setEditingSeries ] = useState<Omit<CreateSeriesParams, "training" | "order"> | null>( null );
+	const [ editingIndex, setEditingIndex ] = useState<number | null>( null );
+
 	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
 		name: "",
 		days: [],
@@ -33,6 +37,11 @@ const AddTraining = () => {
 	const { addSeriesStore } = useSeriesStore();
 
 	const handleModalVisibility = () => {
+		// Réinitialiser les états d'édition lors de l'ouverture pour une nouvelle série
+		if ( !isModalVisible ) {
+			setEditingSeries( null );
+			setEditingIndex( null );
+		}
 		setIsModalVisible( !isModalVisible );
 	};
 
@@ -40,6 +49,23 @@ const AddTraining = () => {
 		series: Omit<CreateSeriesParams, "training" | "order">
 	) => {
 		setSeriesList( ( prev ) => [ ...prev, series ] );
+	};
+
+	const handleSeriesUpdated = (
+		series: Omit<CreateSeriesParams, "training" | "order">,
+		index: number
+	) => {
+		setSeriesList( ( prev ) => {
+			const newList = [ ...prev ];
+			newList[ index ] = series;
+			return newList;
+		} );
+	};
+
+	const handleEditSeries = ( index: number ) => {
+		setEditingSeries( seriesList[ index ] );
+		setEditingIndex( index );
+		setIsModalVisible( true );
 	};
 
 	const handleSeriesListChange = (
@@ -151,6 +177,7 @@ const AddTraining = () => {
 							<SeriesItemList
 								seriesList={ seriesList }
 								onSeriesListChange={ handleSeriesListChange }
+								onEditSeries={ handleEditSeries }
 							/>
 						) }
 					</View>
@@ -176,6 +203,9 @@ const AddTraining = () => {
 				isVisible={ isModalVisible }
 				closeModal={ handleModalVisibility }
 				onSeriesCreated={ handleSeriesCreated }
+				editingSeries={ editingSeries }
+				editingIndex={ editingIndex }
+				onSeriesUpdated={ handleSeriesUpdated }
 			/>
 		</View>
 	);

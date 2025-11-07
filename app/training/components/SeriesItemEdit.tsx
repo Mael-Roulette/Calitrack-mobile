@@ -10,10 +10,11 @@ interface SeriesItemProps {
   seriesData: Omit<CreateSeriesParams, 'training' | 'order'>;
   onDrag: () => void;
   onDelete: () => void;
+  onEdit: () => void; // Nouvelle prop
   isActive?: boolean;
 }
 
-const SeriesItemEdit = ( { seriesData, onDrag, onDelete, isActive }: SeriesItemProps ) => {
+const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: SeriesItemProps ) => {
   const [ showDelete, setShowDelete ] = useState<boolean>( false );
   const [ , setLoading ] = useState<boolean>( true );
   const [ exercise, setExercise ] = useState<Exercise>();
@@ -60,8 +61,12 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, isActive }: SeriesItemP
         <MaterialIcons name="drag-indicator" size={ 28 } color="#132541" />
       </TouchableOpacity>
 
-      {/* Informations de la série */ }
-      <View className="flex-1">
+      {/* Informations de la série - maintenant cliquable */ }
+      <TouchableOpacity
+        className="flex-1"
+        onPress={ onEdit }
+        activeOpacity={ 0.7 }
+      >
         <Text className="text-primary font-sregular text-base mb-1">
           { exercise.name }
         </Text>
@@ -69,7 +74,7 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, isActive }: SeriesItemP
           { seriesData.sets } x { formatValue() }
           { seriesData.restTime && `  •  ${seriesData.restTime}min repos` }
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/* Actions */ }
       <View>

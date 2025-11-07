@@ -7,21 +7,24 @@ import SeriesItemEdit from './SeriesItemEdit';
 interface SeriesItemListProps {
   seriesList: Omit<CreateSeriesParams, 'training' | 'order'>[];
   onSeriesListChange: ( newList: Omit<CreateSeriesParams, 'training' | 'order'>[] ) => void;
+  onEditSeries: ( index: number ) => void; // Nouvelle prop
 }
 
-const SeriesItemList = ( { seriesList, onSeriesListChange }: SeriesItemListProps ) => {
+const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: SeriesItemListProps ) => {
   const handleDeleteSeries = ( exerciseId: string ) => {
     const updatedList = seriesList.filter( ( series ) => series.exercise !== exerciseId );
     onSeriesListChange( updatedList );
   };
 
-  const renderItem = ( { item, drag, isActive }: RenderItemParams<Omit<CreateSeriesParams, 'training' | 'order'>> ) => {
+  const renderItem = ( { item, drag, isActive, getIndex }: RenderItemParams<Omit<CreateSeriesParams, 'training' | 'order'>> ) => {
+    const index = getIndex();
     return (
       <ScaleDecorator activeScale={ 1.05 }>
         <SeriesItemEdit
           seriesData={ item }
           onDelete={ () => handleDeleteSeries( item.exercise ) }
           onDrag={ drag }
+          onEdit={ () => onEditSeries( index ?? 0 ) }
           isActive={ isActive }
         />
       </ScaleDecorator>
