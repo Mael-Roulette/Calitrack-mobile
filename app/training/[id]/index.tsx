@@ -125,7 +125,6 @@ const Index = () => {
 					( a: SeriesParams, b: SeriesParams ) => a.order - b.order
 				)
 			);
-
 		}
 	}, [ training ] );
 

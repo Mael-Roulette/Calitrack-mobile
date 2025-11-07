@@ -113,11 +113,13 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
                 </View>
               </ScrollView>
 
-              <CustomButton
-                title="Revenir à l'entraînement"
-                variant="secondary"
-                onPress={ () => setShowDetailsModal( false ) }
-              />
+              <View className="px-5">
+                <CustomButton
+                  title="Revenir à l'entraînement"
+                  variant="secondary"
+                  onPress={ () => setShowDetailsModal( false ) }
+                />
+              </View>
             </View>
           </SafeAreaView>
         </Modal>
