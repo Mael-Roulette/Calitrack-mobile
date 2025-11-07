@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import SeriesItem from "../components/SeriesItem";
 import { Training } from "@/types";
+import Entypo from '@expo/vector-icons/Entypo';
 
 
 const Index = () => {
@@ -68,18 +69,24 @@ const Index = () => {
 		}
 	}, [ training ] );
 
-	// Gère la supression de l'entrainement
-	const handleDelete = () => {
-		setShowMenu( false );
-		deleteTraining( training.$id )
-			.then( () => deleteTrainingStore( training.$id ) )
-			.then( () => router.push( "/trainings" ) );
+	// Gère le lancement du séance
+	const handleStart = () => {
+		setShowMenu( false )
+		router.push( `/training/${id}/session` );
 	};
 
 	// Gère l'édition de l'entrainement
 	const handleEdit = () => {
 		setShowMenu( false );
 		router.push( `/training/${id}/edit` );
+	};
+
+	// Gère la supression de l'entrainement
+	const handleDelete = () => {
+		setShowMenu( false );
+		deleteTraining( training.$id )
+			.then( () => deleteTrainingStore( training.$id ) )
+			.then( () => router.push( "/trainings" ) );
 	};
 
 
@@ -115,7 +122,17 @@ const Index = () => {
 								activeOpacity={ 1 }
 								onPress={ () => setShowMenu( false ) }
 							>
-								<View className='absolute top-16 right-5 bg-background rounded-md shadow-lg elevation-md min-w-40'>
+								<View className='absolute top-16 right-14 bg-background rounded-md shadow-lg elevation-md min-w-40'>
+									<TouchableOpacity
+										onPress={ handleStart }
+										className='flex-row items-center px-4 py-3 border-b border-gray-200'
+									>
+										<Entypo name="controller-play" size={ 18 } color="#132541" />
+										<Text className='ml-3 text-base font-sregular text-primary'>
+											Lancer la séance
+										</Text>
+									</TouchableOpacity>
+
 									<TouchableOpacity
 										onPress={ handleEdit }
 										className='flex-row items-center px-4 py-3 border-b border-gray-200'

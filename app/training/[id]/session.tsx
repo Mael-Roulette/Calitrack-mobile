@@ -4,8 +4,8 @@ import {
 	getTrainingById,
 	incrementUserTrainings,
 } from "@/lib/training.appwrite";
-import { useAuthStore, useGoalsStore } from "@/store";
-import { Goal } from "@/types";
+import { useAuthStore, useGoalsStore, useTrainingsStore } from "@/store";
+import { Goal, Training } from "@/types";
 import { SeriesParams } from "@/types/series";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -23,6 +23,7 @@ const Session = () => {
 	const navigation = useNavigation();
 	const { goals } = useGoalsStore();
 	const [ relatedGoals, setRelatedGoals ] = useState<Goal[]>( [] );
+	const { getById, addTrainingStore } = useTrainingsStore();
 
 	/* -------------------------------------------------- */
 	/* ---------- Récupérer les informations de l'entraînement ---------- */
@@ -45,6 +46,35 @@ const Session = () => {
 		fetchTraining();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ id, router ] );
+	// Chargement de l'entrainement
+	useEffect( () => {
+		const load = async () => {
+			const cached = getById( id as string );
+
+			if ( cached ) {
+				setTraining( cached );
+				setLoading( false );
+				return;
+			}
+
+			// Fallback API si pas encore chargé
+			try {
+				setLoading( true );
+				const training = await getTrainingById( id as string ) as any as Training;
+				setTraining( training );
+
+				// mise dans le store
+				addTrainingStore( training );
+
+			} catch {
+				router.push( "/trainings" );
+			} finally {
+				setLoading( false );
+			}
+		};
+
+		load();
+	}, [ addTrainingStore, getById, id ] );
 
 	/* ----- Modification du custom header ----- */
 	useLayoutEffect( () => {
