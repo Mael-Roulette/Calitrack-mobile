@@ -14,10 +14,9 @@ const AddTraining = () => {
 	// Fonction store
 	const { addTrainingStore } = useTrainingsStore();
 
-
 	// Envoie du formulaire pour la création de l'entraînement
 	const submit = async ( { form, seriesList }: { form: Partial<createTrainingParams>, seriesList: MixSeriesType[] } ): Promise<void> => {
-		// Vérification des champs aléatoires
+		// Vérification des champs obligatoires
 		if ( !form.name || !form.days || form.days.length === 0 ) {
 			Alert.alert( "Erreur", "Veuillez remplir tous les champs obligatoires" );
 			return;
@@ -41,8 +40,18 @@ const AddTraining = () => {
 			if ( seriesList.length > 0 ) {
 				for ( let i = 0; i < seriesList.length; i++ ) {
 					const series = seriesList[ i ];
+
+					// Extraction de l'exerciseId selon le type de série
+					const exerciseId = typeof series.exercise === 'string'
+						? series.exercise
+						: series.exercise.$id;
+
 					const seriesResponse = await createSeries( {
-						...series,
+						exercise: exerciseId,
+						targetValue: series.targetValue,
+						sets: series.sets,
+						restTime: series.restTime,
+						note: series.note,
 						training: training.$id, // Ajout de l'id de l'entrainement
 						order: i + 1, // Ajout de l'ordre
 					} );
@@ -76,7 +85,7 @@ const AddTraining = () => {
 	return (
 		<View className="flex-1 bg-background min-h-full px-5">
 			<TrainingForm
-				onSubmit={ () => submit() }
+				onSubmit={ submit }
 				submitButtonText="Créer l'entraînement"
 				isSubmitting={ isSubmitting }
 			/>

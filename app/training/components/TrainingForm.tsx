@@ -12,7 +12,7 @@ import SeriesFormModal from "./SeriesFormModal";
 
 interface TrainingFormParams {
   initialData?: Training;
-  onSubmit: ( form: Partial<createTrainingParams>, seriesList: MixSeriesType[] ) => void | undefined;
+  onSubmit: ( data: { form: Partial<createTrainingParams>, seriesList: MixSeriesType[] } ) => void;
   submitButtonText: string;
   isSubmitting: boolean;
 }
@@ -28,11 +28,10 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
     days: [],
     duration: 0,
   } );
-  const [ selectedDays, setSelectedDays ] = useState<string[] | undefined>( [] );
+  const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
   const [ seriesList, setSeriesList ] = useState<MixSeriesType[]>( [] );
   const [ editingSeries, setEditingSeries ] = useState<MixSeriesType | null>( null );
   const [ editingIndex, setEditingIndex ] = useState<number | null>( null );
-
 
   // Ajout des informations de l'entrainement si elles existent
   useEffect( () => {
@@ -43,15 +42,15 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
         duration: initialData.duration
       } );
 
-      setSelectedDays( initialData.days );
+      setSelectedDays( initialData.days || [] );
 
-      if ( initialData.series ) setSeriesList( initialData.series )
+      if ( initialData.series ) {
+        setSeriesList( initialData.series );
+      }
     }
-  }, [ initialData ] );
-
+  }, [ initialData, selectedDays ] );
 
   // Gestion de la modal d'ajout de série
-  //Permet de gérer la visibilité de la modal
   const handleModalVisibility = () => {
     if ( !isModalVisible ) {
       setEditingSeries( null );
@@ -66,10 +65,7 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
   };
 
   // Mise à jour d'une série dans la liste
-  const handleSeriesUpdated = (
-    series: MixSeriesType,
-    index: number
-  ) => {
+  const handleSeriesUpdated = ( series: MixSeriesType, index: number ) => {
     setSeriesList( ( prev ) => {
       const newList = [ ...prev ];
       newList[ index ] = series;
@@ -85,16 +81,19 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
   };
 
   // Permet de modifier l'ordre de la liste
-  const handleSeriesListChange = (
-    newList: MixSeriesType[]
-  ) => {
+  const handleSeriesListChange = ( newList: MixSeriesType[] ) => {
     setSeriesList( newList );
   };
 
+  // Fonction de soumission
+  const handleSubmit = () => {
+    onSubmit( { form, seriesList } );
+  };
+
   return (
-    <View>
+    <View className="flex-1">
       <View className="flex-1">
-        <View className=" flex-1 flex-col gap-5 pb-5">
+        <View className="flex-1 flex-col gap-5 pb-5">
           <CustomInput
             label="Nom de l'entraînement"
             value={ form.name }
@@ -161,7 +160,7 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
         />
         <CustomButton
           title={ submitButtonText }
-          onPress={ onSubmit( form, seriesList ) }
+          onPress={ handleSubmit }
           isLoading={ isSubmitting }
         />
       </View>
@@ -176,6 +175,6 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
       />
     </View>
   );
-}
+};
 
 export default TrainingForm;

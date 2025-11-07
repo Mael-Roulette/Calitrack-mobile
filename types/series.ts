@@ -2,7 +2,7 @@ import { Exercise } from ".";
 
 export interface SeriesParams {
   $id: string;
-  exercise: Exercise;
+  exercise: Exercise | string;
   targetValue: number;
   sets: number;
   restTime?: number;

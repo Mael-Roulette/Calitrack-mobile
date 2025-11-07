@@ -7,12 +7,14 @@ export interface createTrainingParams {
 	series?: string[];
 }
 
-export interface updateTrainingParams {
-	id: Training[ '$id' ];
-	name?: Training[ 'name' ];
-	days?: Training[ 'days' ];
-	duration?: Training[ 'duration' ];
-	series?: string[];
+export interface UpdateSeriesParams {
+	id: string;
+	exercise?: string;
+	targetValue?: SeriesParams[ 'targetValue' ];
+	sets?: SeriesParams[ 'sets' ];
+	restTime?: SeriesParams[ 'restTime' ];
+	note?: SeriesParams[ 'note' ];
+	order?: SeriesParams[ 'order' ];
 }
 
 export interface Training {
