@@ -8,10 +8,11 @@ import { Modal, Text, TouchableOpacity, View } from "react-native";
 
 interface SeriesItemProps {
   seriesData: Omit<CreateSeriesParams, 'training' | 'order'>;
+  onDrag: () => void;
   onDelete: () => void;
 }
 
-const SeriesItemEdit = ( { seriesData, onDelete }: SeriesItemProps ) => {
+const SeriesItemEdit = ( { seriesData, onDrag, onDelete }: SeriesItemProps ) => {
   const [ showDelete, setShowDelete ] = useState<boolean>( false );
   const [ , setLoading ] = useState<boolean>( true );
   const [ exercise, setExercise ] = useState<Exercise>();
@@ -31,6 +32,10 @@ const SeriesItemEdit = ( { seriesData, onDelete }: SeriesItemProps ) => {
     fetchExercise();
   }, [ seriesData.exercise ] );
 
+  const handleDrag = () => {
+    onDrag();
+  }
+
   const handleDelete = () => {
     setShowDelete( false );
     onDelete();
@@ -46,11 +51,11 @@ const SeriesItemEdit = ( { seriesData, onDelete }: SeriesItemProps ) => {
   };
 
   return (
-    <View className="px-5 py-4 mb-3 rounded-md border border-secondary flex-row items-center justify-between">
+    <View className="py-4 mb-3 bg-background rounded-md border border-secondary flex-row items-center justify-between">
       {/* Indicateur de drag pour l'édition */ }
-      <View className="mr-3">
+      <TouchableOpacity style={ { paddingHorizontal: 18, paddingVertical: 12 } } onPress={ handleDrag }>
         <MaterialIcons name="drag-indicator" size={ 28 } color="#132541" />
-      </View>
+      </TouchableOpacity>
 
       {/* Informations de la série */ }
       <View className="flex-1">
@@ -68,7 +73,7 @@ const SeriesItemEdit = ( { seriesData, onDelete }: SeriesItemProps ) => {
         <TouchableOpacity
           onPress={ () => setShowDelete( true ) }
           accessibilityLabel='Supprimer'
-          style={ { paddingLeft: 24 } }
+          style={ { padding: 12, paddingRight: 24 } }
         >
           <Feather name='trash-2' size={ 20 } color='#ef4444' />
         </TouchableOpacity>

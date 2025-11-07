@@ -2,18 +2,16 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import CustomTags from "@/components/CustomTags";
 import { DAYS_TRANSLATION } from "@/constants/value";
+import { createSeries } from "@/lib/series.appwrite";
 import { createTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
+import useSeriesStore from "@/store/series.store";
 import { createTrainingParams, Training } from "@/types";
+import { CreateSeriesParams, SeriesParams } from "@/types/series";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import SeriesFormModal from "./components/SeriesFormModal";
-import { CreateSeriesParams, SeriesParams } from "@/types/series";
-import { createSeries } from "@/lib/series.appwrite";
-import useSeriesStore from "@/store/series.store";
-import SeriesItemEdit from "./components/SeriesItemEdit";
-import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
 import SeriesItemList from "./components/SeriesItemList";
 
 const AddTraining = () => {
@@ -32,30 +30,30 @@ const AddTraining = () => {
 
 	const handleModalVisibility = () => {
 		setIsModalVisible( !isModalVisible );
-	}
+	};
 
 	const handleSeriesCreated = ( series: Omit<CreateSeriesParams, 'training' | 'order'> ) => {
-		const newSeries = {
-			...series
-		};
-		setSeriesList( prev => [ ...prev, newSeries ] );
+		setSeriesList( prev => [ ...prev, series ] );
+	};
+
+	const handleSeriesListChange = ( newList: Omit<CreateSeriesParams, 'training' | 'order'>[] ) => {
+		setSeriesList( newList );
 	};
 
 	const submit = async (): Promise<void> => {
-		if ( !form.name || !form.days ) {
-			Alert.alert( "Erreur", "Veuillez remplir tous les champs" );
+		if ( !form.name || !form.days || form.days.length === 0 ) {
+			Alert.alert( "Erreur", "Veuillez remplir tous les champs obligatoires" );
 			return;
 		}
 
-		if ( form.hours === undefined ) {
-			form.hours = 0;
+		if ( seriesList.length === 0 ) {
+			Alert.alert( "Erreur", "Veuillez ajouter au moins une série à votre entraînement" );
+			return;
 		}
 
-		if ( form.minutes === undefined ) {
-			form.minutes = 0;
-		}
-
-		const totalDuration = form.hours * 60 + form.minutes;
+		const hours = form.hours || 0;
+		const minutes = form.minutes || 0;
+		const totalDuration = hours * 60 + minutes;
 
 		const trainingData: createTrainingParams = {
 			name: form.name,
@@ -68,34 +66,33 @@ const AddTraining = () => {
 			const response = await createTraining( trainingData );
 			const training = response.training as any as Training;
 
-			for ( const series of seriesList ) {
-				let seriesOrder = 1;
-				const response = await createSeries( {
+			// Créer les séries avec le bon ordre
+			for ( let i = 0; i < seriesList.length; i++ ) {
+				const series = seriesList[ i ];
+				const seriesResponse = await createSeries( {
 					...series,
 					training: training.$id,
-					order: seriesOrder
-				} )
+					order: i + 1 // L'ordre commence à 1 et suit l'ordre du tableau
+				} );
 
-				seriesOrder++;
-
-				const newSeries = response.series as any as SeriesParams;
-
+				const newSeries = seriesResponse.series as any as SeriesParams;
 				addSeriesStore( newSeries );
 			}
 
-			if ( training ) {
-				const newTraining: Training = {
-					$id: training.$id,
-					user: training.user,
-					name: training.name,
-					days: training.days,
-					duration: training.duration,
-				};
-				addTrainingStore( newTraining );
-			}
+			// Ajouter l'entraînement au store
+			const newTraining: Training = {
+				$id: training.$id,
+				user: training.user,
+				name: training.name,
+				days: training.days,
+				duration: training.duration,
+			};
+			addTrainingStore( newTraining );
+
+			// Redirection vers la liste des entraînements
 			router.push( "/trainings" );
 		} catch ( err ) {
-			console.error( err );
+			console.error( "Erreur lors de la création de l'entraînement:", err );
 			Alert.alert( "Erreur", "Échec de l'ajout. Réessayez." );
 		} finally {
 			setIsSubmitting( false );
@@ -104,8 +101,8 @@ const AddTraining = () => {
 
 	return (
 		<View className='flex-1 bg-background min-h-full px-5'>
-			<ScrollView className='flex-1'>
-				<View className='flex-col gap-5'>
+			<View className="flex-1">
+				<View className=' flex-1 flex-col gap-5 pb-5'>
 					<CustomInput
 						label="Nom de l'entraînement"
 						value={ form.name }
@@ -151,44 +148,43 @@ const AddTraining = () => {
 						allowCustomTags={ false }
 					/>
 
-					<View>
-						<Text className="text">Mes séries ( { seriesList.length } )</Text>
+					<View className="flex-1">
+						<Text className="text-primary font-sregular text-lg mb-3">
+							Mes séries ({ seriesList.length })
+						</Text>
 
-						{ seriesList.length > 0 && (
-							<View>
-								<View>
-									{
-										seriesList.length > 4 && (
-											<Text className='indicator-text mt-2 mb-4'>
-												Attention, avoir trop d&apos;exercices différents dans son entraînement n&apos;est
-												pas forcément une bonne chose
-											</Text>
-										)
-									}
-								</View>
-
-								<View>
-									<SeriesItemList />
-								</View>
-							</View>
+						{ seriesList.length > 4 && (
+							<Text className='text-sm text-primary-100 font-sregular mb-4'>
+								Attention, avoir trop d&apos;exercices différents dans son entraînement n&apos;est
+								pas forcément une bonne chose
+							</Text>
 						) }
 
+						{ seriesList.length > 0 && (
+							<SeriesItemList
+								seriesList={ seriesList }
+								onSeriesListChange={ handleSeriesListChange }
+							/>
+						) }
 					</View>
 				</View>
-			</ScrollView>
+			</View>
 
-			<CustomButton
-				title='Ajouter une série'
-				variant='secondary'
-				onPress={ handleModalVisibility }
-			/>
+			<View className="pb-5">
+				<CustomButton
+					title='Ajouter une série'
+					variant='secondary'
+					onPress={ handleModalVisibility }
+					customStyles="mb-3"
+				/>
 
-			<CustomButton
-				title="Créer l'entraînement"
-				onPress={ submit }
-				isLoading={ isSubmitting }
-				customStyles='my-5'
-			/>
+				<CustomButton
+					title="Créer l'entraînement"
+					onPress={ submit }
+					isLoading={ isSubmitting }
+				/>
+			</View>
+
 			<SeriesFormModal
 				isVisible={ isModalVisible }
 				closeModal={ handleModalVisibility }
