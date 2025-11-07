@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { Alert, Text, View } from "react-native";
 import SeriesFormModal from "./components/SeriesFormModal";
 import SeriesItemList from "./components/SeriesItemList";
+import CustomTimePicker from "@/components/CustomTimePicker";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
@@ -109,6 +110,8 @@ const AddTraining = () => {
 						placeholder='Ex : Planche + combo'
 						onChangeText={ ( t: string ) => setForm( ( p ) => ( { ...p, name: t } ) ) }
 					/>
+
+					<CustomTimePicker />
 
 					<View className='flex-row w-full gap-3'>
 						<View className='flex-1'>
