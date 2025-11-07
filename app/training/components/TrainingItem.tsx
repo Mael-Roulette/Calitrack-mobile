@@ -79,7 +79,7 @@ const TrainingItem = ( {
 				>
 					<FontAwesome name="caret-right" size={ 22 } color="#FC7942" />
 					<Text className='text-secondary font-sregular text-base'>
-						Lancer ma séance
+						Voir ma séance
 					</Text>
 				</TouchableOpacity>
 			) : (

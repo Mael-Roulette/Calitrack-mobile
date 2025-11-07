@@ -136,13 +136,13 @@ const Session = () => {
 					<View className="px-5">
 						<View>
 							<View>
-								<Text className='text-lg font-sregular text-primary mb-4'>
-									<Text className="font-bold">Durée:</Text>{ " " }
+								<Text className='text mb-5'>
+									<Text className="title-3">Durée:</Text>{ "  " }
 									{ training?.duration < 60
 										? `${training?.duration} minutes`
 										: `${Math.floor( ( training?.duration ?? 0 ) / 60 )}h${( training?.duration ?? 0 ) % 60 === 0 ? "" : ( training?.duration ?? 0 ) % 60}` }
 								</Text>
-								<Text className="text mb-2">Mes exercices</Text>
+								<Text className="title-3 mb-3">Mes exercices</Text>
 								<FlatList
 									data={ trainingSeries }
 									renderItem={ renderSeriesItem }
