@@ -120,13 +120,17 @@ const Index = () => {
 
 	useEffect( () => {
 		if ( training && training.series ) {
-			setTrainingSeries( training.series );
+			setTrainingSeries(
+				training.series.sort(
+					( a: SeriesParams, b: SeriesParams ) => a.order - b.order
+				)
+			);
+
 		}
 	}, [ training ] );
 
 	const renderSeriesItem = ( { item }: { item: SeriesParams } ) => (
 		<SeriesItem
-			state="view"
 			seriesData={ item }
 		/>
 	);
