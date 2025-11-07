@@ -1,4 +1,4 @@
-import { createSeries } from "@/lib/series.appwrite";
+import { createSeries, deleteSeries } from "@/lib/series.appwrite";
 import { updateTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
 import { Training, createTrainingParams } from "@/types";
@@ -40,15 +40,14 @@ const EditTrainingPage = () => {
     try {
       setIsSubmitting( true );
 
-      // Mise à jour des informations de base du training
-      await updateTraining( {
-        id: currentTraining.$id,
-        name: form.name,
-        days: form.days,
-        duration: form.duration,
-      } );
+      // 1. Supprimer toutes les anciennes séries
+      if ( currentTraining.series && currentTraining.series.length > 0 ) {
+        for ( const series of currentTraining.series ) {
+          await deleteSeries( series.$id );
+        }
+      }
 
-      // Création des séries (s'ajoute automatiquement dans les entrainements)
+      // 2. Créer les nouvelles séries avec le bon ordre
       let newSeriesList: SeriesParams[] = [];
       if ( seriesList.length > 0 ) {
         for ( let i = 0; i < seriesList.length; i++ ) {
@@ -65,30 +64,32 @@ const EditTrainingPage = () => {
             sets: series.sets,
             restTime: series.restTime,
             note: series.note,
-            training:
-              "training" in series && series.training
-                ? series.training
-                : training.$id,
-            order:
-              "order" in series && series.order
-                ? series.order
-                : i + 1,
+            training: currentTraining.$id,
+            order: i + 1, // L'ordre correspond à la position dans la liste
           } );
 
-          // Ajout des séries dans le store
+          // Ajout des séries dans la nouvelle liste
           const newSeries = seriesResponse.series as any as SeriesParams;
           newSeriesList.push( newSeries );
         }
       }
 
-      // Mise à jour du store local
+      // 3. Mise à jour des informations de base du training
+      await updateTraining( {
+        id: currentTraining.$id,
+        name: form.name,
+        days: form.days,
+        duration: form.duration,
+      } );
+
+      // 4. Mise à jour du store local avec les nouvelles séries
       const updatedTraining: Training = {
         $id: currentTraining.$id,
         user: currentTraining.user,
         name: form.name,
         days: form.days,
         duration: form.duration!,
-        // series: updatedSeriesList,
+        series: newSeriesList, // ✅ Ajout des nouvelles séries
       };
 
       updateTrainingStore( currentTraining.$id, updatedTraining );

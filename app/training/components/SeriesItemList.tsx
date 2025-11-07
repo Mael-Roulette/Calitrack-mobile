@@ -11,8 +11,8 @@ interface SeriesItemListProps {
 }
 
 const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: SeriesItemListProps ) => {
-  const handleDeleteSeries = ( exerciseId: string ) => {
-    const updatedList = seriesList.filter( ( series ) => series.exercise !== exerciseId );
+  const handleDeleteSeries = ( index: number ) => {
+    const updatedList = seriesList.filter( ( _, i ) => i !== index );
     onSeriesListChange( updatedList );
   };
 
@@ -22,7 +22,7 @@ const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: Serie
       <ScaleDecorator activeScale={ 1.05 }>
         <SeriesItemEdit
           seriesData={ item }
-          onDelete={ () => handleDeleteSeries( typeof item.exercise === 'string' ? item.exercise : item.exercise.$id ) }
+          onDelete={ () => handleDeleteSeries( index ?? 0 ) }
           onDrag={ drag }
           onEdit={ () => onEditSeries( index ?? 0 ) }
           isActive={ isActive }
@@ -36,7 +36,7 @@ const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: Serie
       <DraggableFlatList
         data={ seriesList }
         onDragEnd={ ( { data } ) => onSeriesListChange( data ) }
-        keyExtractor={ ( item ) => typeof item.exercise === 'string' ? item.exercise : item.exercise.$id }
+        keyExtractor={ ( item, index ) => `series-${index}-${typeof item.exercise === 'string' ? item.exercise : item.exercise.$id}` }
         renderItem={ renderItem }
         activationDistance={ 10 }
       />
