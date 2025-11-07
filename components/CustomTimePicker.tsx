@@ -5,21 +5,47 @@ import { TimerPickerModal } from "react-native-timer-picker";
 interface TimePickerProps {
   label: string;
   value: number;
+  showSeconds?: boolean;
   showHours?: boolean;
+  minutesInterval?: number;
   onChange: ( duration: number ) => void;
 }
 
-const CustomTimePicker = ( { label, value, showHours = true, onChange }: TimePickerProps ) => {
+const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true, minutesInterval = 1, onChange }: TimePickerProps ) => {
   const [ visible, setVisible ] = useState( false );
 
-  const formatDuration = ( totalMinutes: number ) => {
-    const h = Math.floor( totalMinutes / 60 ).toString().padStart( 2, "0" );
-    const m = ( totalMinutes % 60 ).toString().padStart( 2, "0" );
-    return `${h}:${m}`;
+  const formatDuration = ( totalSeconds: number ) => {
+    const h = Math.floor( totalSeconds / 3600 )
+      .toString()
+      .padStart( 2, "0" );
+
+    const m = Math.floor( ( totalSeconds % 3600 ) / 60 )
+      .toString()
+      .padStart( 2, "0" );
+
+    const s = Math.floor( totalSeconds % 60 )
+      .toString()
+      .padStart( 2, "0" );
+
+    if ( showHours && showSeconds ) {
+      return `${h}:${m}:${s}`;
+    }
+
+    if ( showHours && !showSeconds ) {
+      return `${h}:${m}`;
+    }
+
+    if ( !showHours && showSeconds ) {
+      return `${m}:${s}`;
+    }
+
+    return `${m}`;
   };
 
+
+
   return (
-    <View className="w-full">
+    <View>
       <Text className="text mb-2">{ label }</Text>
 
       <Pressable
@@ -34,9 +60,9 @@ const CustomTimePicker = ( { label, value, showHours = true, onChange }: TimePic
       <TimerPickerModal
         visible={ visible }
         setIsVisible={ setVisible }
-        onConfirm={ ( { hours = 0, minutes = 0 } ) => {
-          const total = hours * 60 + minutes;
-          onChange( total );
+        onConfirm={ ( { hours = 0, minutes = 0, seconds = 0 } ) => {
+          const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+          onChange( totalSeconds );
           setVisible( false );
         } }
         onCancel={ () => setVisible( false ) }
@@ -47,22 +73,16 @@ const CustomTimePicker = ( { label, value, showHours = true, onChange }: TimePic
         confirmButtonText="Confirmer"
         styles={ {
           theme: "light",
-          container: {
-            flex: 1,
-            justifyContent: "center",
-            paddingBottom: 0,
-            height: "100%"
-          },
-          contentContainer: {
-            width: "100%",
-            height: "auto"
-          },
           text: {
             fontSize: 20
           }
         } }
-        hideSeconds={ true }
+        hideSeconds={ !showSeconds }
+        padSecondsWithZero={ true }
+        secondInterval={ 5 }
         hideHours={ !showHours }
+        padHoursWithZero={ true }
+        minuteInterval={ minutesInterval }
       />
     </View>
   );

@@ -1,16 +1,18 @@
 import { getExericseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
-import { CreateSeriesParams } from "@/types/series";
+import { CreateSeriesParams, SeriesParams } from "@/types/series";
 import { Feather } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useEffect, useState } from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
 
+type MixedSeriesType = SeriesParams | Omit<CreateSeriesParams, "training" | "order">;
+
 interface SeriesItemProps {
-  seriesData: Omit<CreateSeriesParams, 'training' | 'order'>;
+  seriesData: MixedSeriesType;
   onDrag: () => void;
   onDelete: () => void;
-  onEdit: () => void; // Nouvelle prop
+  onEdit: () => void;
   isActive?: boolean;
 }
 
@@ -23,8 +25,13 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: Ser
     const fetchExercise = async () => {
       setLoading( true );
       try {
-        const response = await getExericseById( seriesData.exercise ) as any as Exercise;
-        setExercise( response );
+        if ( typeof seriesData.exercise === "string" ) {
+          const response = await getExericseById( seriesData.exercise ) as any as Exercise;
+          setExercise( response );
+        } else {
+          setExercise( seriesData.exercise );
+        }
+
       } catch ( error ) {
         console.error( "Erreur lors de la récupération de l'exercice", error );
       } finally {

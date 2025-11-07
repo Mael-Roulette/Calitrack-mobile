@@ -7,7 +7,7 @@ import SeriesItemEdit from './SeriesItemEdit';
 interface SeriesItemListProps {
   seriesList: Omit<CreateSeriesParams, 'training' | 'order'>[];
   onSeriesListChange: ( newList: Omit<CreateSeriesParams, 'training' | 'order'>[] ) => void;
-  onEditSeries: ( index: number ) => void; // Nouvelle prop
+  onEditSeries: ( index: number ) => void;
 }
 
 const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: SeriesItemListProps ) => {
@@ -32,7 +32,7 @@ const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: Serie
   };
 
   return (
-    <GestureHandlerRootView style={ { flex: 1 } }>
+    <GestureHandlerRootView>
       <DraggableFlatList
         data={ seriesList }
         onDragEnd={ ( { data } ) => onSeriesListChange( data ) }

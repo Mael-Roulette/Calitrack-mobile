@@ -6,7 +6,6 @@ import { DAYS_TRANSLATION } from "@/constants/value";
 import { createSeries } from "@/lib/series.appwrite";
 import { createTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import useSeriesStore from "@/store/series.store";
 import { createTrainingParams, Training } from "@/types";
 import { CreateSeriesParams, SeriesParams } from "@/types/series";
 import { router } from "expo-router";
@@ -17,27 +16,28 @@ import SeriesItemList from "./components/SeriesItemList";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
-	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
 	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
-	const [ seriesList, setSeriesList ] = useState<
-		Omit<CreateSeriesParams, "training" | "order">[]
-	>( [] );
 
-	// États pour l'édition
-	const [ editingSeries, setEditingSeries ] = useState<Omit<CreateSeriesParams, "training" | "order"> | null>( null );
-	const [ editingIndex, setEditingIndex ] = useState<number | null>( null );
 
+	// Info trainings
 	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
 		name: "",
 		days: [],
 		duration: 0,
 	} );
+	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
+	const [ seriesList, setSeriesList ] = useState<Omit<CreateSeriesParams, "training" | "order">[]>( [] );
+	const [ editingSeries, setEditingSeries ] = useState<Omit<CreateSeriesParams, "training" | "order"> | null>( null );
+	const [ editingIndex, setEditingIndex ] = useState<number | null>( null );
 
+
+	// Fonction store
 	const { addTrainingStore } = useTrainingsStore();
-	const { addSeriesStore } = useSeriesStore();
 
+
+	// Gestion de la modal d'ajout de série
+	//Permet de gérer la visibilité de la modal
 	const handleModalVisibility = () => {
-		// Réinitialiser les états d'édition lors de l'ouverture pour une nouvelle série
 		if ( !isModalVisible ) {
 			setEditingSeries( null );
 			setEditingIndex( null );
@@ -45,12 +45,12 @@ const AddTraining = () => {
 		setIsModalVisible( !isModalVisible );
 	};
 
-	const handleSeriesCreated = (
-		series: Omit<CreateSeriesParams, "training" | "order">
-	) => {
+	// Ajout de la création créer dans la liste
+	const handleSeriesCreated = ( series: Omit<CreateSeriesParams, "training" | "order"> ) => {
 		setSeriesList( ( prev ) => [ ...prev, series ] );
 	};
 
+	// Mise à jour d'une série dans la liste
 	const handleSeriesUpdated = (
 		series: Omit<CreateSeriesParams, "training" | "order">,
 		index: number
@@ -62,29 +62,30 @@ const AddTraining = () => {
 		} );
 	};
 
+	// Permet d'ouvrir la modal avec les infos d'une série
 	const handleEditSeries = ( index: number ) => {
 		setEditingSeries( seriesList[ index ] );
 		setEditingIndex( index );
 		setIsModalVisible( true );
 	};
 
+	// Permet de modifier l'ordre de la liste
 	const handleSeriesListChange = (
 		newList: Omit<CreateSeriesParams, "training" | "order">[]
 	) => {
 		setSeriesList( newList );
 	};
 
+
+	// Envoie du formulaire pour la création de l'entraînement
 	const submit = async (): Promise<void> => {
+		// Vérification des champs aléatoires
 		if ( !form.name || !form.days || form.days.length === 0 ) {
 			Alert.alert( "Erreur", "Veuillez remplir tous les champs obligatoires" );
 			return;
 		}
 
-		if ( seriesList.length === 0 ) {
-			Alert.alert( "Erreur", "Veuillez ajouter au moins une série à votre entraînement" );
-			return;
-		}
-
+		// Récupération des données du formulaire
 		const trainingData: createTrainingParams = {
 			name: form.name,
 			days: form.days,
@@ -93,31 +94,38 @@ const AddTraining = () => {
 
 		try {
 			setIsSubmitting( true );
+			// Création et récupération de l'entraînement
 			const response = await createTraining( trainingData );
 			const training = response.training as any as Training;
 
-			// Créer les séries
-			for ( let i = 0; i < seriesList.length; i++ ) {
-				const series = seriesList[ i ];
-				const seriesResponse = await createSeries( {
-					...series,
-					training: training.$id,
-					order: i + 1,
-				} );
+			// Création des séries (s'ajoute automatiquement dans les entrainements)
+			let newSeriesList: SeriesParams[] = [];
+			if ( seriesList.length > 0 ) {
+				for ( let i = 0; i < seriesList.length; i++ ) {
+					const series = seriesList[ i ];
+					const seriesResponse = await createSeries( {
+						...series,
+						training: training.$id, // Ajout de l'id de l'entrainement
+						order: i + 1, // Ajout de l'ordre
+					} );
 
-				const newSeries = seriesResponse.series as any as SeriesParams;
-				addSeriesStore( newSeries );
+					// Ajout des séries dans le store
+					const newSeries = seriesResponse.series as any as SeriesParams;
+					newSeriesList.push( newSeries );
+				}
 			}
 
+			// Ajout du training dans le store
 			const newTraining: Training = {
 				$id: training.$id,
 				user: training.user,
 				name: training.name,
 				days: training.days,
 				duration: training.duration,
+				series: newSeriesList
 			};
-
 			addTrainingStore( newTraining );
+
 			router.push( "/trainings" );
 		} catch ( err ) {
 			console.error( "Erreur lors de la création de l'entraînement:", err );
@@ -146,6 +154,8 @@ const AddTraining = () => {
 						onChange={ ( durationMinutes ) =>
 							setForm( ( p ) => ( { ...p, duration: durationMinutes } ) )
 						}
+						showSeconds={ false }
+						minutesInterval={ 5 }
 					/>
 
 					<CustomTags
@@ -173,12 +183,14 @@ const AddTraining = () => {
 							</Text>
 						) }
 
-						{ seriesList.length > 0 && (
+						{ seriesList.length > 0 ? (
 							<SeriesItemList
 								seriesList={ seriesList }
 								onSeriesListChange={ handleSeriesListChange }
 								onEditSeries={ handleEditSeries }
 							/>
+						) : (
+							<Text className="indicator-text">Aucune série ajoutée</Text>
 						) }
 					</View>
 				</View>
@@ -189,9 +201,8 @@ const AddTraining = () => {
 					title="Ajouter une série"
 					variant="secondary"
 					onPress={ handleModalVisibility }
-					customStyles="mb-3"
+					customStyles="mb-3 mt-6"
 				/>
-
 				<CustomButton
 					title="Créer l'entraînement"
 					onPress={ submit }

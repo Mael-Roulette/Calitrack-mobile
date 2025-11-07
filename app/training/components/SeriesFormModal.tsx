@@ -20,9 +20,9 @@ interface SeriesFormModalProps {
   isVisible: boolean;
   closeModal: () => void;
   onSeriesCreated: ( series: Omit<CreateSeriesParams, 'training' | 'order'> ) => void;
-  editingSeries?: Omit<CreateSeriesParams, 'training' | 'order'> | null; // Nouvelle prop
-  editingIndex?: number | null; // Nouvelle prop
-  onSeriesUpdated?: ( series: Omit<CreateSeriesParams, 'training' | 'order'>, index: number ) => void; // Nouvelle prop
+  editingSeries?: Omit<CreateSeriesParams, 'training' | 'order'> | null;
+  editingIndex?: number | null;
+  onSeriesUpdated?: ( series: Omit<CreateSeriesParams, 'training' | 'order'>, index: number ) => void;
 }
 
 const SeriesFormModal = ( {
