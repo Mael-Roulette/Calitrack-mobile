@@ -32,7 +32,7 @@ export default function TrainingIdLayout () {
 					headerLeft: () => (
 						<HeaderBackButton
 							tintColor='#132541'
-							onPress={ () => router.back() }
+							onPress={ () => router.push( '/(tabs)/trainings' ) }
 						/>
 					),
 				} }

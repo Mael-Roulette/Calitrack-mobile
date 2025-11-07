@@ -1,7 +1,7 @@
-import { createSeries, deleteSeries, updateSeries } from "@/lib/series.appwrite";
+import { createSeries } from "@/lib/series.appwrite";
 import { updateTraining } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
-import { createTrainingParams, Training } from "@/types";
+import { Training, createTrainingParams } from "@/types";
 import { SeriesParams } from "@/types/series";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -48,63 +48,37 @@ const EditTrainingPage = () => {
         duration: form.duration,
       } );
 
-      // Gestion des séries
-      const existingSeries = currentTraining.series || [];
-      const existingSeriesIds = existingSeries.map( ( s ) => s.$id );
+      // Création des séries (s'ajoute automatiquement dans les entrainements)
+      let newSeriesList: SeriesParams[] = [];
+      if ( seriesList.length > 0 ) {
+        for ( let i = 0; i < seriesList.length; i++ ) {
+          const series = seriesList[ i ];
 
-      let updatedSeriesList: SeriesParams[] = [];
-
-      // Parcourir la nouvelle liste de séries
-      for ( let i = 0; i < seriesList.length; i++ ) {
-        const series = seriesList[ i ];
-
-        // Extraction de l'exerciceId
-        const exerciseId =
-          typeof series.exercise === "string"
+          // Extraction de l'exerciseId selon le type de série
+          const exerciseId = typeof series.exercise === 'string'
             ? series.exercise
             : series.exercise.$id;
 
-        // Vérifier si la série existe déjà (a un $id)
-        if ( "$id" in series && series.$id ) {
-          // Mise à jour d'une série existante
-          const updatedSeries = await updateSeries( {
-            $id: series.$id,
+          const seriesResponse = await createSeries( {
             exercise: exerciseId,
             targetValue: series.targetValue,
             sets: series.sets,
             restTime: series.restTime,
             note: series.note,
-            order: i + 1,
+            training:
+              "training" in series && series.training
+                ? series.training
+                : training.$id,
+            order:
+              "order" in series && series.order
+                ? series.order
+                : i + 1,
           } );
 
-          updatedSeriesList.push( updatedSeries.series as any as SeriesParams );
-        } else {
-          // Création d'une nouvelle série
-          const newSeries = await createSeries( {
-            exercise: exerciseId,
-            targetValue: series.targetValue,
-            sets: series.sets,
-            restTime: series.restTime,
-            note: series.note,
-            training: currentTraining.$id,
-            order: i + 1,
-          } );
-
-          updatedSeriesList.push( newSeries.series as any as SeriesParams );
+          // Ajout des séries dans le store
+          const newSeries = seriesResponse.series as any as SeriesParams;
+          newSeriesList.push( newSeries );
         }
-      }
-
-      // Supprimer les séries qui ont été retirées
-      const newSeriesIds = seriesList
-        .filter( ( s ) => "$id" in s && s.$id )
-        .map( ( s ) => ( "$id" in s ? s.$id : "" ) );
-
-      const seriesToDelete = existingSeriesIds.filter(
-        ( id ) => !newSeriesIds.includes( id )
-      );
-
-      for ( const seriesId of seriesToDelete ) {
-        await deleteSeries( seriesId );
       }
 
       // Mise à jour du store local
@@ -114,11 +88,11 @@ const EditTrainingPage = () => {
         name: form.name,
         days: form.days,
         duration: form.duration!,
-        series: updatedSeriesList,
+        // series: updatedSeriesList,
       };
 
       updateTrainingStore( currentTraining.$id, updatedTraining );
-      router.back();
+      router.push( `/training/${id}/` );
     } catch ( err ) {
       console.error( "Erreur lors de la modification de l'entraînement:", err );
       Alert.alert( "Erreur", "Échec de la modification. Réessayez." );

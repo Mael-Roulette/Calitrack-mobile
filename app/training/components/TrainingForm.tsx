@@ -33,7 +33,7 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
   const [ editingSeries, setEditingSeries ] = useState<MixSeriesType | null>( null );
   const [ editingIndex, setEditingIndex ] = useState<number | null>( null );
 
-  // Ajout des informations de l'entrainement si elles existent
+  // ✅ FIX: Ajout des informations de l'entrainement si elles existent
   useEffect( () => {
     if ( initialData ) {
       setForm( {
@@ -42,13 +42,14 @@ const TrainingForm = ( { initialData, onSubmit, submitButtonText, isSubmitting }
         duration: initialData.duration
       } );
 
+      // ✅ Mise à jour des jours sélectionnés
       setSelectedDays( initialData.days || [] );
 
       if ( initialData.series ) {
         setSeriesList( initialData.series );
       }
     }
-  }, [ initialData, selectedDays ] );
+  }, [ initialData ] ); // ❌ Retiré selectedDays des dépendances
 
   // Gestion de la modal d'ajout de série
   const handleModalVisibility = () => {

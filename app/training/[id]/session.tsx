@@ -16,7 +16,7 @@ import SeriesItem from "../components/SeriesItem";
 const Session = () => {
 	const { id } = useLocalSearchParams();
 	const { user, refreshUser } = useAuthStore();
-	const [ training, setTraining ] = useState<any>( null );
+	const [ training, setTraining ] = useState<Training>();
 	const [ loading, setLoading ] = useState( true );
 	const [ trainingSeries, setTrainingSeries ] = useState<SeriesParams[]>( [] );
 	const [ isFinishing, setIsFinishing ] = useState( false );
@@ -27,25 +27,6 @@ const Session = () => {
 
 	/* -------------------------------------------------- */
 	/* ---------- Récupérer les informations de l'entraînement ---------- */
-	useEffect( () => {
-		const fetchTraining = async () => {
-			setLoading( true );
-			try {
-				const response = await getTrainingById( id as string );
-				setTraining( response );
-			} catch ( error ) {
-				console.error(
-					"Erreur lors de la récupération de l'entraînement",
-					error
-				);
-				router.push( "/trainings" );
-			} finally {
-				setLoading( false );
-			}
-		};
-		fetchTraining();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ id, router ] );
 	// Chargement de l'entrainement
 	useEffect( () => {
 		const load = async () => {
@@ -114,7 +95,11 @@ const Session = () => {
 			return;
 		}
 
-		const exerciseTypes = new Set( trainingSeries.map( ex => ex.exercise.type ) );
+		const exerciseTypes = new Set(
+			trainingSeries.map( ex =>
+				typeof ex.exercise === "string" ? ex.exercise : ex.exercise.type
+			)
+		);
 
 		// Filtrer les goals
 		const related = goals.filter( goal => ( exerciseTypes.has( goal.exercise.type ) && goal.state === "in-progress" ) );
@@ -162,15 +147,14 @@ const Session = () => {
 						<ActivityIndicator size='large' color='#FC7942' />
 						<Text className='mt-2 text-primary'>Chargement...</Text>
 					</View>
-				) : (
+				) : !loading && training && (
 					<View className="px-5">
 						<View>
 							<View>
 								<Text className='text mb-5'>
-									<Text className="title-3">Durée:</Text>{ "  " }
-									{ training?.duration < 60
-										? `${training?.duration} minutes`
-										: `${Math.floor( ( training?.duration ?? 0 ) / 60 )}h${( training?.duration ?? 0 ) % 60 === 0 ? "" : ( training?.duration ?? 0 ) % 60}` }
+									<Text className="title-3">Durée: </Text> { Math.floor( training.duration / 3600 ) > 0
+										? `${Math.floor( training.duration / 3600 )}h${Math.floor( ( training.duration % 3600 ) / 60 ) > 0 ? Math.floor( ( training.duration % 3600 ) / 60 ) : ""}`
+										: `${Math.floor( ( training.duration % 3600 ) / 60 )} min` }
 								</Text>
 								<Text className="title-3 mb-3">Mes exercices</Text>
 								<FlatList
