@@ -1,56 +1,71 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { TimerPickerModal } from "react-native-timer-picker";
 
-const CustomTimePicker = () => {
-  const [ showPicker, setShowPicker ] = useState<boolean>( true );
-  const [ time, setTime ] = useState<string>();
+interface TimePickerProps {
+  label: string;
+  value: number;
+  showHours?: boolean;
+  onChange: ( duration: number ) => void;
+}
 
-  const formatTime = ( {
-    hours,
-    minutes,
-    seconds,
-  }: {
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-  } ) => {
-    const timeParts = [];
+const CustomTimePicker = ( { label, value, showHours = true, onChange }: TimePickerProps ) => {
+  const [ visible, setVisible ] = useState( false );
 
-    if ( hours !== undefined ) {
-      timeParts.push( hours.toString().padStart( 2, "0" ) );
-    }
-    if ( minutes !== undefined ) {
-      timeParts.push( minutes.toString().padStart( 2, "0" ) );
-    }
-    if ( seconds !== undefined ) {
-      timeParts.push( seconds.toString().padStart( 2, "0" ) );
-    }
-
-    return timeParts.join( ":" );
+  const formatDuration = ( totalMinutes: number ) => {
+    const h = Math.floor( totalMinutes / 60 ).toString().padStart( 2, "0" );
+    const m = ( totalMinutes % 60 ).toString().padStart( 2, "0" );
+    return `${h}:${m}`;
   };
 
   return (
-    <View style={ { backgroundColor: "#F1F1F1", alignItems: "center", justifyContent: "center" } }>
+    <View className="w-full">
+      <Text className="text mb-2">{ label }</Text>
+
+      <Pressable
+        onPress={ () => setVisible( true ) }
+        className="custom-input py-3"
+      >
+        <Text className="text-lg text-primary">
+          { formatDuration( value ) }
+        </Text>
+      </Pressable>
+
       <TimerPickerModal
-        visible={ showPicker }
-        setIsVisible={ setShowPicker }
-        onConfirm={ ( pickedDuration ) => {
-          setTime( formatTime( pickedDuration ) );
-          setShowPicker( false );
+        visible={ visible }
+        setIsVisible={ setVisible }
+        onConfirm={ ( { hours = 0, minutes = 0 } ) => {
+          const total = hours * 60 + minutes;
+          onChange( total );
+          setVisible( false );
         } }
-        modalTitle="Set Alarm"
-        onCancel={ () => setShowPicker( false ) }
+        onCancel={ () => setVisible( false ) }
+        modalTitle={ label }
         closeOnOverlayPress
-        use12HourPicker
-        LinearGradient={ LinearGradient }
+        use12HourPicker={ false }
+        cancelButtonText="Annuler"
+        confirmButtonText="Confirmer"
         styles={ {
           theme: "light",
+          container: {
+            flex: 1,
+            justifyContent: "center",
+            paddingBottom: 0,
+            height: "100%"
+          },
+          contentContainer: {
+            width: "100%",
+            height: "auto"
+          },
+          text: {
+            fontSize: 20
+          }
         } }
+        hideSeconds={ true }
+        hideHours={ !showHours }
       />
     </View>
-  )
-}
+  );
+};
 
 export default CustomTimePicker;

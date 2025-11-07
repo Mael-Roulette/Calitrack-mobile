@@ -1,6 +1,7 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import CustomTags from "@/components/CustomTags";
+import CustomTimePicker from "@/components/CustomTimePicker";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { createSeries } from "@/lib/series.appwrite";
 import { createTraining } from "@/lib/training.appwrite";
@@ -13,19 +14,21 @@ import React, { useState } from "react";
 import { Alert, Text, View } from "react-native";
 import SeriesFormModal from "./components/SeriesFormModal";
 import SeriesItemList from "./components/SeriesItemList";
-import CustomTimePicker from "@/components/CustomTimePicker";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
 	const [ selectedDays, setSelectedDays ] = useState<string[]>( [] );
 	const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
-	const [ seriesList, setSeriesList ] = useState<Omit<CreateSeriesParams, 'training' | 'order'>[]>( [] );
+	const [ seriesList, setSeriesList ] = useState<
+		Omit<CreateSeriesParams, "training" | "order">[]
+	>( [] );
+
 	const [ form, setForm ] = useState<Partial<createTrainingParams>>( {
 		name: "",
 		days: [],
-		hours: 0,
-		minutes: 0,
+		duration: 0,
 	} );
+
 	const { addTrainingStore } = useTrainingsStore();
 	const { addSeriesStore } = useSeriesStore();
 
@@ -33,11 +36,15 @@ const AddTraining = () => {
 		setIsModalVisible( !isModalVisible );
 	};
 
-	const handleSeriesCreated = ( series: Omit<CreateSeriesParams, 'training' | 'order'> ) => {
-		setSeriesList( prev => [ ...prev, series ] );
+	const handleSeriesCreated = (
+		series: Omit<CreateSeriesParams, "training" | "order">
+	) => {
+		setSeriesList( ( prev ) => [ ...prev, series ] );
 	};
 
-	const handleSeriesListChange = ( newList: Omit<CreateSeriesParams, 'training' | 'order'>[] ) => {
+	const handleSeriesListChange = (
+		newList: Omit<CreateSeriesParams, "training" | "order">[]
+	) => {
 		setSeriesList( newList );
 	};
 
@@ -52,14 +59,10 @@ const AddTraining = () => {
 			return;
 		}
 
-		const hours = form.hours || 0;
-		const minutes = form.minutes || 0;
-		const totalDuration = hours * 60 + minutes;
-
 		const trainingData: createTrainingParams = {
 			name: form.name,
 			days: form.days,
-			duration: totalDuration,
+			duration: form.duration!,
 		};
 
 		try {
@@ -67,20 +70,19 @@ const AddTraining = () => {
 			const response = await createTraining( trainingData );
 			const training = response.training as any as Training;
 
-			// Créer les séries avec le bon ordre
+			// Créer les séries
 			for ( let i = 0; i < seriesList.length; i++ ) {
 				const series = seriesList[ i ];
 				const seriesResponse = await createSeries( {
 					...series,
 					training: training.$id,
-					order: i + 1 // L'ordre commence à 1 et suit l'ordre du tableau
+					order: i + 1,
 				} );
 
 				const newSeries = seriesResponse.series as any as SeriesParams;
 				addSeriesStore( newSeries );
 			}
 
-			// Ajouter l'entraînement au store
 			const newTraining: Training = {
 				$id: training.$id,
 				user: training.user,
@@ -88,9 +90,8 @@ const AddTraining = () => {
 				days: training.days,
 				duration: training.duration,
 			};
-			addTrainingStore( newTraining );
 
-			// Redirection vers la liste des entraînements
+			addTrainingStore( newTraining );
 			router.push( "/trainings" );
 		} catch ( err ) {
 			console.error( "Erreur lors de la création de l'entraînement:", err );
@@ -101,45 +102,28 @@ const AddTraining = () => {
 	};
 
 	return (
-		<View className='flex-1 bg-background min-h-full px-5'>
+		<View className="flex-1 bg-background min-h-full px-5">
 			<View className="flex-1">
-				<View className=' flex-1 flex-col gap-5 pb-5'>
+				<View className=" flex-1 flex-col gap-5 pb-5">
 					<CustomInput
 						label="Nom de l'entraînement"
 						value={ form.name }
-						placeholder='Ex : Planche + combo'
-						onChangeText={ ( t: string ) => setForm( ( p ) => ( { ...p, name: t } ) ) }
+						placeholder="Ex : Planche + combo"
+						onChangeText={ ( t: string ) =>
+							setForm( ( p ) => ( { ...p, name: t } ) )
+						}
 					/>
 
-					<CustomTimePicker />
-
-					<View className='flex-row w-full gap-3'>
-						<View className='flex-1'>
-							<CustomInput
-								label='Heure'
-								value={ form.hours !== 0 ? String( form.hours ) : '' }
-								placeholder='1'
-								onChangeText={ ( t: string ) =>
-									setForm( ( p ) => ( { ...p, hours: parseInt( t ) || 0 } ) )
-								}
-								keyboardType='numeric'
-							/>
-						</View>
-						<View className='flex-1'>
-							<CustomInput
-								label='Minutes'
-								value={ form.minutes !== 0 ? String( form.minutes ) : '' }
-								placeholder='30'
-								onChangeText={ ( t: string ) =>
-									setForm( ( p ) => ( { ...p, minutes: parseInt( t ) || 0 } ) )
-								}
-								keyboardType='numeric'
-							/>
-						</View>
-					</View>
+					<CustomTimePicker
+						label="Durée de la séance"
+						value={ form.duration || 0 }
+						onChange={ ( durationMinutes ) =>
+							setForm( ( p ) => ( { ...p, duration: durationMinutes } ) )
+						}
+					/>
 
 					<CustomTags
-						label='Jours de disponibilité'
+						label="Jours de disponibilité"
 						placeholder="Sélectionnez vos jours d'entraînement..."
 						suggestions={ DAYS_TRANSLATION }
 						value={ selectedDays }
@@ -157,9 +141,9 @@ const AddTraining = () => {
 						</Text>
 
 						{ seriesList.length > 4 && (
-							<Text className='text-sm text-primary-100 font-sregular mb-4'>
-								Attention, avoir trop d&apos;exercices différents dans son entraînement n&apos;est
-								pas forcément une bonne chose
+							<Text className="text-sm text-primary-100 font-sregular mb-4">
+								Attention, avoir trop d&apos;exercices différents dans son
+								entraînement n&apos;est pas forcément une bonne chose
 							</Text>
 						) }
 
@@ -175,8 +159,8 @@ const AddTraining = () => {
 
 			<View className="pb-5">
 				<CustomButton
-					title='Ajouter une série'
-					variant='secondary'
+					title="Ajouter une série"
+					variant="secondary"
 					onPress={ handleModalVisibility }
 					customStyles="mb-3"
 				/>

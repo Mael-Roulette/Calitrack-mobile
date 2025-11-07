@@ -2,6 +2,7 @@ import ExerciseItem from "@/app/exercise/components/ExerciseItem";
 import ExerciseSelectionModal from "@/app/exercise/components/ExerciseSelectionModal";
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
+import CustomTimePicker from "@/components/CustomTimePicker";
 import { Exercise } from "@/types";
 import { CreateSeriesParams } from "@/types/series";
 import { useMemo, useState } from "react";
@@ -26,7 +27,7 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
   const [ form, setForm ] = useState( {
     targetValue: "",
     sets: "",
-    restTime: "",
+    restTime: "0",
     note: "",
   } );
 
@@ -155,12 +156,11 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
                 keyboardType="numeric"
               />
 
-              <CustomInput
+              <CustomTimePicker
                 label="Temps de repos (en minutes)"
-                placeholder="3"
-                value={ form.restTime }
-                onChangeText={ ( text ) => setForm( prev => ( { ...prev, restTime: text } ) ) }
-                keyboardType="numeric"
+                value={ parseInt( form.restTime ) }
+                showHours={ false }
+                onChange={ ( number ) => setForm( prev => ( { ...prev, restTime: number.toString() } ) ) }
               />
 
               <CustomInput
