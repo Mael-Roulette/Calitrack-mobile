@@ -1,32 +1,19 @@
+import ExerciseItem from "@/app/exercise/components/ExerciseItem";
+import CustomButton from "@/components/CustomButton";
 import { SeriesParams } from "@/types/series";
-import { Feather } from "@expo/vector-icons";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from "expo-router";
 import { useState } from "react";
 import { Modal, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AntDesign from '@expo/vector-icons/AntDesign';
-import CustomButton from "@/components/CustomButton";
-import ExerciseItem from "@/app/exercise/components/ExerciseItem";
-import { router } from "expo-router";
 
 interface SeriesItemProps {
-  state: "edit" | "view";
   seriesData: SeriesParams;
-  index?: number;
-  onDelete?: () => void;
 }
 
-const SeriesItem = ( { state, seriesData, onDelete }: SeriesItemProps ) => {
-  const [ showDelete, setShowDelete ] = useState( false );
+const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
   const [ showDetailsModal, setShowDetailsModal ] = useState( false );
-
-  const handleDelete = () => {
-    setShowDelete( false );
-    if ( onDelete ) {
-      onDelete();
-    }
-  };
 
   const formatValue = () => {
     const { exercise, targetValue } = seriesData;
@@ -45,19 +32,10 @@ const SeriesItem = ( { state, seriesData, onDelete }: SeriesItemProps ) => {
 
   return (
     <View className="px-5 py-4 mb-3 rounded-md border border-secondary flex-row items-center justify-between">
-      {/* Indicateur de drag pour l'édition */ }
-      { state === 'edit' && (
-        <View className="mr-3">
-          <MaterialIcons name="drag-indicator" size={ 28 } color="#132541" />
-        </View>
-      ) }
-
       {/* Numéro de série */ }
-      { state === 'view' && (
-        <View className="w-8 h-8 rounded-full bg-secondary items-center justify-center mr-3">
-          <Text className="text-background font-sbold text-sm">{ seriesData.order }</Text>
-        </View>
-      ) }
+      <View className="w-8 h-8 rounded-full bg-secondary items-center justify-center mr-3">
+        <Text className="text-background font-sbold text-sm">{ seriesData.order }</Text>
+      </View>
 
       {/* Informations de la série */ }
       <View className="flex-1">
@@ -72,72 +50,14 @@ const SeriesItem = ( { state, seriesData, onDelete }: SeriesItemProps ) => {
 
       {/* Actions */ }
       <View>
-        { state === 'edit' && (
-          <TouchableOpacity
-            onPress={ () => setShowDelete( true ) }
-            accessibilityLabel='Supprimer'
-            style={ { paddingLeft: 24 } }
-          >
-            <Feather name='trash-2' size={ 20 } color='#ef4444' />
-          </TouchableOpacity>
-        ) }
-
-        { state === 'view' && (
-          <TouchableOpacity
-            onPress={ () => setShowDetailsModal( !showDetailsModal ) }
-            accessibilityLabel='Voir la série'
-            style={ { paddingLeft: 24 } }
-          >
-            <Entypo name="chevron-small-right" size={ 44 } color="#FC7942" />
-          </TouchableOpacity>
-        ) }
-      </View>
-
-      {/* Modal de confirmation de suppression */ }
-      { showDelete && (
-        <Modal
-          transparent={ true }
-          visible={ showDelete }
-          animationType='fade'
-          onRequestClose={ () => setShowDelete( false ) }
+        <TouchableOpacity
+          onPress={ () => setShowDetailsModal( !showDetailsModal ) }
+          accessibilityLabel='Voir la série'
+          style={ { paddingLeft: 24 } }
         >
-          <TouchableOpacity
-            style={ {
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)'
-            } }
-            activeOpacity={ 1 }
-            onPress={ () => setShowDelete( false ) }
-          >
-            <View className="w-4/5 h-fit flex-col justify-center items-center gap-4 py-4 px-6 bg-background rounded-md">
-              <Text className="text-center font-sregular text-primary">
-                Êtes-vous sûr de supprimer cette série ? Cette action est irréversible.
-              </Text>
-              <View className="flex-row gap-3 w-full">
-                <TouchableOpacity
-                  onPress={ () => setShowDelete( false ) }
-                  className='flex-1 items-center justify-center px-4 py-3 border border-secondary rounded-md'
-                >
-                  <Text className='text-base text-primary font-sregular'>
-                    Annuler
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={ handleDelete }
-                  className='flex-1 flex-row items-center justify-center px-4 py-3 bg-red-500 rounded-md'
-                >
-                  <Feather name='trash-2' size={ 18 } color='white' />
-                  <Text className='ml-2 text-base text-white font-sregular'>
-                    Supprimer
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      ) }
+          <Entypo name="chevron-small-right" size={ 44 } color="#FC7942" />
+        </TouchableOpacity>
+      </View>
 
       { showDetailsModal && (
         <Modal
@@ -174,7 +94,7 @@ const SeriesItem = ( { state, seriesData, onDelete }: SeriesItemProps ) => {
                           "Nombre de répétition"
                         ) : "Valeur à atteindre" }
                       </Text>
-                      <Text className="text">{ seriesData.targetValue } { seriesData.exercise.format === 'hold' && 'seconde(s)'} </Text>
+                      <Text className="text">{ seriesData.targetValue } { seriesData.exercise.format === 'hold' && 'seconde(s)' } </Text>
                     </View>
 
                     <View>

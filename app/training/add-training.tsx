@@ -7,13 +7,14 @@ import { useTrainingsStore } from "@/store";
 import { createTrainingParams, Training } from "@/types";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import SeriesFormModal from "./components/SeriesFormModal";
 import { CreateSeriesParams, SeriesParams } from "@/types/series";
 import { createSeries } from "@/lib/series.appwrite";
 import useSeriesStore from "@/store/series.store";
 import SeriesItemEdit from "./components/SeriesItemEdit";
-// import SeriesItem from "./components/SeriesItem";
+import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
+import SeriesItemList from "./components/SeriesItemList";
 
 const AddTraining = () => {
 	const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
@@ -39,11 +40,6 @@ const AddTraining = () => {
 		};
 		setSeriesList( prev => [ ...prev, newSeries ] );
 	};
-
-	const handleDeleteSeries = ( index: number ) => {
-		setSeriesList( ( prev ) => prev.filter( ( _, i ) => i !== index ) );
-	};
-
 
 	const submit = async (): Promise<void> => {
 		if ( !form.name || !form.days ) {
@@ -172,13 +168,7 @@ const AddTraining = () => {
 								</View>
 
 								<View>
-									{ seriesList.map( ( series, index ) => (
-										<SeriesItemEdit
-											key={ index }
-											seriesData={ series }
-											onDelete={ () => handleDeleteSeries( index ) }
-										/>
-									) ) }
+									<SeriesItemList />
 								</View>
 							</View>
 						) }

@@ -109,85 +109,88 @@ const SeriesFormModal = ( { isVisible, closeModal, onSeriesCreated }: SeriesForm
       statusBarTranslucent={ true }
       visible={ isVisible }
       transparent={ true }
+      animationType="fade"
     >
-      <SafeAreaView className='flex-1 bg-background'>
-        <ScrollView className="px-5 pt-5">
-          <Text className="title-2 mb-5">Ajouter une série</Text>
-          <View className="flex-col gap-5">
-            <View>
-              <Text className="font-sregular text-lg text-primary mb-2">Rechercher un exercice</Text>
-              <CustomButton
-                title="Choisir maintenant"
-                variant="secondary"
-                onPress={ handleExerciseModalVisibility }
+      <SafeAreaView className='flex-1 bg-black/40'>
+        <View className="h-full bg-background">
+          <ScrollView className="px-5 pt-5">
+            <Text className="title-2 mb-5">Ajouter une série</Text>
+            <View className="flex-col gap-5">
+              <View>
+                <Text className="font-sregular text-lg text-primary mb-2">Rechercher un exercice</Text>
+                <CustomButton
+                  title="Choisir maintenant"
+                  variant="secondary"
+                  onPress={ handleExerciseModalVisibility }
+                />
+              </View>
+
+              {/* Affichage de l'exercice sélectionné */ }
+              { selectedExercise.length > 0 && (
+                <View>
+                  { selectedExercise.map( ( exercise ) => (
+                    <ExerciseItem
+                      key={ exercise.$id }
+                      image={ exercise.image }
+                      name={ exercise.name }
+                      difficulty={ exercise.difficulty }
+                    />
+                  ) ) }
+                </View>
+              ) }
+
+              <CustomInput
+                label={ labels }
+                placeholder="10"
+                value={ form.targetValue }
+                onChangeText={ ( text ) => setForm( prev => ( { ...prev, targetValue: text } ) ) }
+                keyboardType="numeric"
+              />
+
+              <CustomInput
+                label="Nombre de série"
+                placeholder="3"
+                value={ form.sets }
+                onChangeText={ ( text ) => setForm( prev => ( { ...prev, sets: text } ) ) }
+                keyboardType="numeric"
+              />
+
+              <CustomInput
+                label="Temps de repos (en minutes)"
+                placeholder="3"
+                value={ form.restTime }
+                onChangeText={ ( text ) => setForm( prev => ( { ...prev, restTime: text } ) ) }
+                keyboardType="numeric"
+              />
+
+              <CustomInput
+                label="Note personnelle (optionnelle)"
+                placeholder="Série de volume..."
+                value={ form.note }
+                onChangeText={ ( text ) => setForm( prev => ( { ...prev, note: text } ) ) }
+                multiline={ true }
+                numberOfLines={ 5 }
+                customStyles="h-32"
               />
             </View>
 
-            {/* Affichage de l'exercice sélectionné */ }
-            { selectedExercise.length > 0 && (
-              <View>
-                { selectedExercise.map( ( exercise ) => (
-                  <ExerciseItem
-                    key={ exercise.$id }
-                    image={ exercise.image }
-                    name={ exercise.name }
-                    difficulty={ exercise.difficulty }
-                  />
-                ) ) }
-              </View>
-            ) }
 
-            <CustomInput
-              label={ labels }
-              placeholder="10"
-              value={ form.targetValue }
-              onChangeText={ ( text ) => setForm( prev => ( { ...prev, targetValue: text } ) ) }
-              keyboardType="numeric"
+          </ScrollView>
+
+          <View className="px-5 pb-5 flex-row gap-5 items-center">
+            <CustomButton
+              title="Annuler"
+              variant="secondary"
+              customStyles="flex-1"
+              onPress={ closeSeriesModal }
             />
-
-            <CustomInput
-              label="Nombre de série"
-              placeholder="3"
-              value={ form.sets }
-              onChangeText={ ( text ) => setForm( prev => ( { ...prev, sets: text } ) ) }
-              keyboardType="numeric"
-            />
-
-            <CustomInput
-              label="Temps de repos (en minutes)"
-              placeholder="3"
-              value={ form.restTime }
-              onChangeText={ ( text ) => setForm( prev => ( { ...prev, restTime: text } ) ) }
-              keyboardType="numeric"
-            />
-
-            <CustomInput
-              label="Note personnelle (optionnelle)"
-              placeholder="Série de volume..."
-              value={ form.note }
-              onChangeText={ ( text ) => setForm( prev => ( { ...prev, note: text } ) ) }
-              multiline={ true }
-              numberOfLines={ 5 }
-              customStyles="h-32"
+            <CustomButton
+              title="Confirmer"
+              variant="primary"
+              customStyles="flex-1"
+              onPress={ handleConfirm }
             />
           </View>
-
-
-        </ScrollView>
-
-        <View className="px-5 pb-5 flex-row gap-5 items-center">
-          <CustomButton
-            title="Annuler"
-            variant="secondary"
-            customStyles="flex-1"
-            onPress={ closeSeriesModal }
-          />
-          <CustomButton
-            title="Confirmer"
-            variant="primary"
-            customStyles="flex-1"
-            onPress={ handleConfirm }
-          />
         </View>
 
         <ExerciseSelectionModal
