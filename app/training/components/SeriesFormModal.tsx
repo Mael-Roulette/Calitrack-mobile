@@ -153,8 +153,8 @@ const SeriesFormModal = ( {
       transparent={ true }
       animationType="fade"
     >
-      <SafeAreaView className='flex-1 bg-black/40'>
-        <View className="h-full bg-background">
+      <SafeAreaView className='flex-1 bg-black/40' edges={ [ 'bottom' ] }>
+        <View className="h-full bg-background pt-8">
           <ScrollView className="px-5 pt-5">
             <Text className="title-2 mb-5">
               { isEditing ? "Modifier la série" : "Ajouter une série" }
