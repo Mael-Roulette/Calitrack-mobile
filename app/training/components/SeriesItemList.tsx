@@ -1,6 +1,5 @@
 import React from 'react';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import SeriesItemEdit from './SeriesItemEdit';
 import { MixSeriesType } from './TrainingForm';
 
@@ -8,9 +7,10 @@ interface SeriesItemListProps {
   seriesList: MixSeriesType[];
   onSeriesListChange: ( newList: MixSeriesType[] ) => void;
   onEditSeries: ( index: number ) => void;
+  scrollViewRef: React.RefObject<any>;
 }
 
-const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: SeriesItemListProps ) => {
+const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries, scrollViewRef }: SeriesItemListProps ) => {
   const handleDeleteSeries = ( index: number ) => {
     const updatedList = seriesList.filter( ( _, i ) => i !== index );
     onSeriesListChange( updatedList );
@@ -32,15 +32,28 @@ const SeriesItemList = ( { seriesList, onSeriesListChange, onEditSeries }: Serie
   };
 
   return (
-    <GestureHandlerRootView>
-      <DraggableFlatList
-        data={ seriesList }
-        onDragEnd={ ( { data } ) => onSeriesListChange( data ) }
-        keyExtractor={ ( item, index ) => `series-${index}-${typeof item.exercise === 'string' ? item.exercise : item.exercise.$id}` }
-        renderItem={ renderItem }
-        activationDistance={ 10 }
-      />
-    </GestureHandlerRootView>
+    <DraggableFlatList
+      data={ seriesList }
+      onDragEnd={ ( { data } ) => onSeriesListChange( data ) }
+      keyExtractor={ ( item, index ) => {
+        // Utiliser un identifiant stable plutôt que l'index
+        const exerciseId = typeof item.exercise === 'string' ? item.exercise : item.exercise?.$id;
+        return `series-${exerciseId}`;
+      } }
+      renderItem={ renderItem }
+      activationDistance={ 10 }
+      scrollEnabled={ false }
+      simultaneousHandlers={ scrollViewRef }
+      // IMPORTANT: Ces props empêchent le rechargement complet
+      removeClippedSubviews={ false }
+      windowSize={ 21 }
+      maxToRenderPerBatch={ 10 }
+      updateCellsBatchingPeriod={ 50 }
+      initialNumToRender={ 10 }
+      maintainVisibleContentPosition={{
+        minIndexForVisible: 0,
+      }}
+    />
   );
 };
 

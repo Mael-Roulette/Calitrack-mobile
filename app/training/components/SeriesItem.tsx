@@ -48,8 +48,7 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
               { seriesData.exercise.name }
             </Text>
             <Text className="text-primary-100 font-sregular text-sm">
-              { seriesData.sets } x { formatValue() }
-              { seriesData.restTime && `  •  ${seriesData.restTime / 60}min repos` }
+              { seriesData.sets } x { formatValue() }  •  {seriesData.restTime && `${Math.floor(seriesData.restTime / 60) > 0 ? Math.floor(seriesData.restTime / 60) : '00'}:${(seriesData.restTime % 60).toString().padStart(2,'0')}${Math.floor(seriesData.restTime / 60) > 0 ? 'min' : 'sec'}`}
             </Text>
           </View>
 

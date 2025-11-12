@@ -66,7 +66,7 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: Ser
         <MaterialIcons name="drag-indicator" size={ 28 } color="#132541" />
       </TouchableOpacity>
 
-      {/* Informations de la série - maintenant cliquable */ }
+      {/* Informations de la série */ }
       <TouchableOpacity
         className="flex-1"
         onPress={ onEdit }
@@ -76,8 +76,7 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: Ser
           { exercise.name }
         </Text>
         <Text className="text-primary-100 font-sregular text-sm">
-          { seriesData.sets } x { formatValue() }
-          { seriesData.restTime && `  •  ${seriesData.restTime / 60}min repos` }
+          { seriesData.sets } x { formatValue() }  •  {seriesData.restTime && `${Math.floor(seriesData.restTime / 60) > 0 ? Math.floor(seriesData.restTime / 60) : '00'}:${(seriesData.restTime % 60).toString().padStart(2,'0')}${Math.floor(seriesData.restTime / 60) > 0 ? 'min' : 'sec'}`}
         </Text>
       </TouchableOpacity>
 
