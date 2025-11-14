@@ -2,7 +2,7 @@ import useExercicesStore from "@/store/exercises.stores";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import ExerciseItem from "./components/ExerciseItem";
+import ExerciseItem from "../components/ExerciseItem";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Exercise } from "@/types";
 import CustomInput from "@/components/CustomInput";

@@ -4,7 +4,7 @@ import React from "react";
 const ExerciseLayout = () => {
 	return (
 		<Stack
-			screenOptions={{
+			screenOptions={ {
 				headerShown: true,
 				headerStyle: {
 					backgroundColor: "#FFF9F7",
@@ -15,13 +15,13 @@ const ExerciseLayout = () => {
 					fontSize: 24,
 				},
 				headerShadowVisible: false,
-			}}
+			} }
 		>
 			<Stack.Screen
-				name='exercise-list'
-				options={{
-					title: "Les mouvements",
-				}}
+				name='(list)'
+			/>
+			<Stack.Screen
+				name='[id]'
 			/>
 		</Stack>
 	);
