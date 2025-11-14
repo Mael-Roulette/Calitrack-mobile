@@ -123,27 +123,6 @@ export const updateUser = async ( data: Partial<User>, password?: string ): Prom
 };
 
 /**
- * Permet de réinitialiser le mot de passe
- * @returns {Promise<{ success: boolean }>} - Si l'email de réinitialisation a été envoyé
- * @throws {Error} - Si l'email de réinitialisation n'a pas pu être envoyé
- */
-export const updatePassword = async () => {
-	try {
-		const currentUser = await getCurrentUser();
-		if ( !currentUser.email ) {
-			throw new Error( "Aucun email associé à cet utilisateur" );
-		}
-
-		const redirectUrl = appwriteConfig.passwordRedirectUrl;
-
-		await account.createRecovery( currentUser.email, redirectUrl );
-		return { success: true };
-	} catch ( e ) {
-		console.error( "Password recovery error:", e );
-	}
-};
-
-/**
  * Permet à l'utilisateur de supprimer définitivement son compte
  * @returns {Promise<void>} - Si la suppression a réussi
  * @throws {Error} - Si la suppression a échoué

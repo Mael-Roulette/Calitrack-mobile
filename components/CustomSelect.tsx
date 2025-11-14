@@ -34,7 +34,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ( {
     <View>
       {/* Zone cliquable */ }
       <TouchableOpacity
-        className="custom-input flex-row items-center justify-between pr-4"
+        className="custom-input flex-row items-center justify-between pr-4 py-3"
         onPress={ () => setVisible( true ) }
       >
         <Text

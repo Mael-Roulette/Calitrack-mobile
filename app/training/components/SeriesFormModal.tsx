@@ -3,7 +3,7 @@ import ExerciseSelectionModal from "@/app/exercise/components/ExerciseSelectionM
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import CustomTimePicker from "@/components/CustomTimePicker";
-import { getExericseById } from "@/lib/exercise.appwrite";
+import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { CreateSeriesParams } from "@/types/series";
 import { useEffect, useMemo, useState } from "react";
@@ -48,7 +48,7 @@ const SeriesFormModal = ( {
     const loadEditingData = async () => {
       if ( editingSeries && isVisible ) {
         try {
-          const exercise = await getExericseById( typeof editingSeries.exercise === 'string' ? editingSeries.exercise : editingSeries.exercise.$id ) as any as Exercise;
+          const exercise = await getExerciseById( typeof editingSeries.exercise === 'string' ? editingSeries.exercise : editingSeries.exercise.$id ) as any as Exercise;
           setSelectedExercise( [ exercise ] );
           setForm( {
             targetValue: editingSeries.targetValue.toString(),

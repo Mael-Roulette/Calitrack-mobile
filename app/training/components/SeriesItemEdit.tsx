@@ -1,4 +1,4 @@
-import { getExericseById } from "@/lib/exercise.appwrite";
+import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -24,7 +24,7 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: Ser
       setLoading( true );
       try {
         if ( typeof seriesData.exercise === "string" ) {
-          const response = await getExericseById( seriesData.exercise ) as any as Exercise;
+          const response = await getExerciseById( seriesData.exercise ) as any as Exercise;
           setExercise( response );
         } else {
           setExercise( seriesData.exercise );

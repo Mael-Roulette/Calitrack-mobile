@@ -22,9 +22,11 @@ export default function Index () {
 	const { fetchExercises } = useExercicesStore();
 	const [ todayTraining, setTodayTraining ] = useState<any>( [] );
 
-	if ( !user ) {
-		router.replace( "/(auth)" );
-	}
+	useEffect( () => {
+		if ( !isLoading && !user ) {
+			router.replace( "/(auth)" );
+		}
+	}, [ user, isLoading ] );
 
 	// Lancement de la vérification de first launch
 	useEffect( () => {
@@ -78,7 +80,7 @@ export default function Index () {
 		fetchUserGoals();
 		fetchUserTrainings();
 		fetchExercises();
-	}, [ fetchUserGoals, fetchUserTrainings, fetchExercises ] );
+	}, [ fetchUserGoals, fetchUserTrainings, fetchExercises, user ] );
 
 	const { progressGoals } = useMemo(
 		() => ( {

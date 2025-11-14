@@ -1,55 +1,62 @@
-import { getAllExercises } from "@/lib/exercise.appwrite";
-import { Exercise } from "@/types";
-import { create } from "zustand";
-import useAuthStore from "./auth.store";
+// store/exercises.stores.ts
 
-type ExerciseState = {
+import { create } from 'zustand';
+import { Exercise } from '@/types';
+import { getAllExercises } from '@/lib/exercise.appwrite';
+
+interface ExercisesStore {
 	exercices: Exercise[];
-	isLoadingExercices: boolean;
-	loaded: boolean;
+	loading: boolean;
+	error: string | null;
 
-	setExercices: ( exercices: Exercise[] ) => void;
-	setIsLoadingExercices: ( value: boolean ) => void;
+	// Actions
 	fetchExercises: () => Promise<void>;
-};
+	addExercise: ( exercise: Exercise ) => void;
+	removeExercise: ( exerciseId: string ) => void;
+	updateExercise: ( exerciseId: string, updates: Partial<Exercise> ) => void;
+	setExercises: ( exercises: Exercise[] ) => void;
+}
 
-const useExercicesStore = create<ExerciseState>( ( set, get ) => ( {
+const useExercicesStore = create<ExercisesStore>( ( set ) => ( {
 	exercices: [],
-	isLoadingExercices: false,
-	loaded: false,
-
-	setExercices: ( exercices: Exercise[] ) => set( { exercices } ),
-	setIsLoadingExercices: ( value: boolean ) => set( { isLoadingExercices: value } ),
+	loading: false,
+	error: null,
 
 	fetchExercises: async () => {
-		const { isAuthenticated } = useAuthStore.getState();
-		if ( !isAuthenticated ) return;
-
-		if ( get().loaded ) return;
-
-		set( { isLoadingExercices: true } );
-
+		set( { loading: true, error: null } );
 		try {
-			const documents = await getAllExercises();
-			const exercices = documents.map(
-				( doc ) =>
-					( {
-						$id: doc.$id,
-						name: doc.name,
-						image: doc.image,
-						description: doc.description,
-						type: doc.type,
-						difficulty: doc.difficulty,
-						format: doc.format,
-					} ) as Exercise
-			);
-			set( { exercices, loaded: true } );
+			const exercises = await getAllExercises();
+			set( { exercices: exercises as any as Exercise[], loading: false } );
 		} catch ( error ) {
-			console.error( "Erreur lors de la récupération des exercices:", error );
-			set( { exercices: [] } );
-		} finally {
-			set( { isLoadingExercices: false } );
+			set( {
+				error: error instanceof Error ? error.message : 'Erreur inconnue',
+				loading: false
+			} );
 		}
+	},
+
+	addExercise: ( exercise ) => {
+		set( ( state ) => ( {
+			exercices: [ ...state.exercices, exercise ]
+		} ) );
+	},
+
+	removeExercise: ( exerciseId ) => {
+		set( ( state ) => ( {
+			exercices: state.exercices.filter( ex => ex.$id !== exerciseId )
+		} ) );
+	},
+
+	updateExercise: ( exerciseId, updates ) => {
+		set( ( state ) => ( {
+			exercices: state.exercices.map( ex =>
+				ex.$id === exerciseId ? { ...ex, ...updates } : ex
+			)
+		} ) );
+	},
+
+	setExercises: ( exercises ) => {
+		set( { exercices: exercises } );
 	},
 } ) );
 

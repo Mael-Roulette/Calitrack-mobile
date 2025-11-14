@@ -1,44 +1,17 @@
+import { MAX_GOALS } from "@/constants/value";
 import { useGoalsStore } from "@/store";
 import { Goal } from "@/types";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation, router } from "expo-router";
-import { useLayoutEffect, useMemo } from "react";
+import { useMemo } from "react";
 import {
-	Alert,
 	FlatList,
 	Text,
-	TouchableOpacity,
-	View,
+	View
 } from "react-native";
 import GoalItem from "../goal/components/GoalItem";
-import { MAX_GOALS } from "@/constants/value";
 
 const Goals = () => {
 	const { goals } = useGoalsStore();
-	const navigation = useNavigation();
-
-	const handleAddGoalLink = () => {
-		if ( goals.length >= MAX_GOALS ) {
-			Alert.alert(
-				"Limite atteinte",
-				`Vous ne pouvez pas ajouter plus de ${MAX_GOALS} objectifs.`
-			);
-		} else {
-			router.push( "/goal/add-goal" );
-		}
-	};
-
-	useLayoutEffect( () => {
-		navigation.setOptions( {
-			headerRight: () => (
-				<TouchableOpacity onPress={ handleAddGoalLink } className='mr-4' accessibilityLabel="Ajouter un objectif">
-					<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
-				</TouchableOpacity>
-			),
-		} );
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ navigation, goals.length ] );
 
 	const { progressGoals, finishedGoals } = useMemo(
 		() => ( {

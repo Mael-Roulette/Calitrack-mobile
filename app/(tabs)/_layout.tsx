@@ -1,9 +1,11 @@
 import { icons } from "@/constants/icons";
+import { MAX_GOALS, MAX_TRAININGS } from "@/constants/value";
+import { useGoalsStore, useTrainingsStore } from "@/store";
 import useAuthStore from "@/store/auth.store";
 import { TabBarIconProps } from "@/types";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link, Tabs } from "expo-router";
-import { Image, StatusBar, TouchableOpacity } from "react-native";
+import { Link, Tabs, router } from "expo-router";
+import { Alert, Image, StatusBar, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const TabIcon = ( { icon }: TabBarIconProps ) => (
@@ -12,6 +14,30 @@ const TabIcon = ( { icon }: TabBarIconProps ) => (
 
 const TabsLayout = () => {
 	const { user } = useAuthStore();
+	const { goals } = useGoalsStore();
+	const { trainings } = useTrainingsStore();
+
+	const handleAddGoalLink = () => {
+		if ( goals.length >= MAX_GOALS ) {
+			Alert.alert(
+				"Limite atteinte",
+				`Vous ne pouvez pas ajouter plus de ${MAX_GOALS} objectifs.`
+			);
+		} else {
+			router.push( "/goal/add-goal" );
+		}
+	};
+
+	const handleAddTrainingLink = () => {
+		if ( trainings.length >= MAX_TRAININGS ) {
+			Alert.alert(
+				"Limite atteinte",
+				`Vous ne pouvez pas ajouter plus de ${MAX_TRAININGS} entraînements.`
+			);
+		} else {
+			router.push( "/training/add-training" );
+		}
+	};
 
 	return (
 		<SafeAreaView className='bg-background flex-1' edges={ [ 'bottom' ] }>
@@ -71,6 +97,11 @@ const TabsLayout = () => {
 					options={ {
 						title: "Objectifs",
 						headerTitle: "Mes objectifs",
+						headerRight: () => (
+							<TouchableOpacity onPress={ handleAddGoalLink } className='mr-4' accessibilityLabel="Ajouter un objectif">
+								<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
+							</TouchableOpacity>
+						),
 						tabBarIcon: ( { focused } ) => (
 							<TabIcon icon={ focused ? icons.goals_focus : icons.goals } />
 						),
@@ -81,6 +112,11 @@ const TabsLayout = () => {
 					options={ {
 						title: "Entraînements",
 						headerTitle: "Mes entraînements",
+						headerRight: () => (
+							<TouchableOpacity onPress={ handleAddTrainingLink } className="mr-4" accessibilityLabel="Ajouter un entraînement">
+								<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
+							</TouchableOpacity>
+						),
 						tabBarIcon: ( { focused } ) => (
 							<TabIcon icon={ focused ? icons.training_focus : icons.training } />
 						),

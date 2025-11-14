@@ -35,4 +35,5 @@ export interface Exercise {
 	difficulty: string;
 	image?: string;
 	format: "hold" | "repetition";
+	isCustom?: boolean;
 }

@@ -1,4 +1,4 @@
-import { getExericseById } from "@/lib/exercise.appwrite";
+import { getExerciseById } from "@/lib/exercise.appwrite";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Image } from 'expo-image';
@@ -23,7 +23,7 @@ const ExerciseDetails = () => {
 		const fetchExercise = async () => {
 			setLoading( true );
 			try {
-				const response = await getExericseById( id as string );
+				const response = await getExerciseById( id as string );
 				setExercise( response );
 			} catch ( error ) {
 				console.error( "Erreur lors de la récupération de l'exercice", error );
