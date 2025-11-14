@@ -8,7 +8,7 @@ import { Exercise } from "@/types";
 import CustomInput from "@/components/CustomInput";
 
 
-const ExerciseList = () => {
+const CustomExerciseList = () => {
 	const { exercices } = useExercicesStore();
 	const [ filteredExercises, setFilteredExercises ] = useState<Exercise[]>();
 
@@ -68,4 +68,4 @@ const ExerciseList = () => {
 	);
 };
 
-export default ExerciseList;
+export default CustomExerciseList;

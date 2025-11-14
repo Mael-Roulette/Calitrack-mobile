@@ -1,29 +1,16 @@
-import { Stack } from "expo-router";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React from "react";
+import CustomExerciseList from "./custom-exercise-list";
+import ExerciseList from "./exercise-list";
+
+const Tab = createMaterialTopTabNavigator();
 
 const ExerciseLayout = () => {
 	return (
-		<Stack
-			screenOptions={{
-				headerShown: true,
-				headerStyle: {
-					backgroundColor: "#FFF9F7",
-				},
-				headerTintColor: "#132541",
-				headerTitleStyle: {
-					fontFamily: "CalSans-Regular",
-					fontSize: 24,
-				},
-				headerShadowVisible: false,
-			}}
-		>
-			<Stack.Screen
-				name='exercise-list'
-				options={{
-					title: "Les mouvements",
-				}}
-			/>
-		</Stack>
+		<Tab.Navigator>
+			<Tab.Screen name="Généraux" component={ ExerciseList } />
+			<Tab.Screen name="Profile" component={ CustomExerciseList } />
+		</Tab.Navigator>
 	);
 };
 
