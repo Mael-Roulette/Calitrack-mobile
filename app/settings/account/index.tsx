@@ -22,7 +22,6 @@ const Index = () => {
 	const [ newPseudo, setNewPseudo ] = useState( user?.name || "" );
 	const [ newMail, setNewMail ] = useState( user?.email || "" );
 	const [ password, setPassword ] = useState( user?.email || "" );
-	const [ , setDeleteLoading ] = useState( false );
 	const [ showModal, setShowModal ] = useState( false );
 
 	/**
@@ -97,7 +96,6 @@ const Index = () => {
 					text: "Supprimer",
 					style: "destructive",
 					onPress: async () => {
-						setDeleteLoading( true );
 						try {
 							await deleteAccount();
 
@@ -118,8 +116,6 @@ const Index = () => {
 								"Une erreur est survenue lors de la suppression de votre compte."
 							);
 							console.error( "Delete account error:", errorMessage );
-						} finally {
-							setDeleteLoading( false );
 						}
 					},
 				},

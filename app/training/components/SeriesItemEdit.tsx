@@ -16,7 +16,7 @@ interface SeriesItemProps {
 
 const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: SeriesItemProps ) => {
   const [ showDelete, setShowDelete ] = useState<boolean>( false );
-  const [ , setLoading ] = useState<boolean>( true );
+  const [ loading, setLoading ] = useState<boolean>( true );
   const [ exercise, setExercise ] = useState<Exercise>();
 
   useEffect( () => {
@@ -52,6 +52,14 @@ const SeriesItemEdit = ( { seriesData, onDrag, onDelete, onEdit, isActive }: Ser
     }
     return seriesData.targetValue;
   };
+
+  if ( loading ) {
+    return (
+      <View className="py-4 mb-3 bg-background rounded-md border border-secondary flex-row items-center justify-between">
+        <Text>Chargement...</Text>
+      </View>
+    )
+  }
 
   return (
     <View className="py-4 mb-3 bg-background rounded-md border border-secondary flex-row items-center justify-between">

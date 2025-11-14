@@ -1,6 +1,5 @@
 import { CustomInputProps } from "@/types";
 import cn from "clsx";
-import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
 const CustomInput = ( {
@@ -15,7 +14,6 @@ const CustomInput = ( {
 	multiline = false,
 	numberOfLines = 1,
 }: CustomInputProps ) => {
-	const [ , setIsFocused ] = useState( false );
 
 	return (
 		<View className='w-full gap-1'>
@@ -29,8 +27,6 @@ const CustomInput = ( {
 				onChangeText={ onChangeText }
 				secureTextEntry={ secureTextEntry }
 				keyboardType={ keyboardType }
-				onFocus={ () => setIsFocused( true ) }
-				onBlur={ () => setIsFocused( false ) }
 				placeholder={ placeholder }
 				placeholderTextColor={ "#AEC4E7" }
 				className={ cn( "custom-input", customStyles ) }
