@@ -158,3 +158,36 @@ export const createCustomExercise = async ( {
 		throw new Error( e as string );
 	}
 }
+
+export const updateCustomExercise = async ( {
+	$id,
+	name,
+	description,
+	type,
+	difficulty,
+	format,
+	image
+}: Exercise ) => {
+	try {
+		const currentAccount = await account.get();
+		if ( !currentAccount ) throw Error;
+
+		const customExercise = await databases.createDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.exerciseCollectionId,
+			$id,
+			{
+				name,
+				description,
+				type,
+				difficulty,
+				format,
+				image,
+			}
+		);
+
+		return customExercise;
+	} catch ( e ) {
+		throw new Error( e as string );
+	}
+}

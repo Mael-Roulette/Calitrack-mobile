@@ -1,16 +1,16 @@
 import CustomButton from '@/components/CustomButton'
+import { updateCustomExercise } from '@/lib/exercise.appwrite'
+import useExercicesStore from '@/store/exercises.stores'
+import { Exercise } from '@/types'
+import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { View, Alert } from 'react-native'
+import { Alert, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import ExerciseForm from '../components/ExerciceForm'
-import { createCustomExercise } from '@/lib/exercise.appwrite'
-import useExercicesStore from '@/store/exercises.stores'
-import { router } from 'expo-router'
-import { Exercise } from '@/types'
 
 const EditExercise = () => {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
-  const { addExercise } = useExercicesStore();
+  const { updateExercise } = useExercicesStore();
   const [ formData, setFormData ] = useState<Omit<Exercise, "$id">>( {
     name: "",
     description: "",
@@ -49,7 +49,8 @@ const EditExercise = () => {
     setIsSubmitting( true );
 
     try {
-      const newExercise = await createCustomExercise( {
+      const updatedExercise = await updateCustomExercise( {
+        $id: "1",
         name: formData.name,
         description: formData.description,
         difficulty: formData.difficulty,
@@ -60,7 +61,7 @@ const EditExercise = () => {
       } );
 
       // Ajouter l'exercice au store
-      addExercise( newExercise as any );
+      updateExercise( updatedExercise as any );
 
       router.back()
     } catch ( error ) {
