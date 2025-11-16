@@ -24,7 +24,7 @@ const ExerciseLayout = () => {
 				options={ {
 					title: "Exercices",
 					headerRight: () => (
-						<TouchableOpacity onPress={ () => router.push('/exercise/add-exercise') } className="mr-4" accessibilityLabel="Ajouter un exercise">
+						<TouchableOpacity onPress={ () => router.push( '/exercise/add-exercise' ) } className="mr-4" accessibilityLabel="Ajouter un exercise">
 							<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
 						</TouchableOpacity>
 					)
@@ -32,9 +32,9 @@ const ExerciseLayout = () => {
 			/>
 			<Stack.Screen
 				name="add-exercise"
-				options={{
+				options={ {
 					title: "Ajouter un exercice"
-				}}
+				} }
 			/>
 			<Stack.Screen
 				name="[id]"

@@ -1,7 +1,6 @@
-import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
-import { appwriteConfig, databases } from "./appwrite";
 import { Exercise } from "@/types";
-import { getCurrentUser } from "./user.appwrite";
+import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
+import { account, appwriteConfig, databases } from "./appwrite";
 
 /**
  * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
@@ -129,10 +128,10 @@ export const createCustomExercise = async ( {
 	difficulty,
 	format,
 	image
-}: Exercise ) => {
+}: Omit<Exercise, "$id"> ) => {
 	try {
-		const currentUser = await getCurrentUser();
-		if ( !currentUser ) throw Error;
+		const currentAccount = await account.get();
+		if ( !currentAccount ) throw Error;
 
 		const customExercise = await databases.createDocument(
 			appwriteConfig.databaseId,
@@ -148,9 +147,9 @@ export const createCustomExercise = async ( {
 				isCustom: true
 			},
 			[
-				Permission.read( Role.user( currentUser.$id ) ),
-				Permission.update( Role.user( currentUser.$id ) ),
-				Permission.delete( Role.user( currentUser.$id ) )
+				Permission.read( Role.user( currentAccount.$id ) ),
+				Permission.update( Role.user( currentAccount.$id ) ),
+				Permission.delete( Role.user( currentAccount.$id ) )
 			]
 		);
 

@@ -1,57 +1,58 @@
 import CustomInput from "@/components/CustomInput";
-import CustomSelect from "@/components/CustomSelect";
+import CustomSelect, { Option } from "@/components/CustomSelect";
 import { ScrollView, View, Text } from "react-native";
-import { exerciseDifficulty, exerciseFormat, exerciseType } from '@/constants/exercises'
-import { useState } from "react";
+import { exerciseDifficulty, exerciseType } from '@/constants/exercises'
+import { Dispatch } from "react";
+import { Exercise } from "@/types";
 
-interface FormState {
-  name: string;
-  description: string;
-  difficulty: string;
-  type: string;
-  format: string;
+interface ExerciseFormProps {
+  formData: Omit<Exercise, "$id">;
+  setFormData: Dispatch<React.SetStateAction<Omit<Exercise, "$id">>>;
 }
 
-const ExerciseForm = () => {
-  const [ form, setForm ] = useState<FormState>( {
-    name: "",
-    description: "",
-    difficulty: "",
-    type: "",
-    format: "",
-  } );
+type ExerciseFormat = "hold" | "repetition";
 
-  const handleSubmit = () => {
+const exerciseFormat: Option<ExerciseFormat>[] = [
+  { label: "Hold", value: "hold" },
+  { label: "Repetition", value: "repetition" }
+];
 
-  }
 
+const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
   return (
-    <ScrollView className='mt-2 px-5' contentContainerStyle={ { display: "flex", flexDirection: "column", gap: 15 } }>
+    <ScrollView
+      className='mt-2 px-5'
+      contentContainerStyle={ { display: "flex", flexDirection: "column", gap: 15 } }
+      showsVerticalScrollIndicator={ false }
+    >
       <CustomInput
         label='Nom de l&apos;exercice'
         placeholder='Handstand'
+        value={ formData.name }
         onChangeText={ ( text: string ) =>
-          setForm( ( prev ) => ( { ...prev, name: text } ) )
+          setFormData( ( prev ) => ( { ...prev, name: text } ) )
         }
       />
 
       <CustomInput
         label="Description"
         placeholder="Equilibre sur les mains"
+        value={ formData.description }
         multiline={ true }
         numberOfLines={ 5 }
         customStyles="h-32"
         onChangeText={ ( text: string ) =>
-          setForm( ( prev ) => ( { ...prev, description: text } ) )
+          setFormData( ( prev ) => ( { ...prev, description: text } ) )
         }
       />
+
       <View>
         <Text className='font-sregular text-lg text-primary mb-2'>Difficulté</Text>
         <CustomSelect
           options={ exerciseDifficulty }
-          value={ form.difficulty }
+          value={ formData.difficulty }
           onChange={ ( text: string ) =>
-            setForm( ( prev ) => ( { ...prev, difficulty: text } ) )
+            setFormData( ( prev ) => ( { ...prev, difficulty: text } ) )
           }
         />
       </View>
@@ -60,24 +61,24 @@ const ExerciseForm = () => {
         <Text className='font-sregular text-lg text-primary mb-2'>Type</Text>
         <CustomSelect
           options={ exerciseType }
-          value={ form.type }
+          value={ formData.type }
           onChange={ ( text: string ) =>
-            setForm( ( prev ) => ( { ...prev, type: text } ) )
+            setFormData( ( prev ) => ( { ...prev, type: text } ) )
           }
         />
       </View>
 
       <View>
         <Text className='font-sregular text-lg text-primary mb-2'>Format</Text>
-        <CustomSelect
+        <CustomSelect<ExerciseFormat>
           options={ exerciseFormat }
-          value={ form.format }
-          onChange={ ( text: string ) =>
-            setForm( ( prev ) => ( { ...prev, format: text } ) )
+          value={ formData.format }
+          onChange={ ( text ) =>
+            setFormData( ( prev ) => ( { ...prev, format: text } ) )
           }
         />
       </View>
-    </ ScrollView>
+    </ScrollView>
   )
 }
 

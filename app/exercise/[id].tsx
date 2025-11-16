@@ -1,23 +1,22 @@
+import { getExerciseImage } from '@/constants/exercises';
 import { getExerciseById } from "@/lib/exercise.appwrite";
-import { useLocalSearchParams, useNavigation, router } from "expo-router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
 	ActivityIndicator,
 	ScrollView,
 	Text,
-	View,
-	TouchableOpacity
+	TouchableOpacity,
+	View
 } from "react-native";
-import { getExerciseImage } from '@/constants/exercises';
-import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseDetails = () => {
 	const { id } = useLocalSearchParams();
 	const [ exercise, setExercise ] = useState<any>( null );
 	const [ loading, setLoading ] = useState( true );
-	const navigation = useNavigation();
 
 	useEffect( () => {
 		const fetchExercise = async () => {
@@ -34,13 +33,6 @@ const ExerciseDetails = () => {
 		};
 		fetchExercise();
 	}, [ id ] );
-
-	/* ----- Masquer l'entete ----- */
-	useLayoutEffect( () => {
-		navigation.setOptions( {
-			headerShown: false,
-		} );
-	}, [ navigation ] );
 
 	let difficultyInfo;
 	if ( !loading ) {
@@ -74,29 +66,41 @@ const ExerciseDetails = () => {
 					</View>
 				) : (
 					<ScrollView>
-						<View className='relative bg-secondary px-4 py-8 rounded-b-2xl min-h-80 w-full items-center justify-center'>
-							{ exercise.image ? (
-								<Image
-									source={ getExerciseImage( exercise.image ) }
-									style={ { width: 250, height: 250 } }
-									contentFit="contain"
-								/>
-							) : (
-								<Text className="title-4 text-background text-center">Illustration en cours de création…</Text>
-							) }
+						{ !exercise.isCustom &&
+							<View className='relative bg-secondary px-4 py-8 rounded-b-2xl min-h-80 w-full items-center justify-center'>
+								{ exercise.image ? (
+									<Image
+										source={ getExerciseImage( exercise.image ) }
+										style={ { width: 250, height: 250 } }
+										contentFit="contain"
+									/>
+								) : (
+									<Text className="title-4 text-background text-center">Illustration en cours de création…</Text>
+								) }
 
-							<View className='absolute top-4 left-4 z-10'>
-								<TouchableOpacity
-									onPress={ () => router.back() }
-									className='w-10 h-10 rounded-full items-center justify-center'
-								>
-									<Ionicons name="arrow-back" size={ 24 } color="#FFF9F7" />
-								</TouchableOpacity>
+								<View className='absolute top-4 left-4 z-10'>
+									<TouchableOpacity
+										onPress={ () => router.back() }
+										className='w-10 h-10 rounded-full items-center justify-center'
+									>
+										<Ionicons name="arrow-back" size={ 24 } color="#FFF9F7" />
+									</TouchableOpacity>
+								</View>
 							</View>
-						</View>
+						}
 
 						<View className='px-5 mt-6 mb-4'>
-							<Text className="title-2 mb-4">{ exercise.name }</Text>
+							<View className='mb-4 flex-row items-center gap-2'>
+								{ exercise.isCustom &&
+									<TouchableOpacity
+										onPress={ () => router.back() }
+										className='w-10 h-10 rounded-full items-center justify-center'
+									>
+										<Ionicons name="arrow-back" size={ 24 } color="#132541" />
+									</TouchableOpacity>
+								}
+								<Text className="title-2">{ exercise.name }</Text>
+							</View>
 							<View className='flex-row flex-wrap items-center justify-between mb-3'>
 								<Text className='text'>
 									Type :{ " " }
