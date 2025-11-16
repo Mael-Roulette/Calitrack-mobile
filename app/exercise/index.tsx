@@ -1,4 +1,3 @@
-// app/exercise/exercise-list.tsx
 import useExercicesStore from "@/store/exercises.stores";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
