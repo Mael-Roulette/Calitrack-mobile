@@ -1,15 +1,17 @@
 import CustomButton from '@/components/CustomButton'
-import { updateCustomExercise } from '@/lib/exercise.appwrite'
+import { getExerciseById, updateCustomExercise } from '@/lib/exercise.appwrite'
 import useExercicesStore from '@/store/exercises.stores'
 import { Exercise } from '@/types'
-import { router } from 'expo-router'
-import React, { useState } from 'react'
-import { Alert, View } from 'react-native'
+import { router, useLocalSearchParams } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { Alert, View, ActivityIndicator, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import ExerciseForm from '../components/ExerciceForm'
 
 const EditExercise = () => {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
+  const [ isLoading, setIsLoading ] = useState<boolean>( true );
   const { updateExercise } = useExercicesStore();
   const [ formData, setFormData ] = useState<Omit<Exercise, "$id">>( {
     name: "",
@@ -18,6 +20,44 @@ const EditExercise = () => {
     type: "",
     format: "hold",
   } );
+
+  // Charger les données de l'exercice au montage du composant
+  useEffect( () => {
+    const loadExercise = async () => {
+      if ( !id ) {
+        Alert.alert( "Erreur", "ID d'exercice manquant" );
+        router.back();
+        return;
+      }
+
+      try {
+        setIsLoading( true );
+        const exercise = await getExerciseById( id as string ) as any as Exercise;
+
+        // Remplir le formulaire avec les données de l'exercice
+        setFormData( {
+          name: exercise.name,
+          description: exercise.description,
+          difficulty: exercise.difficulty,
+          type: exercise.type,
+          format: exercise.format,
+          image: exercise.image,
+          isCustom: exercise.isCustom
+        } );
+      } catch ( error ) {
+        console.error( "Erreur lors du chargement de l'exercice:", error );
+        Alert.alert(
+          "Erreur",
+          "Impossible de charger l'exercice. Veuillez réessayer."
+        );
+        router.back();
+      } finally {
+        setIsLoading( false );
+      }
+    };
+
+    loadExercise();
+  }, [ id ] );
 
   const handleSubmit = async () => {
     // Validation des champs
@@ -50,30 +90,51 @@ const EditExercise = () => {
 
     try {
       const updatedExercise = await updateCustomExercise( {
-        $id: "1",
+        $id: id as string,
         name: formData.name,
         description: formData.description,
         difficulty: formData.difficulty,
         type: formData.type,
         format: formData.format,
-        image: "",
+        image: formData.image || "",
         isCustom: true
       } );
 
-      // Ajouter l'exercice au store
-      updateExercise( updatedExercise as any );
+      // Mettre à jour l'exercice dans le store
+      updateExercise( id as string, updatedExercise as any );
 
-      router.back()
+      Alert.alert(
+        "Succès",
+        "L'exercice a été modifié avec succès",
+        [
+          {
+            text: "OK",
+            onPress: () => router.back()
+          }
+        ]
+      );
     } catch ( error ) {
-      console.error( "Erreur lors de la création de l'exercice:", error );
+      console.error( "Erreur lors de la modification de l'exercice:", error );
       Alert.alert(
         "Erreur",
-        "Impossible de créer l'exercice. Veuillez réessayer."
+        "Impossible de modifier l'exercice. Veuillez réessayer."
       );
     } finally {
       setIsSubmitting( false );
     }
   };
+
+  // Afficher un loader pendant le chargement
+  if ( isLoading ) {
+    return (
+      <SafeAreaView edges={ [ 'bottom' ] } className="flex-1 bg-background">
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#FC7942" />
+          <Text className="mt-4 text-primary text-lg">Chargement de l&apos;exercice...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={ [ 'bottom' ] } className="flex-1 bg-background min-h-full">
@@ -84,7 +145,7 @@ const EditExercise = () => {
 
       <View className='px-5 mb-5'>
         <CustomButton
-          title="Ajouter l'exercice"
+          title="Modifier l'exercice"
           onPress={ handleSubmit }
           isLoading={ isSubmitting }
         />
