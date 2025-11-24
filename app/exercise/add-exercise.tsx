@@ -3,10 +3,12 @@ import React, { useState } from 'react'
 import { View, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import ExerciseForm from './components/ExerciceForm'
-import { createCustomExercise } from '@/lib/exercise.appwrite'
+import { createCustomExercise, getCustomExercises } from '@/lib/exercise.appwrite'
 import useExercicesStore from '@/store/exercises.stores'
 import { router } from 'expo-router'
 import { Exercise } from '@/types'
+import { MAX_CUSTOM_EXERCISES } from '@/constants/value'
+import { account } from '@/lib/appwrite'
 
 const AddExercise = () => {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
@@ -45,6 +47,17 @@ const AddExercise = () => {
       Alert.alert( "Erreur", "Veuillez sélectionner un format" );
       return;
     }
+
+    const currentAccount = await account.get();
+		if ( !currentAccount ) throw Error;
+
+		const existingCustomExercises = await getCustomExercises( currentAccount.$id );
+
+		if ( existingCustomExercises.length >= MAX_CUSTOM_EXERCISES ) {
+      Alert.alert( "Erreur", "Vous avez atteint le nombre maximal d'exercice personnalisé." );
+			return;
+		}
+
 
     setIsSubmitting( true );
 

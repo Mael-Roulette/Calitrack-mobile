@@ -17,6 +17,14 @@ export interface UpdateSeriesParams {
 	order?: SeriesParams[ 'order' ];
 }
 
+export interface updateTrainingParams {
+	id: string,
+	name: string,
+	days: string[],
+	duration: number | undefined,
+	series?: SeriesParams[],
+}
+
 export interface Training {
 	$id: string;
 	user: string;

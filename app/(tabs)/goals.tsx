@@ -71,19 +71,16 @@ const Goals = () => {
 
 	return (
 		<View className='px-5 bg-background flex-1'>
-			<View className='mb-6'>
-				<Text className='indicator-text'>
-					Nombre d&apos;objectifs en cours : { progressGoals.length }/{ MAX_GOALS }.
-				</Text>
-			</View>
-			{ goals.length !== 0 && (
-				<View className='mb-6'>
-					<Text className='indicator-text'>
+			<View className='mb-6 flex-row items-center justify-end gap-4'>
+				{ goals.length !== 0 && (
+					<Text className='indicator-text shrink'>
 						Vous pouvez ajouter une nouvelle progression en cliquant sur un
 						objectif.
 					</Text>
-				</View>
-			) }
+				) }
+
+				<Text className='indicator-text text-xl'>{ progressGoals.length }/{ MAX_GOALS }</Text>
+			</View>
 			<FlatList
 				data={ sections }
 				keyExtractor={ ( item, index ) => `section-${index}` }

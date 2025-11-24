@@ -2,6 +2,7 @@ import Constants from "expo-constants";
 
 export const MAX_TRAININGS = 6;
 export const MAX_GOALS = 4;
+export const MAX_CUSTOM_EXERCISES = 10;
 
 export const DAYS_EN = [ "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ];
 export const DAYS_FR = [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ];

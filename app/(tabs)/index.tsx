@@ -90,13 +90,13 @@ export default function Index () {
 	);
 
 	return (
-		<View className='bg-background min-h-full'>
+		<View className='bg-background flex-1 '>
 			{ isLoading ? (
 				<View>
 					<Text className='title'>Chargement...</Text>
 				</View>
 			) : (
-				<ScrollView showsVerticalScrollIndicator={ true } className='flex-1 px-5'>
+				<ScrollView showsVerticalScrollIndicator={ true } className='px-5'>
 					<Modal
 						animationType="fade"
 						transparent={ true }

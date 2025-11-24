@@ -1,6 +1,7 @@
 import { Exercise } from "@/types";
 import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
 import { account, appwriteConfig, databases } from "./appwrite";
+import { MAX_CUSTOM_EXERCISES } from "@/constants/value";
 
 /**
  * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
@@ -137,6 +138,12 @@ export const createCustomExercise = async ( {
 		const currentAccount = await account.get();
 		if ( !currentAccount ) throw Error;
 
+		const existingCustomExercises = await getCustomExercises( currentAccount.$id );
+
+		if ( existingCustomExercises.length >= MAX_CUSTOM_EXERCISES ) {
+			return;
+		}
+
 		const customExercise = await databases.createDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.exerciseCollectionId,
@@ -204,7 +211,7 @@ export const updateCustomExercise = async ( {
  * Permet de supprimer un exercice personnalisé
  * @param id id de l'exercice à supprimer
  */
-export const deleteCustomExercise = async ( id : string ) => {
+export const deleteCustomExercise = async ( id: string ) => {
 	try {
 		await databases.deleteDocument(
 			appwriteConfig.databaseId,

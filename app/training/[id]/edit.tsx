@@ -74,7 +74,6 @@ const EditTrainingPage = () => {
         }
       }
 
-      // 3. Mise à jour des informations de base du training
       await updateTraining( {
         id: currentTraining.$id,
         name: form.name,
@@ -82,14 +81,13 @@ const EditTrainingPage = () => {
         duration: form.duration,
       } );
 
-      // 4. Mise à jour du store local avec les nouvelles séries
       const updatedTraining: Training = {
         $id: currentTraining.$id,
         user: currentTraining.user,
         name: form.name,
         days: form.days,
         duration: form.duration!,
-        series: newSeriesList, // ✅ Ajout des nouvelles séries
+        series: newSeriesList,
       };
 
       updateTrainingStore( currentTraining.$id, updatedTraining );
