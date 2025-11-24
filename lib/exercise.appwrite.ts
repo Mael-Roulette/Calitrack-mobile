@@ -121,6 +121,10 @@ export const getExerciseById = async ( id: string ): Promise<Models.Document> =>
 	}
 };
 
+/**
+ * Permet de créer un exercice personnalisé pour un seul utilisateur
+ * @returns l'exercice personnalisé
+ */
 export const createCustomExercise = async ( {
 	name,
 	description,
@@ -159,6 +163,10 @@ export const createCustomExercise = async ( {
 	}
 }
 
+/**
+ * Permet de modifier un exercice personnalisé
+ * @returns l'exercice personnalisé modifié
+ */
 export const updateCustomExercise = async ( {
 	$id,
 	name,
@@ -172,7 +180,7 @@ export const updateCustomExercise = async ( {
 		const currentAccount = await account.get();
 		if ( !currentAccount ) throw Error;
 
-		const customExercise = await databases.createDocument(
+		const customExercise = await databases.updateDocument(
 			appwriteConfig.databaseId,
 			appwriteConfig.exerciseCollectionId,
 			$id,
@@ -187,6 +195,22 @@ export const updateCustomExercise = async ( {
 		);
 
 		return customExercise;
+	} catch ( e ) {
+		throw new Error( e as string );
+	}
+}
+
+/**
+ * Permet de supprimer un exercice personnalisé
+ * @param id id de l'exercice à supprimer
+ */
+export const deleteCustomExercise = async ( id : string ) => {
+	try {
+		await databases.deleteDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.exerciseCollectionId,
+			id
+		);
 	} catch ( e ) {
 		throw new Error( e as string );
 	}

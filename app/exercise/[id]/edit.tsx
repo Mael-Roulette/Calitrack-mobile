@@ -103,16 +103,7 @@ const EditExercise = () => {
       // Mettre à jour l'exercice dans le store
       updateExercise( id as string, updatedExercise as any );
 
-      Alert.alert(
-        "Succès",
-        "L'exercice a été modifié avec succès",
-        [
-          {
-            text: "OK",
-            onPress: () => router.back()
-          }
-        ]
-      );
+      router.push( `/exercise/${id}/` )
     } catch ( error ) {
       console.error( "Erreur lors de la modification de l'exercice:", error );
       Alert.alert(

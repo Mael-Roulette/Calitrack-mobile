@@ -1,5 +1,6 @@
 import { getExerciseImage } from '@/constants/exercises';
-import { getExerciseById } from "@/lib/exercise.appwrite";
+import { deleteCustomExercise, getExerciseById } from "@/lib/exercise.appwrite";
+import useExercicesStore from '@/store/exercises.stores';
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from "expo-router";
@@ -19,6 +20,8 @@ const ExerciseDetails = () => {
   const [ exercise, setExercise ] = useState<any>( null );
   const [ loading, setLoading ] = useState( true );
   const [ showMenu, setShowMenu ] = useState( false );
+
+  const { removeExercise } = useExercicesStore();
 
   useEffect( () => {
     const fetchExercise = async () => {
@@ -67,6 +70,10 @@ const ExerciseDetails = () => {
   // Gère la supression de l'entrainement
   const handleDelete = () => {
     setShowMenu( false );
+
+    deleteCustomExercise( exercise.$id )
+			.then( () => removeExercise( exercise.$id ) )
+			.then( () => router.push( "/exercise" ) );
   };
 
   return (
