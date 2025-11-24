@@ -8,26 +8,25 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-type Option = {
+export type Option<T extends string> = {
   label: string;
-  value: string;
+  value: T;
 };
 
-type CustomSelectProps = {
-  options: Option[];
-  value: string | null;
-  onChange: ( value: string ) => void;
+type CustomSelectProps<T extends string> = {
+  options: Option<T>[];
+  value: T | null;
+  onChange: ( value: T ) => void;
   placeholder?: string;
 };
 
-const CustomSelect: React.FC<CustomSelectProps> = ( {
+function CustomSelect<T extends string> ( {
   options,
   value,
   onChange,
   placeholder = "Choisir...",
-} ) => {
+}: CustomSelectProps<T> ) {
   const [ visible, setVisible ] = useState( false );
-
   const selectedLabel = options.find( ( option ) => option.value === value )?.label;
 
   return (
@@ -42,8 +41,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ( {
         >
           { value ? selectedLabel : placeholder }
         </Text>
-
-
         <Ionicons
           name={ visible ? "chevron-up" : "chevron-down" }
           size={ 20 }
@@ -79,6 +76,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ( {
       </Modal>
     </View>
   );
-};
+}
 
 export default CustomSelect;

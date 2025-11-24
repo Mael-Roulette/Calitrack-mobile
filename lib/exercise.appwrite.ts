@@ -1,7 +1,6 @@
-import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
-import { appwriteConfig, databases } from "./appwrite";
 import { Exercise } from "@/types";
-import { getCurrentUser } from "./user.appwrite";
+import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
+import { account, appwriteConfig, databases } from "./appwrite";
 
 /**
  * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
@@ -122,6 +121,10 @@ export const getExerciseById = async ( id: string ): Promise<Models.Document> =>
 	}
 };
 
+/**
+ * Permet de créer un exercice personnalisé pour un seul utilisateur
+ * @returns l'exercice personnalisé
+ */
 export const createCustomExercise = async ( {
 	name,
 	description,
@@ -129,10 +132,10 @@ export const createCustomExercise = async ( {
 	difficulty,
 	format,
 	image
-}: Exercise ) => {
+}: Omit<Exercise, "$id"> ) => {
 	try {
-		const currentUser = await getCurrentUser();
-		if ( !currentUser ) throw Error;
+		const currentAccount = await account.get();
+		if ( !currentAccount ) throw Error;
 
 		const customExercise = await databases.createDocument(
 			appwriteConfig.databaseId,
@@ -148,13 +151,66 @@ export const createCustomExercise = async ( {
 				isCustom: true
 			},
 			[
-				Permission.read( Role.user( currentUser.$id ) ),
-				Permission.update( Role.user( currentUser.$id ) ),
-				Permission.delete( Role.user( currentUser.$id ) )
+				Permission.read( Role.user( currentAccount.$id ) ),
+				Permission.update( Role.user( currentAccount.$id ) ),
+				Permission.delete( Role.user( currentAccount.$id ) )
 			]
 		);
 
 		return customExercise;
+	} catch ( e ) {
+		throw new Error( e as string );
+	}
+}
+
+/**
+ * Permet de modifier un exercice personnalisé
+ * @returns l'exercice personnalisé modifié
+ */
+export const updateCustomExercise = async ( {
+	$id,
+	name,
+	description,
+	type,
+	difficulty,
+	format,
+	image
+}: Exercise ) => {
+	try {
+		const currentAccount = await account.get();
+		if ( !currentAccount ) throw Error;
+
+		const customExercise = await databases.updateDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.exerciseCollectionId,
+			$id,
+			{
+				name,
+				description,
+				type,
+				difficulty,
+				format,
+				image,
+			}
+		);
+
+		return customExercise;
+	} catch ( e ) {
+		throw new Error( e as string );
+	}
+}
+
+/**
+ * Permet de supprimer un exercice personnalisé
+ * @param id id de l'exercice à supprimer
+ */
+export const deleteCustomExercise = async ( id : string ) => {
+	try {
+		await databases.deleteDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.exerciseCollectionId,
+			id
+		);
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
