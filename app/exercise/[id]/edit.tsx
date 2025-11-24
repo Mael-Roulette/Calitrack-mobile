@@ -1,10 +1,11 @@
 import CustomButton from '@/components/CustomButton'
 import { getExerciseById, updateCustomExercise } from '@/lib/exercise.appwrite'
+import { useGoalsStore } from '@/store'
 import useExercicesStore from '@/store/exercises.stores'
 import { Exercise } from '@/types'
 import { router, useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Alert, View, ActivityIndicator, Text } from 'react-native'
+import { ActivityIndicator, Alert, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import ExerciseForm from '../components/ExerciceForm'
 
@@ -13,6 +14,7 @@ const EditExercise = () => {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
   const [ isLoading, setIsLoading ] = useState<boolean>( true );
   const { updateExercise } = useExercicesStore();
+  const { refreshGoals } = useGoalsStore();
   const [ formData, setFormData ] = useState<Omit<Exercise, "$id">>( {
     name: "",
     description: "",
@@ -102,8 +104,9 @@ const EditExercise = () => {
 
       // Mettre à jour l'exercice dans le store
       updateExercise( id as string, updatedExercise as any );
+      await refreshGoals();
 
-      router.push( `/exercise/${id}/` )
+      router.push( `/exercise` )
     } catch ( error ) {
       console.error( "Erreur lors de la modification de l'exercice:", error );
       Alert.alert(

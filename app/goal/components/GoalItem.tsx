@@ -100,8 +100,8 @@ const GoalItem = ( {
 					className={ `w-full px-5 py-4 mb-4 border-[1px] rounded-xl border-secondary` }
 				>
 					<View className='flex-row justify-between items-start gap-4'>
-						<View className="flex-row gap-2 items-center gap-5">
-							<Text className='font-sregular text-primary text-lg'>{ exercise.name }</Text>
+						<View className="min-w-0 flex-row gap-2 items-center gap-5">
+							<Text className='font-sregular text-primary text-lg max-w-[160px]' numberOfLines={ 1 } ellipsizeMode="tail">{ exercise.name }</Text>
 							<Text
 								className={ `text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary` }
 							>

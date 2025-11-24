@@ -18,6 +18,7 @@ type TrainingState = {
 	) => void;
 	deleteTrainingStore: ( trainingId: string ) => void;
 	getById: ( trainingId: string ) => Training | null;
+	getTrainingsByDay: ( dayOfWeek: string ) => Training[];
 };
 
 const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
@@ -69,8 +70,13 @@ const useTrainingsStore = create<TrainingState>( ( set, get ) => ( {
 
 	getById: ( trainingId: string ): Training | null => {
 		return get().trainings.find( t => t.$id === trainingId ) ?? null;
-	}
+	},
 
+	getTrainingsByDay: ( dayOfWeek: string ) => {
+		return get().trainings.filter( training =>
+			training.days?.includes( dayOfWeek )
+		);
+	}
 } ) );
 
 export default useTrainingsStore;

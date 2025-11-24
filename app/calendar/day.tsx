@@ -1,16 +1,17 @@
 import { View, Text } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
-import { getTrainingFromUserByDay } from "@/lib/training.appwrite";
 import TrainingItem from "../training/components/TrainingItem";
 import CustomButton from "@/components/CustomButton";
+import { useTrainingsStore } from "@/store";
+import { Training } from "@/types";
 
 
 const Day = () => {
 	const { day, month, year } = useLocalSearchParams();
 	const navigation = useNavigation();
-	const [ dayTrainings, setDayTrainings ] = useState<any[]>( [] );
-	const [ isLoading, setIsLoading ] = useState( true );
+	const { getTrainingsByDay, isLoadingTrainings } = useTrainingsStore();
+	const [ dayTrainings, setDayTrainings ] = useState<Training[]>( [] );
 
 	/* -------------------------------------------------- */
 	/* ---------- Modification du custom header ---------- */
@@ -46,49 +47,26 @@ const Day = () => {
 
 	/* -------------------------------------------------- */
 	/* ---------- Récupération des entraînements associé au jour ---------- */
-	// TODO : Optimiser le chargement des entrainements
 	useEffect( () => {
-		const fetchDayTrainings = async () => {
-			try {
-				setIsLoading( true );
+		const selectedDate = new Date(
+			Number( year ),
+			Number( month ) - 1,
+			Number( day )
+		);
 
-				const selectedDate = new Date(
-					Number( year ),
-					Number( month ) - 1,
-					Number( day )
-				);
+		const daysOfWeek = [
+			"sunday", "monday", "tuesday", "wednesday",
+			"thursday", "friday", "saturday"
+		];
+		const dayOfWeek = daysOfWeek[ selectedDate.getDay() ];
 
-				const daysOfWeek = [
-					"sunday",
-					"monday",
-					"tuesday",
-					"wednesday",
-					"thursday",
-					"friday",
-					"saturday",
-				];
-				const dayOfWeek = daysOfWeek[ selectedDate.getDay() ];
-
-				const trainings = await getTrainingFromUserByDay( dayOfWeek );
-
-				setDayTrainings( trainings );
-			} catch ( error ) {
-				console.error(
-					"Erreur lors de la récupération des entraînements :",
-					error
-				);
-			} finally {
-				setIsLoading( false );
-			}
-		};
-
-		fetchDayTrainings();
-	}, [ day, month, year ] );
+		setDayTrainings( getTrainingsByDay( dayOfWeek ) );
+	}, [ day, month, year, getTrainingsByDay ] );
 
 	return (
 		<View className='flex-1 bg-background px-5'>
 			<View className='flex-1'>
-				{ isLoading ? (
+				{ isLoadingTrainings ? (
 					<Text className="py-5">Chargement des entraînements...</Text>
 				) : dayTrainings.length > 0 ? (
 					<View className="flex-1">
@@ -110,7 +88,7 @@ const Day = () => {
 					</View>
 				) }
 
-				{ !isLoading && (
+				{ !isLoadingTrainings && (
 					<View className="flex-col gap-5 mb-10">
 						<CustomButton
 							title='Modifier un entraînement'

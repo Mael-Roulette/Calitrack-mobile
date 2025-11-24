@@ -11,6 +11,7 @@ type GoalState = {
 	setGoals: ( goals: Goal[] ) => void;
 	setIsLoadingGoals: ( value: boolean ) => void;
 	fetchUserGoals: () => Promise<void>;
+	refreshGoals: () => Promise<void>;
 	addGoalStore: ( goal: Goal ) => void;
 	updateGoalStore: ( goalId: string, updatedGoal: Partial<Goal> ) => void;
 	deleteGoalStore: ( goalId: string ) => void;
@@ -51,6 +52,35 @@ const useGoalsStore = create<GoalState>( ( set, get ) => ( {
 		} catch ( error ) {
 			console.error( "Erreur lors de la récupération des objectifs:", error );
 			set( { goals: [] } );
+		} finally {
+			set( { isLoadingGoals: false } );
+		}
+	},
+
+	refreshGoals: async () => {
+		const { isAuthenticated } = useAuthStore.getState();
+		if ( !isAuthenticated ) return;
+
+		set( { isLoadingGoals: true } );
+
+		try {
+			const documents = await getGoalsFromUser();
+			const goals = documents.map(
+				( doc ) =>
+					( {
+						$id: doc.$id,
+						$createdAt: doc.$createdAt,
+						$updatedAt: doc.$updatedAt,
+						exercise: doc.exercise,
+						progress: doc.progress,
+						progressHistory: JSON.parse( doc.progressHistory || "[]" ),
+						total: doc.total,
+						state: doc.state,
+					} ) as Goal
+			);
+			set( { goals } );
+		} catch ( error ) {
+			console.error( "Erreur lors du refresh des objectifs:", error );
 		} finally {
 			set( { isLoadingGoals: false } );
 		}
