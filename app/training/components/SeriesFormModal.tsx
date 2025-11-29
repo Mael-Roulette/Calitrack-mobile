@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Modal, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MixSeriesType } from "./TrainingForm";
+import RpeSelector from "./RpeSelector";
 
 const LABEL_CONFIGS = {
   hold: "Temps de hold",
@@ -40,6 +41,7 @@ const SeriesFormModal = ( {
     targetValue: "",
     sets: "",
     restTime: 0,
+    rpe: 5,
     note: "",
   } );
 
@@ -54,6 +56,7 @@ const SeriesFormModal = ( {
             targetValue: editingSeries.targetValue.toString(),
             sets: editingSeries.sets.toString(),
             restTime: editingSeries.restTime || 0,
+            rpe: editingSeries.rpe,
             note: editingSeries.note || "",
           } );
         } catch ( error ) {
@@ -70,6 +73,7 @@ const SeriesFormModal = ( {
       targetValue: "",
       sets: "",
       restTime: 0,
+      rpe: 5,
       note: "",
     } );
   };
@@ -100,6 +104,7 @@ const SeriesFormModal = ( {
     const targetValue = parseInt( form.targetValue );
     const sets = parseInt( form.sets );
     const restTime = form.restTime ? form.restTime : undefined;
+    const rpe = form.rpe;
 
     if ( !form.targetValue || !form.sets ) {
       Alert.alert( "Erreur", "Veuillez remplir la valeur cible et le nombre de séries" );
@@ -126,6 +131,7 @@ const SeriesFormModal = ( {
       targetValue: targetValue,
       sets: sets,
       restTime: restTime,
+      rpe: rpe,
       note: form.note
     }
 
@@ -206,6 +212,14 @@ const SeriesFormModal = ( {
                 showHours={ false }
                 onChange={ ( number ) => setForm( prev => ( { ...prev, restTime: number } ) ) }
               />
+
+              <View className='w-full gap-1'>
+                <Text className='font-sregular text-lg text-primary'>Effort perçu (RPE)</Text>
+                <RpeSelector
+                  value={form.rpe}
+                  onChange={(value) => setForm(prev => ({ ...prev, rpe: value }))}
+                />
+              </View>
 
               <CustomInput
                 label="Note personnelle (optionnelle)"

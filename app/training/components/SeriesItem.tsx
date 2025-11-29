@@ -102,14 +102,21 @@ const SeriesItem = ( { seriesData }: SeriesItemProps ) => {
                       <Text className="text">{ seriesData.sets }</Text>
                     </View>
                   </View>
-                  <View>
-                    <Text className="title-3">Temps de repos entre les séries</Text>
-                    <Text className="text">{ seriesData.restTime !== undefined ? seriesData.restTime / 60 : "0" } minutes</Text>
-                  </View>
-                  <View>
-                    <Text className="title-3">Note personnelle</Text>
-                    <Text className="text">{ seriesData.note }</Text>
-                  </View>
+                  { seriesData.restTime &&
+                    <View>
+                      <Text className="title-3">Temps de repos entre les séries</Text>
+                      <Text className="text">{ seriesData.restTime !== undefined ? seriesData.restTime / 60 : "0" } minutes</Text>
+                    </View>
+                  }
+                  { seriesData.rpe &&
+                      <Text className="title-3">Effort perçu (RPE) :  <Text className="text">{ seriesData.rpe }</Text></Text>
+                  }
+                  { seriesData.note &&
+                    <View>
+                      <Text className="title-3">Note personnelle</Text>
+                      <Text className="text">{ seriesData.note }</Text>
+                    </View>
+                  }
                 </View>
               </ScrollView>
 

@@ -51,6 +51,7 @@ const AddTraining = () => {
 						targetValue: series.targetValue,
 						sets: series.sets,
 						restTime: series.restTime,
+						rpe: series.rpe,
 						note: series.note,
 						training: training.$id, // Ajout de l'id de l'entrainement
 						order: i + 1, // Ajout de l'ordre

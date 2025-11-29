@@ -63,6 +63,7 @@ const EditTrainingPage = () => {
             targetValue: series.targetValue,
             sets: series.sets,
             restTime: series.restTime,
+            rpe: series.rpe,
             note: series.note,
             training: currentTraining.$id,
             order: i + 1, // L'ordre correspond à la position dans la liste

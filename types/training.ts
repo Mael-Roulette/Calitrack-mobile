@@ -13,6 +13,7 @@ export interface UpdateSeriesParams {
 	targetValue?: SeriesParams[ 'targetValue' ];
 	sets?: SeriesParams[ 'sets' ];
 	restTime?: SeriesParams[ 'restTime' ];
+	rpe?: SeriesParams[ 'rpe' ];
 	note?: SeriesParams[ 'note' ];
 	order?: SeriesParams[ 'order' ];
 }
