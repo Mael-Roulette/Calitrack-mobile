@@ -1,5 +1,6 @@
 import { getExerciseImage } from '@/constants/exercises';
 import { deleteCustomExercise, getExerciseById } from "@/lib/exercise.appwrite";
+import { useGoalsStore } from '@/store';
 import useExercicesStore from '@/store/exercises.stores';
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
@@ -22,6 +23,7 @@ const ExerciseDetails = () => {
   const [ showMenu, setShowMenu ] = useState( false );
 
   const { removeExercise } = useExercicesStore();
+  const { refreshGoals } = useGoalsStore();
 
   useEffect( () => {
     const fetchExercise = async () => {
@@ -73,6 +75,7 @@ const ExerciseDetails = () => {
 
     deleteCustomExercise( exercise.$id )
 			.then( () => removeExercise( exercise.$id ) )
+      .then( () => refreshGoals())
 			.then( () => router.push( "/exercise" ) );
   };
 

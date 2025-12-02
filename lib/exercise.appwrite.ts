@@ -10,6 +10,9 @@ import { MAX_CUSTOM_EXERCISES } from "@/constants/value";
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
 export const getAllExercises = async (): Promise<Models.Document[]> => {
+	const currentAccount = await account.get();
+	if ( !currentAccount ) throw Error;
+
 	try {
 		// Récupérer les exercices généraux (isCustom = false ou null)
 		const generalExercises = await databases.listDocuments(
@@ -31,12 +34,12 @@ export const getAllExercises = async (): Promise<Models.Document[]> => {
 				appwriteConfig.exerciseCollectionId,
 				[
 					Query.equal( 'isCustom', true ),
+					Permission.read( Role.user( currentAccount.$id ) ),
 				]
 			);
 			customExercises = customResponse.documents;
 		} catch {
-			// Si l'utilisateur n'a pas d'exercices personnalisés, on continue
-			console.log( "Aucun exercice personnalisé trouvé pour cet utilisateur" );
+			customExercises = [];
 		}
 
 
@@ -218,6 +221,7 @@ export const deleteCustomExercise = async ( id: string ) => {
 			appwriteConfig.exerciseCollectionId,
 			id
 		);
+		
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
