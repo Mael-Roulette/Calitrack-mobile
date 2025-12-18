@@ -8,6 +8,8 @@ import { Link, router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import SessionSummary from "../components/session/SessionSummary";
+import { SeriesParams } from "@/types/series";
+import SessionSerie from "../components/session/SessionSerie";
 
 const Session = () => {
 	const { id } = useLocalSearchParams();
@@ -16,6 +18,7 @@ const Session = () => {
 	const [ training, setTraining ] = useState<Training>();
 	const navigation = useNavigation();
 	const { goals } = useGoalsStore();
+	const [ isSessionLaunched, setIsSessionLaunched ] = useState<boolean>( false );
 	// const { user, refreshUser } = useAuthStore();
 
 	/* -------------------------------------------------- */
@@ -64,6 +67,10 @@ const Session = () => {
 		} );
 	}, [ navigation, training ] );
 
+	const handleSessionLaunch = () => {
+		setIsSessionLaunched( true );
+	}
+
 	// /* ----- Méthode pour gérer la fin de l'entraînement ----- */
 	// const handleEndTraining = async () => {
 	// 	if ( !user?.$id ) {
@@ -89,7 +96,7 @@ const Session = () => {
 		return (
 			<View className='flex-1 justify-center items-center'>
 				<Text className='mt-2 text-primary'>La récupération de l&apos;entraînement a échoué.</Text>
-				<Link href={"/"}>Revenir à l&apos;accueil</Link>
+				<Link href={ "/" }>Revenir à l&apos;accueil</Link>
 			</View>
 		)
 	}
@@ -102,13 +109,22 @@ const Session = () => {
 						<ActivityIndicator size='large' color='#FC7942' />
 						<Text className='mt-2 text-primary'>Chargement...</Text>
 					</View>
-				) : !isTrainingLoading && training && (
+				) : !isTrainingLoading && training && !isSessionLaunched && (
 					<SessionSummary training={ training } goals={ goals } />
 				) }
+
+				{ isSessionLaunched &&
+					training?.series?.map( ( serie: SeriesParams ) => {
+						return (
+							<SessionSerie key={ serie.$id } />
+						)
+					} )
+				}
 			</ScrollView>
 
 			<View className='px-5 mb-5'>
 				<CustomButton
+					onPress={ handleSessionLaunch }
 					title='C&apos;est parti !'
 				/>
 			</View>
