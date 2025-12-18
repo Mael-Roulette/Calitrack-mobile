@@ -50,7 +50,9 @@
       ],
       "expo-notifications",
       "@react-native-firebase/app",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
