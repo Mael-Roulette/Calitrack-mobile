@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Svg, { Circle } from "react-native-svg";
-import { useAudioPlayer } from 'expo-audio';
-
-const timerBell = require('@/assets/audios/timer_bell.mp3');
 
 interface SessionRestProps {
     restTime: number; // en secondes
@@ -15,8 +12,6 @@ interface SessionRestProps {
 const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
     const [ timeRemaining, setTimeRemaining ] = useState( restTime );
     const [ isRunning, setIsRunning ] = useState( true );
-
-    const playerAudio = useAudioPlayer(timerBell);
 
     useEffect( () => {
         if ( !isRunning || timeRemaining <= 0 ) return;
@@ -33,12 +28,6 @@ const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
 
         return () => clearInterval( interval );
     }, [ isRunning, timeRemaining ] );
-
-    useEffect( () => {
-        if ( timeRemaining === 0 ) {
-            playerAudio.play();
-        }
-    }, [ timeRemaining ] );
 
     const toggleTimer = () => {
         setIsRunning( !isRunning );
