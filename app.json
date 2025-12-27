@@ -17,9 +17,6 @@
         "backgroundColor": "#FFF9F7"
       },
       "edgeToEdgeEnabled": true,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
       "package": "com.mael_rltt.calitrackts",
       "googleServicesFile": "./google-services.json"
     },
@@ -50,7 +47,6 @@
       ],
       "expo-notifications",
       "@react-native-firebase/app",
-      "expo-audio",
       "expo-asset",
       "expo-web-browser"
     ],
