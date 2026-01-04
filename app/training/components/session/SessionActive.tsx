@@ -8,11 +8,12 @@ interface SessionActiveProps {
     series: SeriesParams[];
     currentIndex: number;
     onSeriesComplete: () => void;
+    onPerformanceRecorded: ( seriesId: string, setNumber: number, performance: number, notes?: string ) => void;
 }
 
 type ActiveState = "series" | "rest";
 
-const SessionActive = ( { series, currentIndex, onSeriesComplete }: SessionActiveProps ) => {
+const SessionActive = ( { series, currentIndex, onSeriesComplete, onPerformanceRecorded }: SessionActiveProps ) => {
     const [ activeState, setActiveState ] = useState<ActiveState>( "series" );
     const [ currentSet, setCurrentSet ] = useState( 1 );
     const currentSeries = series[ currentIndex ];
@@ -38,6 +39,15 @@ const SessionActive = ( { series, currentIndex, onSeriesComplete }: SessionActiv
         setActiveState( "series" );
     };
 
+    const handlePerformanceSubmit = ( reachValue: number, notes?: string ) => {
+        // Enregistrer la performance
+        const seriesId = typeof currentSeries.exercise === "string"
+            ? currentSeries.$id
+            : currentSeries.$id;
+
+        onPerformanceRecorded( seriesId, currentSet, reachValue, notes );
+    };
+
     return (
         <View className="flex-1 px-5">
             { activeState === "series" ? (
@@ -53,6 +63,13 @@ const SessionActive = ( { series, currentIndex, onSeriesComplete }: SessionActiv
                 <SessionRest
                     restTime={ currentSeries.restTime || 60 }
                     onRestComplete={ handleRestComplete }
+                    onPerformanceSubmit={ handlePerformanceSubmit }
+                    targetValue={ currentSeries.targetValue }
+                    exerciseFormat={
+                        typeof currentSeries.exercise === "string"
+                            ? "repetition"
+                            : currentSeries.exercise.format
+                    }
                 />
             ) }
         </View>

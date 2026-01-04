@@ -1,29 +1,65 @@
 import { Training } from "@/types";
-import { Text, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
+interface PerformanceData {
+    seriesId: string;
+    setNumber: number;
+    reachValue: number;
+    notes?: string;
+}
 
 interface SessionRecapProps {
     training: Training;
     startTime: Date;
     endTime: Date;
+    performances: PerformanceData[];
 }
 
-const SessionRecap = ( { training, startTime, endTime }: SessionRecapProps ) => {
+const SessionRecap = ( {
+    training,
+    startTime,
+    endTime,
+    performances,
+}: SessionRecapProps ) => {
     const durationMs = endTime.getTime() - startTime.getTime();
     const durationMinutes = Math.floor( durationMs / 60000 );
     const hours = Math.floor( durationMinutes / 60 );
     const minutes = durationMinutes % 60;
 
-    const formattedDuration = hours > 0
-        ? `${hours}h${minutes > 0 ? minutes : ""}`
-        : `${minutes} min`;
+    const formattedDuration =
+        hours > 0 ? `${hours}h${minutes > 0 ? minutes : ""}` : `${minutes} min`;
 
     const totalSeries = training.series?.length || 0;
-    const totalSets = training.series?.reduce( ( acc, s ) => acc + s.sets, 0 ) || 0;
+    const totalSets =
+        training.series?.reduce( ( acc, s ) => acc + s.sets, 0 ) || 0;
+
+    // Calculer les statistiques de performance
+    const performanceStats = training.series?.map( ( series ) => {
+        const seriesPerformances = performances.filter(
+            ( p ) => p.seriesId === series.$id
+        );
+
+        const avgPerformance =
+            seriesPerformances.length > 0
+                ? seriesPerformances.reduce( ( acc, p ) => acc + p.reachValue, 0 ) /
+                seriesPerformances.length
+                : 0;
+
+        const targetReached =
+            avgPerformance >= series.targetValue * 0.9; // 90% de l'objectif
+
+        return {
+            series,
+            performances: seriesPerformances,
+            avgPerformance: Math.round( avgPerformance ),
+            targetReached,
+        };
+    } );
 
     return (
-        <View className="flex-1 px-5 pt-8">
+        <ScrollView className="flex-1 px-5 pt-8">
             {/* Header de félicitations */ }
             <View className="items-center mb-8">
                 <View className="w-20 h-20 bg-secondary/20 rounded-full items-center justify-center mb-4">
@@ -35,7 +71,7 @@ const SessionRecap = ( { training, startTime, endTime }: SessionRecapProps ) => 
             </View>
 
             {/* Statistiques de la session */ }
-            <View className="bg-background border border-secondary rounded-2xl p-6 gap-5">
+            <View className="bg-background border border-secondary rounded-2xl p-6 gap-5 mb-6">
                 <Text className="title-3 text-center mb-2">
                     Résumé de la séance
                 </Text>
@@ -80,7 +116,8 @@ const SessionRecap = ( { training, startTime, endTime }: SessionRecapProps ) => 
                             Exercices complétés
                         </Text>
                         <Text className="text-primary font-sregular text-base">
-                            { totalSeries } { totalSeries > 1 ? "exercices" : "exercice" }
+                            { totalSeries }{ " " }
+                            { totalSeries > 1 ? "exercices" : "exercice" }
                         </Text>
                     </View>
                 </View>
@@ -101,13 +138,110 @@ const SessionRecap = ( { training, startTime, endTime }: SessionRecapProps ) => 
                 </View>
             </View>
 
+            {/* Détails des performances */ }
+            { performanceStats && performanceStats.length > 0 && (
+                <View className="bg-background border border-secondary rounded-2xl p-6 gap-4 mb-6">
+                    <Text className="title-3 text-center mb-2">
+                        Vos performances
+                    </Text>
+
+                    { performanceStats.map( ( stat, index ) => {
+                        const exercise =
+                            typeof stat.series.exercise === "string"
+                                ? null
+                                : stat.series.exercise;
+
+                        return (
+                            <View
+                                key={ index }
+                                className="pb-4 border-b border-primary-100/20 last:border-b-0 last:pb-0"
+                            >
+                                <View className="flex-row items-center justify-between mb-2">
+                                    <Text className="text-primary font-sregular text-base flex-1">
+                                        { exercise?.name || "Exercice" }
+                                    </Text>
+                                    { stat.targetReached && (
+                                        <View className="bg-green-100 px-2 py-1 rounded">
+                                            <Text className="text-green-800 text-xs font-sregular">
+                                                ✓ Objectif atteint
+                                            </Text>
+                                        </View>
+                                    ) }
+                                </View>
+
+                                <View className="flex-row items-center gap-4">
+                                    <View>
+                                        <Text className="text-primary-100 text-xs">
+                                            Objectif
+                                        </Text>
+                                        <Text className="text-primary font-sregular">
+                                            { stat.series.targetValue }
+                                            { exercise?.format === "hold"
+                                                ? "s"
+                                                : " reps" }
+                                        </Text>
+                                    </View>
+
+                                    <View>
+                                        <Text className="text-primary-100 text-xs">
+                                            Moyenne
+                                        </Text>
+                                        <Text
+                                            className={ `font-sregular ${stat.targetReached
+                                                    ? "text-green-600"
+                                                    : "text-primary"
+                                                }` }
+                                        >
+                                            { stat.avgPerformance }
+                                            { exercise?.format === "hold"
+                                                ? "s"
+                                                : " reps" }
+                                        </Text>
+                                    </View>
+
+                                    <View>
+                                        <Text className="text-primary-100 text-xs">
+                                            Sets
+                                        </Text>
+                                        <Text className="text-primary font-sregular">
+                                            { stat.performances.length } /{ " " }
+                                            { stat.series.sets }
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {/* Notes si présentes */ }
+                                { stat.performances.some( ( p ) => p.notes ) && (
+                                    <View className="mt-2 bg-primary-100/10 p-2 rounded">
+                                        <Text className="text-primary-100 text-xs mb-1">
+                                            Notes:
+                                        </Text>
+                                        { stat.performances
+                                            .filter( ( p ) => p.notes )
+                                            .map( ( p, idx ) => (
+                                                <Text
+                                                    key={ idx }
+                                                    className="text-primary text-xs italic"
+                                                >
+                                                    • { p.notes }
+                                                </Text>
+                                            ) ) }
+                                    </View>
+                                ) }
+                            </View>
+                        );
+                    } ) }
+                </View>
+            ) }
+
             {/* Message motivationnel */ }
-            <View className="mt-8 bg-secondary/10 rounded-xl p-4">
+            <View className="mt-4 bg-secondary/10 rounded-xl p-4 mb-8">
                 <Text className="text-primary font-sregular text-center">
-                    Continue comme ça ! Chaque séance te rapproche de tes objectifs.
+                    Continue comme ça ! Chaque séance te rapproche de tes
+                    objectifs.
                 </Text>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 

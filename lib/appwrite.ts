@@ -18,6 +18,9 @@ export const appwriteConfig = {
 	exerciseCollectionId:
 		process.env.EXPO_PUBLIC_APPWRITE_EXERCISE_COLLECTION_ID!,
 	seriesCollectionId : process.env.EXPO_PUBLIC_APPWRITE_SERIES_COLLECTION_ID!,
+	sessionCollectionId:
+		process.env.EXPO_PUBLIC_APPWRITE_SESSION_COLLECTION_ID!,
+	performanceCollectionId : process.env.EXPO_PUBLIC_APPWRITE_PERFORMANCE_COLLECTION_ID!,
 	deleteAccountFunctionId: process.env.EXPO_PUBLIC_APPWRITE_DELETE_ACCOUNT_FUNCTION_ID!,
 };
 

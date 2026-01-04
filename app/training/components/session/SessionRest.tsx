@@ -1,17 +1,30 @@
 import CustomButton from "@/components/CustomButton";
+import CustomInput from "@/components/CustomInput";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Svg, { Circle } from "react-native-svg";
 
 interface SessionRestProps {
-    restTime: number; // en secondes
+    restTime: number;
     onRestComplete: () => void;
+    onPerformanceSubmit: ( reachValue: number, notes?: string ) => void;
+    targetValue: number;
+    exerciseFormat: "hold" | "repetition";
 }
 
-const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
+const SessionRest = ( {
+    restTime,
+    onRestComplete,
+    onPerformanceSubmit,
+    targetValue,
+    exerciseFormat,
+}: SessionRestProps ) => {
     const [ timeRemaining, setTimeRemaining ] = useState( restTime );
     const [ isRunning, setIsRunning ] = useState( true );
+    const [ performanceValue, setPerformanceValue ] = useState( "" );
+    const [ performanceNotes, setPerformanceNotes ] = useState( "" );
+    const [ performanceSubmitted, setPerformanceSubmitted ] = useState( false );
 
     useEffect( () => {
         if ( !isRunning || timeRemaining <= 0 ) return;
@@ -33,27 +46,59 @@ const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
         setIsRunning( !isRunning );
     };
 
-    const skipRest = () => {
-        setTimeRemaining( 0 );
-        setIsRunning( false );
+    const handlePerformanceSubmit = () => {
+        const value = parseInt( performanceValue );
+
+        if ( isNaN( value ) || value < 0 ) {
+            Alert.alert( "Erreur", "Veuillez entrer une valeur valide" );
+            return;
+        }
+
+        onPerformanceSubmit( value, performanceNotes );
+        setPerformanceSubmitted( true );
+    };
+
+    const handleContinue = () => {
+        if ( !performanceSubmitted ) {
+            Alert.alert(
+                "Performance non enregistrée",
+                "Voulez-vous continuer sans enregistrer votre performance ?",
+                [
+                    { text: "Retour", style: "cancel" },
+                    {
+                        text: "Continuer",
+                        onPress: () => {
+                            // Enregistrer une valeur par défaut (0 ou targetValue)
+                            onPerformanceSubmit( 0, "Non renseigné" );
+                            onRestComplete();
+                        },
+                    },
+                ]
+            );
+            return;
+        }
         onRestComplete();
     };
 
     const formatTime = ( seconds: number ) => {
         const mins = Math.floor( seconds / 60 );
         const secs = seconds % 60;
-        return `${mins.toString().padStart( 2, "0" )}:${secs.toString().padStart( 2, "0" )}`;
+        return `${mins.toString().padStart( 2, "0" )}:${secs
+            .toString()
+            .padStart( 2, "0" )}`;
     };
 
-    // Calcul de la progression (0 à 1)
     const progress = ( restTime - timeRemaining ) / restTime;
-
-    // Paramètres du cercle SVG
-    const size = 256; // Taille du cercle
+    const size = 256;
     const strokeWidth = 8;
     const radius = ( size - strokeWidth ) / 2;
     const circumference = radius * 2 * Math.PI;
     const strokeDashoffset = circumference - progress * circumference;
+
+    const performanceLabel =
+        exerciseFormat === "hold"
+            ? "Temps tenu (secondes)"
+            : "Répétitions effectuées";
 
     return (
         <>
@@ -63,11 +108,10 @@ const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
                     <Text className="title text-center">Temps de repos</Text>
                 </View>
 
-                {/* Timer circulaire avec SVG */ }
-                <View className="items-center justify-center">
+                {/* Timer circulaire */ }
+                <View className="items-center justify-center mb-8">
                     <View style={ { width: size, height: size } }>
                         <Svg width={ size } height={ size }>
-                            {/* Cercle de fond */ }
                             <Circle
                                 cx={ size / 2 }
                                 cy={ size / 2 }
@@ -77,8 +121,6 @@ const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
                                 strokeOpacity={ 0.1 }
                                 fill="none"
                             />
-
-                            {/* Cercle de progression */ }
                             <Circle
                                 cx={ size / 2 }
                                 cy={ size / 2 }
@@ -94,24 +136,74 @@ const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
                             />
                         </Svg>
 
-                        {/* Temps restant au centre */ }
                         <View
                             className="absolute inset-0 items-center justify-center"
                             style={ {
                                 top: 0,
                                 left: 0,
                                 right: 0,
-                                bottom: 0
+                                bottom: 0,
                             } }
                         >
                             <Text className="text-6xl font-sbold text-primary">
                                 { formatTime( timeRemaining ) }
                             </Text>
                             <Text className="text-primary-100 font-sregular text-base mt-2">
-                                { timeRemaining === 0 ? "Repos terminé !" : "restantes" }
+                                { timeRemaining === 0
+                                    ? "Repos terminé !"
+                                    : "restantes" }
                             </Text>
                         </View>
                     </View>
+                </View>
+
+                {/* Formulaire de performance */ }
+                <View className="bg-secondary/10 rounded-2xl p-4 mb-4">
+                    <Text className="title-3 mb-4 text-center">
+                        Comment s&apos;est passé votre set ?
+                    </Text>
+
+                    <Text className="text-primary-100 text-sm mb-2">
+                        Objectif : { targetValue }{ " " }
+                        { exerciseFormat === "hold" ? "secondes" : "répétitions" }
+                    </Text>
+
+                    <CustomInput
+                        label={ performanceLabel }
+                        placeholder={ targetValue.toString() }
+                        value={ performanceValue }
+                        onChangeText={ setPerformanceValue }
+                        keyboardType="numeric"
+                        editable={ !performanceSubmitted }
+                    />
+
+                    <CustomInput
+                        label="Notes (optionnel)"
+                        placeholder="Ex: Trop facile, augmenter la difficulté..."
+                        value={ performanceNotes }
+                        onChangeText={ setPerformanceNotes }
+                        multiline={ true }
+                        numberOfLines={ 3 }
+                        customStyles="h-20"
+                        editable={ !performanceSubmitted }
+                    />
+
+                    { !performanceSubmitted && (
+                        <CustomButton
+                            title="Enregistrer ma performance"
+                            variant="secondary"
+                            onPress={ handlePerformanceSubmit }
+                            customStyles="mt-2"
+                        />
+                    ) }
+
+                    { performanceSubmitted && (
+                        <View className="bg-green-100 p-3 rounded-md mt-2">
+                            <Text className="text-green-800 text-center font-sregular">
+                                ✓ Performance enregistrée
+                            </Text>
+                        </View>
+                    ) }
                 </View>
             </ScrollView>
 
@@ -126,13 +218,13 @@ const SessionRest = ( { restTime, onRestComplete }: SessionRestProps ) => {
                         />
                         <CustomButton
                             title="Passer le repos"
-                            onPress={ skipRest }
+                            onPress={ handleContinue }
                         />
                     </>
                 ) : (
                     <CustomButton
                         title="Continuer"
-                        onPress={ onRestComplete }
+                        onPress={ handleContinue }
                     />
                 ) }
             </View>

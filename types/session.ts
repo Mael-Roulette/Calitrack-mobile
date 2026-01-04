@@ -14,3 +14,16 @@ export interface SeriesProgress {
     totalSets: number;
     completed: boolean;
 }
+
+export interface CreateSessionParams {
+    training: string;
+    duration: number;
+    notes?: string;
+}
+
+export interface CreatePerformanceParams {
+    session: string;
+    series: string;
+    reachValue: number;
+    notes?: string;
+}
