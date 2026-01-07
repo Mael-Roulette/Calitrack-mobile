@@ -3,6 +3,7 @@ import { CreateGoalParams, Goal, UpdatedGoalParams } from "@/types";
 import { ID, Models, Query } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 import { getCurrentUser } from "./user.appwrite";
+import { getExerciseById } from "./exercise.appwrite";
 
 /**
  * Permet de créer un nouvel objectif
@@ -38,7 +39,7 @@ export const createGoal = async ( {
 		}
 
 		// Création de l'objectif
-		const goal = await tablesDB.createRow({
+		const goal = await tablesDB.createRow( {
 			databaseId: appwriteConfig.databaseId,
 			tableId: appwriteConfig.goalCollectionId,
 			rowId: ID.unique(),
@@ -50,7 +51,7 @@ export const createGoal = async ( {
 				total,
 				progressHistory: JSON.stringify( [ progress || 0 ] ),
 			}
-		});
+		} );
 
 		const message = {
 			title: "Nouvel objectif créé",
@@ -70,20 +71,34 @@ export const createGoal = async ( {
  */
 export const getGoalsFromUser = async (): Promise<Models.Row[]> => {
 	try {
-		// Récupération de l'utilisateur connecté
 		const currentUser = await getCurrentUser();
-		if ( !currentUser ) throw Error;
+		if ( !currentUser ) throw new Error( "Utilisateur non connecté" );
 
-		// Récupération des objectifs de l'utilisateur connecté
-		const goals = await tablesDB.listRows({
+		// Récupérer tous les objectifs
+		const goalsResponse = await tablesDB.listRows( {
 			databaseId: appwriteConfig.databaseId,
 			tableId: appwriteConfig.goalCollectionId,
 			queries: [ Query.equal( "user", currentUser.$id ) ]
-		});
+		} );
 
-		return goals.rows;
+		const goals = goalsResponse.rows;
+
+		// Récupérer tous les exercices liés en parallèle
+		const goalsWithExercises = await Promise.all(
+			goals.map( async goal => {
+				if ( !goal.exercise ) return goal; // si pas d'exercice lié
+				const exerciseId = typeof goal.exercise === "string" ? goal.exercise : goal.exercise.$id;
+				const exercise = await getExerciseById( exerciseId );
+				return {
+					...goal,
+					exercise
+				};
+			} )
+		);
+
+		return goalsWithExercises;
 	} catch ( e ) {
-		throw new Error( e as string );
+		throw new Error( e instanceof Error ? e.message : "Impossible de récupérer les objectifs" );
 	}
 };
 
@@ -99,11 +114,11 @@ export const updateGoal = async (
 ): Promise<void> => {
 	try {
 		// récupérer l'objectif à mettre à jour
-		const currentGoal = await tablesDB.getRow({
+		const currentGoal = await tablesDB.getRow( {
 			databaseId: appwriteConfig.databaseId,
 			tableId: appwriteConfig.goalCollectionId,
 			rowId: $id
-		});
+		} );
 
 		// On vérifie que l'objectif est validé ou non
 		const newState = progress >= currentGoal.total ? "finish" : "in-progress";
@@ -113,7 +128,7 @@ export const updateGoal = async (
 		progressHistoryArray.push( progress );
 
 		// on met à jour le document
-		await tablesDB.updateRow({
+		await tablesDB.updateRow( {
 			databaseId: appwriteConfig.databaseId,
 			tableId: appwriteConfig.goalCollectionId,
 			rowId: $id,
@@ -122,7 +137,7 @@ export const updateGoal = async (
 				progressHistory: JSON.stringify( progressHistoryArray ),
 				state: newState,
 			}
-		});
+		} );
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
@@ -134,11 +149,11 @@ export const updateGoal = async (
  */
 export const deleteGoal = async ( id: string ) => {
 	try {
-		await tablesDB.deleteRow({
+		await tablesDB.deleteRow( {
 			databaseId: appwriteConfig.databaseId,
 			tableId: appwriteConfig.goalCollectionId,
 			rowId: id
-		});
+		} );
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
