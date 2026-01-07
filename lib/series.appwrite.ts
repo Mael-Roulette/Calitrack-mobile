@@ -1,7 +1,7 @@
 import { CreateSeriesParams, SeriesParams } from "@/types/series";
-import { getCurrentUser } from "./user.appwrite";
-import { appwriteConfig, databases } from "./appwrite";
 import { ID } from "react-native-appwrite";
+import { appwriteConfig, tablesDB } from "./appwrite";
+import { getCurrentUser } from "./user.appwrite";
 
 /**
  * Permet de créer une série dans un entrainement
@@ -14,12 +14,12 @@ export const createSeries = async ( seriesData: CreateSeriesParams ) => {
     const currentUser = getCurrentUser();
     if ( !currentUser ) throw Error;
 
-    const series = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.seriesCollectionId,
-      ID.unique(),
-      seriesData,
-    );
+    const series = await tablesDB.createRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.seriesCollectionId,
+      rowId: ID.unique(),
+      data: seriesData,
+    });
 
     const message = {
       title: "Nouvelle série créée",
@@ -45,12 +45,12 @@ export const updateSeries = async ( seriesData: Partial<SeriesParams> ) => {
     if ( seriesData.$id ) {
       const seriesId = seriesData.$id;
 
-      const series = await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.seriesCollectionId,
-        seriesId,
-        seriesData
-      );
+      const series = await tablesDB.updateRow({
+        databaseId: appwriteConfig.databaseId,
+        tableId: appwriteConfig.seriesCollectionId,
+        rowId: seriesId,
+        data: seriesData
+      });
 
       return series;
     } else {
@@ -67,11 +67,11 @@ export const updateSeries = async ( seriesData: Partial<SeriesParams> ) => {
  */
 export const deleteSeries = async ( id: string ) => {
   try {
-    await databases.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.seriesCollectionId,
-      id
-    );
+    await tablesDB.deleteRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.seriesCollectionId,
+      rowId: id
+    });
   } catch ( e ) {
     throw new Error( e as string );
   }
