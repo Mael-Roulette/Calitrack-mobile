@@ -89,8 +89,6 @@ export default function Index () {
 		[ goals ]
 	);
 
-	console.log( progressGoals );
-
 	return (
 		<View className='bg-background flex-1 '>
 			{ isLoading ? (
