@@ -4,35 +4,35 @@ import {
 	account,
 	appwriteConfig,
 	avatars,
-	databases,
 	functions,
+	tablesDB
 } from "./appwrite";
 
 /**
  * Permet de créer un nouvel utilisateur
  * @param param0 - email, password, name
- * @returns {Promise<Models.Document>} - Document de l'utilisateur créé
+ * @returns {Promise<Models.Row>} - Document de l'utilisateur créé
  * @throws {Error} - Si l'utilisateur n'a pas pu être créé
  */
 export const createUser = async ( {
 	email,
 	password,
 	name,
-}: CreateUserParams ): Promise<Models.Document> => {
+}: CreateUserParams ): Promise<Models.Row> => {
 	try {
-		const newAccount = await account.create( ID.unique(), email, password, name );
+		const newAccount = await account.create( { userId: ID.unique(), email, password, name } );
 		if ( !newAccount ) throw Error;
 
 		await signIn( { email, password } );
 
 		const avatarUrl = avatars.getInitialsURL( name );
 
-		return await databases.createDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.userCollectionId,
-			ID.unique(),
-			{ email, name, accountId: newAccount.$id, avatar: avatarUrl }
-		);
+		return await tablesDB.createRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.userCollectionId,
+			rowId: ID.unique(),
+			data: { email, name, accountId: newAccount.$id, avatar: avatarUrl } as any,
+		} )
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
@@ -46,7 +46,7 @@ export const createUser = async ( {
  */
 export const signIn = async ( { email, password }: SignInParams ): Promise<void> => {
 	try {
-		await account.createEmailPasswordSession( email, password );
+		await account.createEmailPasswordSession( { email, password } );
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
@@ -62,13 +62,13 @@ export const getCurrentUser = async (): Promise<User> => {
 		const currentAccount = await account.get();
 		if ( !currentAccount ) throw Error;
 
-		const currentUser = await databases.listDocuments(
-			appwriteConfig.databaseId,
-			appwriteConfig.userCollectionId,
-			[ Query.equal( "accountId", currentAccount.$id ) ]
-		);
+		const currentUser = await tablesDB.listRows( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.userCollectionId,
+			queries: [ Query.equal( "accountId", currentAccount.$id ) ]
+		} )
 
-		return currentUser.documents[ 0 ] as any;
+		return currentUser.rows[ 0 ] as any;
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
@@ -77,22 +77,22 @@ export const getCurrentUser = async (): Promise<User> => {
 /**
  * Permet de mettre à jour les données d'un utilisateur
  * @param data - Les données à mettre à jour
- * @returns {Promise<Models.Document>} - L'utilisateur mis à jour
+ * @returns {Promise<Models.Row>} - L'utilisateur mis à jour
  * @throws {Error} - Si la mise à jour a échoué ou si l'email est déjà utilisé
  */
-export const updateUser = async ( data: Partial<User>, password?: string ): Promise<Models.Document> => {
+export const updateUser = async ( data: Partial<User>, password?: string ): Promise<Models.Row> => {
 	try {
 		const currentUser = await getCurrentUser();
 
 		// Vérifie si l'email est déjà utilisé par un autre utilisateur
 		if ( data.email ) {
-			const usersWithEmail = await databases.listDocuments(
-				appwriteConfig.databaseId,
-				appwriteConfig.userCollectionId,
-				[ Query.equal( "email", data.email ) ]
-			);
+			const usersWithEmail = await tablesDB.listRows( {
+				databaseId: appwriteConfig.databaseId,
+				tableId: appwriteConfig.userCollectionId,
+				queries: [ Query.equal( "email", data.email ) ]
+			} )
 
-			const emailUsedByOther = usersWithEmail.documents.some(
+			const emailUsedByOther = usersWithEmail.rows.some(
 				( user: any ) => user.$id !== currentUser.$id
 			);
 
@@ -103,19 +103,20 @@ export const updateUser = async ( data: Partial<User>, password?: string ): Prom
 
 
 		if ( data.name ) {
-			await account.updateName( data.name );
+			await account.updateName( { name: data.name } );
 		}
 
 		if ( data.email && password ) {
-			await account.updateEmail( data.email, password )
+			await account.updateEmail( { email: data.email, password } )
 		}
 
-		const updatedUser = await databases.updateDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.userCollectionId,
-			currentUser.$id,
+		const updatedUser = await tablesDB.updateRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.userCollectionId,
+			rowId: currentUser.$id,
 			data
-		);
+		} );
+
 		return updatedUser;
 	} catch ( e ) {
 		throw new Error( e as string );
@@ -131,21 +132,21 @@ export const deleteAccount = async () => {
 	try {
 		const currentUser = await getCurrentUser();
 
-		const execution = await functions.createExecution(
-			appwriteConfig.deleteAccountFunctionId,
-			JSON.stringify( { userId: currentUser.$id } ),
-			false
-		);
+		const execution = await functions.createExecution( {
+			functionId: appwriteConfig.deleteAccountFunctionId,
+			body: JSON.stringify( { userId: currentUser.$id } ),
+			async: false
+		} );
 
 		if ( execution.status !== "completed" ) {
 			throw new Error( ( execution as any ).stderr || "Delete function failed" );
 		}
 
-		await databases.deleteDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.userCollectionId,
-			currentUser.$id
-		);
+		await tablesDB.deleteRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.userCollectionId,
+			rowId: currentUser.$id
+		} );
 
 		return { success: true };
 	} catch ( e ) {
@@ -159,10 +160,9 @@ export const deleteAccount = async () => {
  * @returns {Promise<void>} - Si la déconnexion a réussi
  * @throws {Error} - Si la déconnexion a échoué
  */
-export const logout = async () => {
+export const logout = async (): Promise<void> => {
 	try {
-		const result = await account.deleteSession( "current" );
-		return result;
+		await account.deleteSession( { sessionId: "current" } );
 	} catch ( e ) {
 		throw new Error( ( e as string ) || "Failed to logout" );
 	}

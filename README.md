@@ -1,26 +1,42 @@
-# 🎯 CaliTrack
+﻿# 🏋️ Calitrack Mobile
 
-**CaliTrack** est une application mobile développée en **React Native** avec **Expo**, permettant aux utilisateurs de gérer leurs entraînements et objectifs.
+<div align="center">
 
-## 📱 Fonctionnalités
+<br /><br /><img src="assets/images/logo.png" alt="Calitrack" width="200"/><br /><br />
 
-- Création et suivi d’objectifs personnalisés
-- Création d'entraînement personnalisé
+**Calitrack Mobile - Tes objectifs, ta discipline, ton app**
 
-## 🛠️ Stack technique
+</div>
 
-- **React Native** (Expo)
-- **Expo Router**
-- **NativeWind** pour le style (avec Tailwind-like syntax)
-- **TypeScript**
-- **Icons** via `react-native-vector-icons` / `@expo/vector-icons`
+## 📖 Présentation
 
-## Description du projet
+Application mobile de Calitrack pour iOS et Android. Simple, claire et motivante, elle t'accompagne dans tes entraînements de calisthenics et te permet de suivre tes progrès pas à pas.
 
-L'ambition de Calitrack est de devenir bien plus qu'un carnet numérique. L'idée n'est pas seulement de noter des entraînements, mais de proposer un véritable compagnon au quotidien. 
+## ✨ Fonctionnalités
 
-L'application est là pour t'aider à organiser tes séances, à fixer des objectifs et à construire une progression logique dans le temps.
+-   **Entraînements personnalisés**: Choisis tes exercices, créer tes séries et planifie ta semaine
+-   **Objectifs personnalisés**: Fixe toi des objectifs personnalisés selon tes envies
+-   **Visualisation des progrès**: Statistiques simples mais claires pour visualiser la progression de tes objectifs
+-   **Bibliothèque d'exercices**: Accède à une bibliothèque complète d'exercices de Street Workout avec description et photo
 
-Que tu sois débutant et que tu découvres à peine les bases, ou pratiquant confirmé l'application est faite pour toi. Elle propose des progressions d'exercices pour tout niveau. 
+## 🔗 Autres dépôts
 
-L'objectif final est simple : rendre l'entraînement plus clair, plus motivant, et t'aider à transformer ton travail en résultats visibles. Parce qu'au fond, progresser en calisthenics, c'est une histoire de patience mais aussi de plaisir à chaque étape.
+- [Calitrack Web](https://github.com/Mael-Roulette/Calitrack-web)
+- [Monorepo original](https://github.com/Mael-Roulette/Calitrack) (archivé)
+
+## 📄 License
+
+Ce projet est sous licence [Apache License 2.0](LICENCE)
+
+## 📞 Support & Contact
+
+-   📧 Pour toutes questions générales, contactez-moi sur [contact@calitrack.fr](mailto:contact@calitrack.fr)
+-   🐛 Pour signaler un bug, veuillez ouvrir un ticket sur [GitHub Issues](https://github.com/Mael-Roulette/Calitrack-mobile/issues)
+
+---
+
+<div align="center">
+
+Made with ❤️ by [Mael Roulette](https://github.com/Mael-Roulette)
+
+</div>

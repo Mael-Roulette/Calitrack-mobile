@@ -1,26 +1,27 @@
 import { MAX_GOALS } from "@/constants/value";
-import { CreateGoalParams, UpdatedGoalParams } from "@/types";
+import { CreateGoalParams, Goal, UpdatedGoalParams } from "@/types";
 import { ID, Models, Query } from "react-native-appwrite";
-import { appwriteConfig, databases } from "./appwrite";
+import { appwriteConfig, tablesDB } from "./appwrite";
 import { getCurrentUser } from "./user.appwrite";
+import { getExerciseById } from "./exercise.appwrite";
 
 /**
  * Permet de créer un nouvel objectif
  * @param param0 - exercise, progress, total
- * @returns {Promise<{goal: Models.DefaultDocument, message: {title: string, body: string}}>} - L'objectif créé et un message de succès
+ * @returns {Promise<{goal: Models.Row, message: {title: string, body: string}}>} - L'objectif créé et un message de succès
  * @throws {Error} - Si l'objectif n'a pas pu être créé
  */
 export const createGoal = async ( {
 	exercise,
 	progress,
 	total,
-}: CreateGoalParams ): Promise<{ goal?: Models.DefaultDocument; message: { title: string; body: string; }; }> => {
+}: CreateGoalParams ): Promise<{ goal?: Models.Row; message: { title: string; body: string; }; }> => {
 	try {
 		const currentUser = await getCurrentUser();
 		if ( !currentUser ) throw Error;
 
 		// objectifs existants
-		const existingGoals = await getGoalsFromUser();
+		const existingGoals = await getGoalsFromUser() as unknown as Goal[];
 
 		// Filtrer les objectifs en cours
 		const progressGoals = existingGoals.filter(
@@ -38,11 +39,11 @@ export const createGoal = async ( {
 		}
 
 		// Création de l'objectif
-		const goal = await databases.createDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.goalCollectionId,
-			ID.unique(),
-			{
+		const goal = await tablesDB.createRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.goalCollectionId,
+			rowId: ID.unique(),
+			data: {
 				$createdAt: new Date().toISOString(),
 				user: currentUser.$id,
 				exercise,
@@ -50,7 +51,7 @@ export const createGoal = async ( {
 				total,
 				progressHistory: JSON.stringify( [ progress || 0 ] ),
 			}
-		);
+		} );
 
 		const message = {
 			title: "Nouvel objectif créé",
@@ -65,25 +66,39 @@ export const createGoal = async ( {
 
 /**
  * Permet de récupérer les objectifs de l'utilisateur actuellement connecté
- * @returns {Promise<Models.DefaultDocument[]>} - Liste des objectifs de l'utilisateur
+ * @returns {Promise<Models.Row[]>} - Liste des objectifs de l'utilisateur
  * @throws {Error} - Si les objectifs n'ont pas pu être récupérés
  */
-export const getGoalsFromUser = async (): Promise<Models.DefaultDocument[]> => {
+export const getGoalsFromUser = async (): Promise<Models.Row[]> => {
 	try {
-		// Récupération de l'utilisateur connecté
 		const currentUser = await getCurrentUser();
-		if ( !currentUser ) throw Error;
+		if ( !currentUser ) throw new Error( "Utilisateur non connecté" );
 
-		// Récupération des objectifs de l'utilisateur connecté
-		const goals = await databases.listDocuments(
-			appwriteConfig.databaseId,
-			appwriteConfig.goalCollectionId,
-			[ Query.equal( "user", currentUser.$id ) ]
+		// Récupérer tous les objectifs
+		const goalsResponse = await tablesDB.listRows( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.goalCollectionId,
+			queries: [ Query.equal( "user", currentUser.$id ) ]
+		} );
+
+		const goals = goalsResponse.rows;
+
+		// Récupérer tous les exercices liés en parallèle
+		const goalsWithExercises = await Promise.all(
+			goals.map( async goal => {
+				if ( !goal.exercise ) return goal; // si pas d'exercice lié
+				const exerciseId = typeof goal.exercise === "string" ? goal.exercise : goal.exercise.$id;
+				const exercise = await getExerciseById( exerciseId );
+				return {
+					...goal,
+					exercise
+				};
+			} )
 		);
 
-		return goals.documents;
+		return goalsWithExercises;
 	} catch ( e ) {
-		throw new Error( e as string );
+		throw new Error( e instanceof Error ? e.message : "Impossible de récupérer les objectifs" );
 	}
 };
 
@@ -99,11 +114,11 @@ export const updateGoal = async (
 ): Promise<void> => {
 	try {
 		// récupérer l'objectif à mettre à jour
-		const currentGoal = await databases.getDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.goalCollectionId,
-			$id
-		);
+		const currentGoal = await tablesDB.getRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.goalCollectionId,
+			rowId: $id
+		} );
 
 		// On vérifie que l'objectif est validé ou non
 		const newState = progress >= currentGoal.total ? "finish" : "in-progress";
@@ -113,16 +128,16 @@ export const updateGoal = async (
 		progressHistoryArray.push( progress );
 
 		// on met à jour le document
-		await databases.updateDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.goalCollectionId,
-			$id,
-			{
+		await tablesDB.updateRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.goalCollectionId,
+			rowId: $id,
+			data: {
 				progress,
 				progressHistory: JSON.stringify( progressHistoryArray ),
 				state: newState,
 			}
-		);
+		} );
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
@@ -134,11 +149,11 @@ export const updateGoal = async (
  */
 export const deleteGoal = async ( id: string ) => {
 	try {
-		await databases.deleteDocument(
-			appwriteConfig.databaseId,
-			appwriteConfig.goalCollectionId,
-			id
-		);
+		await tablesDB.deleteRow( {
+			databaseId: appwriteConfig.databaseId,
+			tableId: appwriteConfig.goalCollectionId,
+			rowId: id
+		} );
 	} catch ( e ) {
 		throw new Error( e as string );
 	}
