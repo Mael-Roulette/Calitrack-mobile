@@ -1,7 +1,9 @@
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { deleteTraining, getTrainingById } from "@/lib/training.appwrite";
 import { useTrainingsStore } from "@/store";
+import { Training } from "@/types";
 import { SeriesParams } from "@/types/series";
+import Entypo from '@expo/vector-icons/Entypo';
 import Feather from "@expo/vector-icons/Feather";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -15,8 +17,6 @@ import {
 	View
 } from "react-native";
 import SeriesItem from "../components/SeriesItem";
-import { Training } from "@/types";
-import Entypo from '@expo/vector-icons/Entypo';
 
 
 const Index = () => {

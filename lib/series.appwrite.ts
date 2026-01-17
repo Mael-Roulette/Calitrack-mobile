@@ -76,3 +76,19 @@ export const deleteSeries = async ( id: string ) => {
     throw new Error( e as string );
   }
 }
+
+/**
+ * Permet de récupérer une série via son id
+ * @param id Id de la série à récupérer
+ */
+export const getSeriesById = async ( id: string ) => {
+  try {
+    await tablesDB.getRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.seriesCollectionId,
+      rowId: id
+    });
+  } catch (e) {
+    throw new Error( e as string );
+  }
+}

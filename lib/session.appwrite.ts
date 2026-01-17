@@ -21,7 +21,7 @@ export const createSession = async ( {
             rowId: ID.unique(),
             data: {
                 user: currentUser.$id,
-                training,
+                training: [training],
                 duration,
                 notes: notes || "",
                 $createdAt: new Date().toISOString(),
@@ -49,8 +49,8 @@ export const createPerformance = async ( {
             tableId: appwriteConfig.performanceCollectionId,
             rowId: ID.unique(),
             data: {
-                session,
-                series,
+                session: [session],
+                series: [series],
                 reachValue,
                 notes: notes || "",
                 $createdAt: new Date().toISOString(),
@@ -71,11 +71,16 @@ export const updateSession = async (
     updates: Partial<CreateSessionParams>
 ) => {
     try {
+        const updatedData: any = { ...updates };
+        if (updatedData.training) {
+            updatedData.training = [updatedData.training];
+        }
+
         const session = await tablesDB.updateRow({
             databaseId: appwriteConfig.databaseId,
             tableId: appwriteConfig.sessionCollectionId,
             rowId: sessionId,
-            data: updates
+            data: updatedData
         });
 
         return session;

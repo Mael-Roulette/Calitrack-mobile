@@ -7,6 +7,7 @@ import {
 	Query
 } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
+import { getSeriesById } from "./series.appwrite";
 import { getCurrentUser } from "./user.appwrite";
 
 /**
@@ -125,6 +126,16 @@ export const getTrainingById = async ( id: string ): Promise<Models.Row> => {
 			tableId: appwriteConfig.trainingCollectionId,
 			rowId: id
 		} );
+
+		if ( !training.series ) return training;
+
+		const seriesIds = training.series;
+		const series = seriesIds.map( async (serie: string) => {
+			await getSeriesById( serie );
+		})
+
+		console.log(series)
+
 		return training;
 	} catch ( e ) {
 		throw new Error( e as string );
