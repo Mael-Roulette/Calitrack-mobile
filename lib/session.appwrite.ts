@@ -1,7 +1,7 @@
-import { ID, Query } from "react-native-appwrite";
-import { appwriteConfig, databases } from "./appwrite";
-import { getCurrentUser } from "./user.appwrite";
 import { CreatePerformanceParams, CreateSessionParams } from "@/types/session";
+import { ID, Query } from "react-native-appwrite";
+import { appwriteConfig, tablesDB } from "./appwrite";
+import { getCurrentUser } from "./user.appwrite";
 
 /**
  * Crée une nouvelle session d'entraînement
@@ -15,18 +15,18 @@ export const createSession = async ( {
         const currentUser = await getCurrentUser();
         if ( !currentUser ) throw Error( "Utilisateur non connecté" );
 
-        const session = await databases.createDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.sessionCollectionId,
-            ID.unique(),
-            {
+        const session = await tablesDB.createRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.sessionCollectionId,
+            rowId: ID.unique(),
+            data: {
                 user: currentUser.$id,
                 training,
                 duration,
                 notes: notes || "",
                 $createdAt: new Date().toISOString(),
             }
-        );
+        });
 
         return session;
     } catch ( e ) {
@@ -44,18 +44,18 @@ export const createPerformance = async ( {
     notes,
 }: CreatePerformanceParams ) => {
     try {
-        const performance = await databases.createDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.performanceCollectionId,
-            ID.unique(),
-            {
+        const performance = await tablesDB.createRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.performanceCollectionId,
+            rowId: ID.unique(),
+            data: {
                 session,
                 series,
                 reachValue,
                 notes: notes || "",
                 $createdAt: new Date().toISOString(),
             }
-        );
+        });
 
         return performance;
     } catch ( e ) {
@@ -71,12 +71,12 @@ export const updateSession = async (
     updates: Partial<CreateSessionParams>
 ) => {
     try {
-        const session = await databases.updateDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.sessionCollectionId,
-            sessionId,
-            updates
-        );
+        const session = await tablesDB.updateRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.sessionCollectionId,
+            rowId: sessionId,
+            data: updates
+        });
 
         return session;
     } catch ( e ) {
@@ -89,13 +89,13 @@ export const updateSession = async (
  */
 export const getSessionPerformances = async ( sessionId: string ) => {
     try {
-        const performances = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.performanceCollectionId,
-            [ Query.equal( "session", sessionId ) ]
-        );
+        const performances = await tablesDB.listRows({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.performanceCollectionId,
+            queries: [ Query.equal( "session", sessionId ) ]
+        });
 
-        return performances.documents;
+        return performances.rows;
     } catch ( e ) {
         throw new Error( e as string );
     }
