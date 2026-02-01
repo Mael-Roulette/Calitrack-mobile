@@ -1,155 +1,45 @@
-import { icons } from "@/constants/icons";
-import { MAX_GOALS, MAX_TRAININGS } from "@/constants/value";
-import { useGoalsStore, useTrainingsStore } from "@/store";
-import useAuthStore from "@/store/auth.store";
-import { TabBarIconProps } from "@/types";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link, Tabs, router } from "expo-router";
-import { Alert, Image, StatusBar, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Octicons from '@expo/vector-icons/Octicons';
+import { Tabs } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
-const TabIcon = ( { icon }: TabBarIconProps ) => (
-	<Image source={ icon } style={ { width: 24, height: 24 } } />
-);
+export default function TabsLayout () {
+  return (
+    <>
+      <StatusBar style="dark"/>
+      <Tabs
+        screenOptions={ {
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: "#FFF9F7",
+          },
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: '#FFF9F7',
+            paddingTop: 5
+          },
+          tabBarInactiveTintColor: "#132541",
+          tabBarActiveTintColor: "#FC7942",
+        } }
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <Octicons name="home-fill" size={size} color={color} />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name="goals"
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <Octicons name="goal" size={size} color={color} />
+            )
+          }}
+        />
+      </Tabs>
 
-const TabsLayout = () => {
-	const { user } = useAuthStore();
-	const { goals } = useGoalsStore();
-	const { trainings } = useTrainingsStore();
 
-	const handleAddGoalLink = () => {
-		if ( goals.length >= MAX_GOALS ) {
-			Alert.alert(
-				"Limite atteinte",
-				`Vous ne pouvez pas ajouter plus de ${MAX_GOALS} objectifs.`
-			);
-		} else {
-			router.push( "/goal/add-goal" );
-		}
-	};
-
-	const handleAddTrainingLink = () => {
-		if ( trainings.length >= MAX_TRAININGS ) {
-			Alert.alert(
-				"Limite atteinte",
-				`Vous ne pouvez pas ajouter plus de ${MAX_TRAININGS} entraînements.`
-			);
-		} else {
-			router.push( "/training/add-training" );
-		}
-	};
-
-	return (
-		<SafeAreaView className='bg-background flex-1' edges={ [ 'bottom' ] }>
-			<StatusBar barStyle='dark-content' />
-			<Tabs
-				screenOptions={ {
-					headerShadowVisible: false,
-					headerStyle: {
-						backgroundColor: "#FFF9F7",
-					},
-					headerTitleStyle: {
-						fontFamily: "CalSans-Regular",
-						fontSize: 24,
-						color: "#132541",
-					},
-					headerTitleAlign: "left",
-					tabBarShowLabel: false,
-					tabBarLabelPosition: "beside-icon",
-					tabBarButton: ( props ) => (
-						<TouchableOpacity
-							{ ...( props as any ) }
-							activeOpacity={ 1 }
-							style={ [
-								props.style,
-								{
-									flex: 1,
-									borderRadius: 50,
-									paddingHorizontal: 20,
-								},
-							] }
-						/>
-					),
-					tabBarStyle: {
-						backgroundColor: "#FFF9F7",
-						paddingHorizontal: 8,
-						paddingTop: 8,
-						paddingBottom: 8,
-						height: 65,
-					},
-					tabBarActiveBackgroundColor: "#FC7942",
-					tabBarActiveTintColor: "#FFF9F7",
-					tabBarInactiveTintColor: "#132541",
-				} }
-			>
-				<Tabs.Screen
-					name='index'
-					options={ {
-						title: "Accueil",
-						headerTitle: `Salut ${user?.name || "utilisateur"} !`,
-						tabBarIcon: ( { focused } ) => (
-							<TabIcon icon={ focused ? icons.home_focus : icons.home } />
-						),
-					} }
-				/>
-				<Tabs.Screen
-					name='goals'
-					options={ {
-						title: "Objectifs",
-						headerTitle: "Mes objectifs",
-						headerRight: () => (
-							<TouchableOpacity onPress={ handleAddGoalLink } className='mr-4' accessibilityLabel="Ajouter un objectif">
-								<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
-							</TouchableOpacity>
-						),
-						tabBarIcon: ( { focused } ) => (
-							<TabIcon icon={ focused ? icons.goals_focus : icons.goals } />
-						),
-					} }
-				/>
-				<Tabs.Screen
-					name='trainings'
-					options={ {
-						title: "Entraînements",
-						headerTitle: "Mes entraînements",
-						headerRight: () => (
-							<TouchableOpacity onPress={ handleAddTrainingLink } className="mr-4" accessibilityLabel="Ajouter un entraînement">
-								<Ionicons name='add-circle-outline' size={ 30 } color='#132541' />
-							</TouchableOpacity>
-						),
-						tabBarIcon: ( { focused } ) => (
-							<TabIcon icon={ focused ? icons.training_focus : icons.training } />
-						),
-					} }
-				/>
-				<Tabs.Screen
-					name='calendar'
-					options={ {
-						title: "Calendrier",
-						headerTitle: "Calendrier",
-						tabBarIcon: ( { focused } ) => (
-							<TabIcon icon={ focused ? icons.calendar_focus : icons.calendar } />
-						),
-					} }
-				/>
-				<Tabs.Screen
-					name='profile'
-					options={ {
-						title: "Profil",
-						headerTitle: "Profil",
-						headerRight: () => (
-							<Link href="/settings" accessibilityLabel="Paramètres" style={ { marginRight: 20 } }>
-								<Ionicons name='settings-outline' size={ 30 } color='#132541' />
-							</Link>
-						),
-						tabBarIcon: ( { focused } ) => (
-							<TabIcon icon={ focused ? icons.profile_focus : icons.profile } />
-						),
-					} }
-				/>
-			</Tabs>
-		</SafeAreaView>
-	);
-};
-
-export default TabsLayout;
+    </>
+  );
+}

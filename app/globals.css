@@ -29,12 +29,20 @@
 }
 
 @layer components {
-	.custom-btn {
-		@apply flex-row items-center justify-center rounded-md py-2.5 px-6;
+	.btn-primary {
+		@apply flex-row items-center justify-center rounded-lg py-2.5 px-5 bg-background border border-secondary font-bold;
+	}
+
+	.btn-secondary {
+		@apply flex-row items-center justify-center rounded-lg py-2.5 px-5 bg-secondary  font-bold;
+	}
+
+	.btn-tertiary {
+		@apply flex-row items-center justify-center rounded-lg py-2.5 px-5 bg-primary font-bold;
 	}
 
 	.custom-input {
-		@apply bg-background border border-primary-100 rounded-md pl-4 text-lg text-primary font-sregular;
+		@apply bg-background border border-primary-100 rounded-lg placeholder:text-primary-100 pl-4;
 	}
 
 	.custom-option {
