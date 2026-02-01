@@ -8,9 +8,9 @@ interface HeaderContainerProps {
 
 export function HeaderContainer ( { children, paddingTop }: HeaderContainerProps ) {
   return (
-    <View className="bg-secondary rounded-b-xl">
+    <View className="bg-background">
       <View
-        className="px-5 pb-6"
+        className="px-5 pb-6 bg-secondary rounded-b-xl"
         style={ { paddingTop } }
       >
         {children}

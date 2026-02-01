@@ -20,7 +20,7 @@
 	}
 
 	.text {
-		@apply text-lg text-primary font-sregular;
+		@apply text-xl text-primary font-sregular;
 	}
 
 	.indicator-text {

@@ -17,6 +17,6 @@ export default function PrimaryGradient ( { children, style, ...props }: { child
 
 const styles = StyleSheet.create( {
   gradient: {
-    borderRadius: 8,
+    borderRadius: 10,
   },
 } );

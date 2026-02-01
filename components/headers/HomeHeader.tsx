@@ -17,8 +17,6 @@ export default function HomeHeader ( {
   const insets = useSafeAreaInsets();
   const currentDay = new Date().getDate();
 
-  console.log( currentDay );
-
   function getMonday ( d: Date ) {
     d = new Date( d );
     let day = d.getDay(),
@@ -51,6 +49,7 @@ export default function HomeHeader ( {
           <Text className="title text-background mb-2">{greeting}</Text>
           <Text className="text text-background font-bold text-xl">{weekInfo}</Text>
         </View>
+
         {/* Bouton calendrier */}
         <TouchableOpacity
           className="bg-white rounded-full p-2"
@@ -59,11 +58,12 @@ export default function HomeHeader ( {
           <Ionicons name="calendar-outline" size={ 24 } color="#FC7942" />
         </TouchableOpacity>
       </View>
+
       {/* Week days */}
       <View className="flex-row justify-between">
         {days.map( ( day, index ) => (
           <View key={ index } className="items-center">
-            <Text className="text-white text-xs mb-2">{day.label}</Text>
+            <Text className="text-white text-xl font-bold mb-2">{day.label}</Text>
             <View
               className={ `w-12 h-12 rounded-full items-center justify-center ${
                 day.date === currentDay ? "bg-primary" : "bg-background/60"

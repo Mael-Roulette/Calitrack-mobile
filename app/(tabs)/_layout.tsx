@@ -5,13 +5,10 @@ import { StatusBar } from "expo-status-bar";
 export default function TabsLayout () {
   return (
     <>
-      <StatusBar style="dark"/>
+      <StatusBar style="light"/>
       <Tabs
         screenOptions={ {
           headerShown: false,
-          contentStyle: {
-            backgroundColor: "#FFF9F7",
-          },
           tabBarShowLabel: false,
           tabBarStyle: {
             backgroundColor: '#FFF9F7',
