@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import PrimaryGradient from "../PrimaryGradient";
 
 interface TrainingDayProps {
@@ -20,9 +20,9 @@ export default function TrainingDay ( { title, duration }: TrainingDayProps ) {
           </View>
         </View>
 
-        <Pressable className="btn-primary border-0">
+        <TouchableOpacity className="btn-primary border-0">
           <Text className="text-secondary font-bold text-lg">Voir ma séance</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </PrimaryGradient>
   );

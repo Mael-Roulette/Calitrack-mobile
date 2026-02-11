@@ -8,13 +8,11 @@ import { HeaderContainer } from "./HeaderContainer";
 interface PageHeaderProps {
   title: string;
   onBackPress?: () => void;
-  rightActions?: React.ReactNode; // Pour flexibilité
 }
 
 export default function PageHeader ( {
   title,
   onBackPress,
-  rightActions
 }: PageHeaderProps ) {
   const insets = useSafeAreaInsets();
 
@@ -28,17 +26,14 @@ export default function PageHeader ( {
 
   return (
     <HeaderContainer paddingTop={ insets.top + 12 }>
-      <View className="flex-row justify-between items-center mb-4">
+      <View className="flex-row items-center gap-4">
         {/* Back button */}
         <TouchableOpacity onPress={ handleBack }>
           <Ionicons name="arrow-back" size={ 28 } color="white" />
         </TouchableOpacity>
 
-        {/* Right actions (menu, timer, etc.) */}
-        {rightActions}
+        <Text className="text-white text-3xl font-bold">{title}</Text>
       </View>
-
-      <Text className="text-white text-3xl font-bold">{title}</Text>
     </HeaderContainer>
   );
 }

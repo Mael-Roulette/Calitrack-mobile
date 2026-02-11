@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 const Index = () => {
   const signin = () => {
@@ -23,13 +23,13 @@ const Index = () => {
       </View>
 
       <View className='gap-4 mb-14'>
-        <Pressable onPress={ signin } className="btn-secondary">
+        <TouchableOpacity onPress={ signin } className="btn-secondary">
           <Text className="text-background font-bold text-lg">Connexion</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable onPress={ signup } className="btn-primary">
+        <TouchableOpacity onPress={ signup } className="btn-primary">
           <Text className="text-secondary font-bold text-lg">Inscription</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -1,0 +1,100 @@
+import ExerciseItem from "@/components/exercises/ExerciseItem";
+import PageHeader from "@/components/headers/PageHeader";
+import { MAX_CUSTOM_EXERCISES } from "@/constants/value";
+import { useExercicesStore } from "@/store";
+import { Exercise } from "@/types";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const ExerciseList = () => {
+  const { exercices } = useExercicesStore();
+  const [ filteredExercises, setFilteredExercises ] = useState<Exercise[]>( [] );
+  const [ activeTab, setActiveTab ] = useState<"all" | "custom">( "all" );
+
+  useEffect( () => {
+    // Filtrer selon l'onglet actif
+    if ( activeTab === "all" ) {
+      // Tous les exercices SAUF les personnalisés
+      const allExercises = exercices.filter( ex => !ex.isCustom );
+      setFilteredExercises( allExercises );
+    } else {
+      // Uniquement les exercices personnalisés de l'utilisateur
+      const customExercises = exercices.filter( ex => ex.isCustom === true );
+      setFilteredExercises( customExercises );
+    }
+  }, [ exercices, activeTab ] );
+
+  const goToExerciseDetails = ( id: string ) => {
+    router.push( {
+      pathname: "/exercises/[id]",
+      params: { id },
+    } );
+  };
+
+  return (
+    <SafeAreaView className="bg-background flex-1" edges={ [ "bottom" ] }>
+      <PageHeader
+        title="Les mouvements"
+      />
+      {/* Custom Tabs */ }
+      <View className="flex-row border-b border-primary-100/20">
+        <TouchableOpacity
+          className={ `flex-1 py-4 items-center ${activeTab === "all" ? "border-b-2 border-secondary" : ""
+          }` }
+          onPress={ () => setActiveTab( "all" ) }
+        >
+          <Text
+            className={ `title-3 ${activeTab === "all" ? "text-secondary" : "text-primary-100"
+            }` }
+          >
+            Généraux
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={ `flex-1 py-4 items-center ${activeTab === "custom" ? "border-b-2 border-secondary" : ""
+          }` }
+          onPress={ () => setActiveTab( "custom" ) }
+        >
+          <Text
+            className={ `title-3 ${activeTab === "custom" ? "text-secondary" : "text-primary-100"
+            }` }
+          >
+            Personnalisés
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Content */ }
+      <View className="flex-1 px-2 pt-4">
+        { activeTab === "custom" &&
+          <Text className="indicator-text mb-4">Nombre d&apos;exercices personnalisés : { filteredExercises.length } / { MAX_CUSTOM_EXERCISES } </Text>
+        }
+
+        <FlatList
+          data={ filteredExercises }
+          renderItem={ ( { item } ) => (
+            <View style={ { flex: 1, margin: 5 } }>
+              <ExerciseItem
+                exercise={ item }
+                onPress={ () => goToExerciseDetails( item.$id ) }
+              />
+            </View>
+          ) }
+          keyExtractor={ ( item ) => item.$id }
+          showsVerticalScrollIndicator={ false }
+          ListEmptyComponent={
+            <Text className="text-center text-primary-100 mt-4">
+              Aucun exercice trouvé
+            </Text>
+          }
+          numColumns={ 2 }
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default ExerciseList;

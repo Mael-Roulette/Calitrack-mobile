@@ -2,7 +2,7 @@ import { createUser } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const SignUp = () => {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
@@ -78,9 +78,9 @@ const SignUp = () => {
             />
           </View>
 
-          <Pressable onPress={ submit } disabled={ isSubmitting } className="btn-secondary">
+          <TouchableOpacity onPress={ submit } disabled={ isSubmitting } className="btn-secondary">
             <Text className="text-background font-bold text-lg">Inscription</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
 

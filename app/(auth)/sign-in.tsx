@@ -2,7 +2,7 @@ import { signIn } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const SignIn = () => {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
@@ -66,9 +66,9 @@ const SignIn = () => {
               className="custom-input text-primary"
             />
           </View>
-          <Pressable onPress={ submit } disabled={ isSubmitting } className="btn-secondary">
+          <TouchableOpacity onPress={ submit } disabled={ isSubmitting } className="btn-secondary">
             <Text className="text-background font-bold text-lg">Connexion</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
 

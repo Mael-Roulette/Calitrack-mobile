@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -31,6 +32,14 @@ export default function TabsLayout () {
           options={{
             tabBarIcon: ({color, size}) => (
               <Octicons name="goal" size={size} color={color} />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name="week"
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <Feather name="calendar" size={size} color={color} />
             )
           }}
         />

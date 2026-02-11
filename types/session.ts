@@ -1,16 +1,16 @@
-export type SessionState = "summary" | "active" | "rest" | "completed";
+import { Series, Training } from ".";
 
-export interface SessionData {
-    trainingId: string;
-    startTime: Date;
-    currentSeriesIndex: number;
-    completedSets: Map<string, number>;
-    state: SessionState;
+export interface Session {
+    $id: string;
+    training: Training;
+    duration: number;
+    note: string;
+    $createdAt: Date;
 }
 
-export interface SeriesProgress {
-    seriesId: string;
-    currentSet: number;
-    totalSets: number;
-    completed: boolean;
+export interface Performance {
+    $id: string;
+    series: Series;
+    achievedValue: number;
+    session: Session;
 }

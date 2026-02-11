@@ -16,7 +16,7 @@ export interface CustomButtonProps {
 export interface CustomInputProps {
 	placeholder?: string;
 	value?: string;
-	onChangeText?: (text: string) => void;
+	onChangeText?: ( text: string ) => void;
 	label: string;
 	secureTextEntry?: boolean;
 	keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
@@ -31,7 +31,7 @@ export interface CustomTagsProps {
 	placeholder: string;
 	suggestions?: TagOption[] | string[];
 	value?: string[];
-	onChangeText?: (values: string[]) => void;
+	onChangeText?: ( values: string[] ) => void;
 	maxTags?: number;
 	allowCustomTags?: boolean;
 }

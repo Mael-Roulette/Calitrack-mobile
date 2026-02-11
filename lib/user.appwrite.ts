@@ -1,11 +1,11 @@
 import { CreateUserParams, SignInParams, User } from "@/types";
 import { ID, Models, Query } from "react-native-appwrite";
 import {
-	account,
-	appwriteConfig,
-	avatars,
-	functions,
-	tablesDB
+  account,
+  appwriteConfig,
+  avatars,
+  functions,
+  tablesDB
 } from "./appwrite";
 
 /**
@@ -15,27 +15,27 @@ import {
  * @throws {Error} - Si l'utilisateur n'a pas pu être créé
  */
 export const createUser = async ( {
-	email,
-	password,
-	name,
+  email,
+  password,
+  name,
 }: CreateUserParams ): Promise<Models.Row> => {
-	try {
-		const newAccount = await account.create( { userId: ID.unique(), email, password, name } );
-		if ( !newAccount ) throw Error;
+  try {
+    const newAccount = await account.create( { userId: ID.unique(), email, password, name } );
+    if ( !newAccount ) throw Error;
 
-		await signIn( { email, password } );
+    await signIn( { email, password } );
 
-		const avatarUrl = avatars.getInitialsURL( name );
+    const avatarUrl = avatars.getInitialsURL( name );
 
-		return await tablesDB.createRow( {
-			databaseId: appwriteConfig.databaseId,
-			tableId: appwriteConfig.userCollectionId,
-			rowId: ID.unique(),
-			data: { email, name, accountId: newAccount.$id, avatar: avatarUrl } as any,
-		} )
-	} catch ( e ) {
-		throw new Error( e as string );
-	}
+    return await tablesDB.createRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.userCollectionId,
+      rowId: ID.unique(),
+      data: { email, name, accountId: newAccount.$id, avatar: avatarUrl, roles: [ "user" ] } as any,
+    } );
+  } catch ( e ) {
+    throw new Error( e as string );
+  }
 };
 
 /**
@@ -45,11 +45,11 @@ export const createUser = async ( {
  * @throws {Error} - Si la connexion a échoué
  */
 export const signIn = async ( { email, password }: SignInParams ): Promise<void> => {
-	try {
-		await account.createEmailPasswordSession( { email, password } );
-	} catch ( e ) {
-		throw new Error( e as string );
-	}
+  try {
+    await account.createEmailPasswordSession( { email, password } );
+  } catch ( e ) {
+    throw new Error( e as string );
+  }
 };
 
 /**
@@ -58,20 +58,20 @@ export const signIn = async ( { email, password }: SignInParams ): Promise<void>
  * @throws {Error} - Si l'utilisateur n'a pas pu être récupéré
  */
 export const getCurrentUser = async (): Promise<User> => {
-	try {
-		const currentAccount = await account.get();
-		if ( !currentAccount ) throw Error;
+  try {
+    const currentAccount = await account.get();
+    if ( !currentAccount ) throw Error;
 
-		const currentUser = await tablesDB.listRows( {
-			databaseId: appwriteConfig.databaseId,
-			tableId: appwriteConfig.userCollectionId,
-			queries: [ Query.equal( "accountId", currentAccount.$id ) ]
-		} )
+    const currentUser = await tablesDB.listRows( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.userCollectionId,
+      queries: [ Query.equal( "accountId", currentAccount.$id ) ]
+    } );
 
-		return currentUser.rows[ 0 ] as any;
-	} catch ( e ) {
-		throw new Error( e as string );
-	}
+    return currentUser.rows[ 0 ] as any;
+  } catch ( e ) {
+    throw new Error( e as string );
+  }
 };
 
 /**
@@ -81,46 +81,46 @@ export const getCurrentUser = async (): Promise<User> => {
  * @throws {Error} - Si la mise à jour a échoué ou si l'email est déjà utilisé
  */
 export const updateUser = async ( data: Partial<User>, password?: string ): Promise<Models.Row> => {
-	try {
-		const currentUser = await getCurrentUser();
+  try {
+    const currentUser = await getCurrentUser();
 
-		// Vérifie si l'email est déjà utilisé par un autre utilisateur
-		if ( data.email ) {
-			const usersWithEmail = await tablesDB.listRows( {
-				databaseId: appwriteConfig.databaseId,
-				tableId: appwriteConfig.userCollectionId,
-				queries: [ Query.equal( "email", data.email ) ]
-			} )
+    // Vérifie si l'email est déjà utilisé par un autre utilisateur
+    if ( data.email ) {
+      const usersWithEmail = await tablesDB.listRows( {
+        databaseId: appwriteConfig.databaseId,
+        tableId: appwriteConfig.userCollectionId,
+        queries: [ Query.equal( "email", data.email ) ]
+      } );
 
-			const emailUsedByOther = usersWithEmail.rows.some(
-				( user: any ) => user.$id !== currentUser.$id
-			);
+      const emailUsedByOther = usersWithEmail.rows.some(
+        ( user: any ) => user.$id !== currentUser.$id
+      );
 
-			if ( emailUsedByOther ) {
-				throw new Error( "Cet email est déjà utilisé par un autre utilisateur." );
-			}
-		}
+      if ( emailUsedByOther ) {
+        throw new Error( "Cet email est déjà utilisé par un autre utilisateur." );
+      }
+    }
 
 
-		if ( data.name ) {
-			await account.updateName( { name: data.name } );
-		}
+    if ( data.name ) {
+      await account.updateName( { name: data.name } );
+    }
 
-		if ( data.email && password ) {
-			await account.updateEmail( { email: data.email, password } )
-		}
+    if ( data.email && password ) {
+      await account.updateEmail( { email: data.email, password } );
+    }
 
-		const updatedUser = await tablesDB.updateRow( {
-			databaseId: appwriteConfig.databaseId,
-			tableId: appwriteConfig.userCollectionId,
-			rowId: currentUser.$id,
-			data
-		} );
+    const updatedUser = await tablesDB.updateRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.userCollectionId,
+      rowId: currentUser.$id,
+      data
+    } );
 
-		return updatedUser;
-	} catch ( e ) {
-		throw new Error( e as string );
-	}
+    return updatedUser;
+  } catch ( e ) {
+    throw new Error( e as string );
+  }
 };
 
 /**
@@ -129,30 +129,30 @@ export const updateUser = async ( data: Partial<User>, password?: string ): Prom
  * @throws {Error} - Si la suppression a échoué
  */
 export const deleteAccount = async () => {
-	try {
-		const currentUser = await getCurrentUser();
+  try {
+    const currentUser = await getCurrentUser();
 
-		const execution = await functions.createExecution( {
-			functionId: appwriteConfig.deleteAccountFunctionId,
-			body: JSON.stringify( { userId: currentUser.$id } ),
-			async: false
-		} );
+    const execution = await functions.createExecution( {
+      functionId: appwriteConfig.deleteAccountFunctionId,
+      body: JSON.stringify( { userId: currentUser.$id } ),
+      async: false
+    } );
 
-		if ( execution.status !== "completed" ) {
-			throw new Error( ( execution as any ).stderr || "Delete function failed" );
-		}
+    if ( execution.status !== "completed" ) {
+      throw new Error( ( execution as any ).stderr || "Delete function failed" );
+    }
 
-		await tablesDB.deleteRow( {
-			databaseId: appwriteConfig.databaseId,
-			tableId: appwriteConfig.userCollectionId,
-			rowId: currentUser.$id
-		} );
+    await tablesDB.deleteRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.userCollectionId,
+      rowId: currentUser.$id
+    } );
 
-		return { success: true };
-	} catch ( e ) {
-		console.error( "Account deletion error:", e );
-		throw new Error( ( e as string ) || "Failed to delete account" );
-	}
+    return { success: true };
+  } catch ( e ) {
+    console.error( "Account deletion error:", e );
+    throw new Error( ( e as string ) || "Failed to delete account" );
+  }
 };
 
 /**
@@ -161,9 +161,9 @@ export const deleteAccount = async () => {
  * @throws {Error} - Si la déconnexion a échoué
  */
 export const logout = async (): Promise<void> => {
-	try {
-		await account.deleteSession( { sessionId: "current" } );
-	} catch ( e ) {
-		throw new Error( ( e as string ) || "Failed to logout" );
-	}
+  try {
+    await account.deleteSession( { sessionId: "current" } );
+  } catch ( e ) {
+    throw new Error( ( e as string ) || "Failed to logout" );
+  }
 };
