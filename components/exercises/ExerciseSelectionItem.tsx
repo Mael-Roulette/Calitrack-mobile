@@ -1,5 +1,5 @@
-// app/exercise/components/ExerciseItem.tsx
 import { getExerciseImage } from "@/constants/exercises";
+import { getDifficultyInfo } from "@/utils/exercises";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
@@ -20,24 +20,8 @@ const ExerciseSelectionItem = ( {
 	isSelected?: boolean;
 	onPress?: () => void;
 } ) => {
-  const getDifficultyColor = ( difficulty: string ) => {
-    switch ( difficulty ) {
-      case "beginner":
-        return { traduction: "Débutant", color: "#3b82f6" };
-      case "novice":
-        return { traduction: "Novice", color: "#22c55e" };
-      case "intermediate":
-        return { traduction: "Intermédiaire", color: "#eab308" };
-      case "advanced":
-        return { traduction: "Avancé", color: "#f97316" };
-      case "expert":
-        return { traduction: "Expert", color: "#ef4444" };
-      default:
-        return { traduction: "Novice", color: "#22c55e" };
-    }
-  };
 
-  const difficultyInfo = getDifficultyColor( difficulty );
+  const difficultyInfo = getDifficultyInfo( difficulty );
 
   return (
     <TouchableOpacity
@@ -62,7 +46,7 @@ const ExerciseSelectionItem = ( {
         <Text className='text-sm font-medium text-primary-100 font-sregular'>
           Difficulté :{ " " }
           <Text style={ { color: difficultyInfo.color } }>
-            { difficultyInfo.traduction }
+            { difficultyInfo.label }
           </Text>
         </Text>
       </View>

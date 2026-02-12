@@ -14,13 +14,12 @@ const CustomInput = ( {
   multiline = false,
   numberOfLines = 1,
 }: CustomInputProps ) => {
-
   return (
-    <View className='w-full gap-1'>
-      <Text className='font-sregular text-lg text-primary'>{ label }</Text>
+    <View className='w-full gap-2'>
+      <Text className='label-text'>{label}</Text>
 
       <TextInput
-        textAlignVertical="top"
+        textAlignVertical={ multiline ? "top" : "center" }
         autoCapitalize='none'
         autoCorrect={ false }
         value={ value }
@@ -28,7 +27,7 @@ const CustomInput = ( {
         secureTextEntry={ secureTextEntry }
         keyboardType={ keyboardType }
         placeholder={ placeholder }
-        placeholderTextColor={ "#AEC4E7" }
+        placeholderTextColor='#617188'
         className={ cn( "custom-input", customStyles ) }
         editable={ editable }
         multiline={ multiline }
@@ -37,4 +36,5 @@ const CustomInput = ( {
     </View>
   );
 };
+
 export default CustomInput;

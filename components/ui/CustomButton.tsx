@@ -1,7 +1,7 @@
 import { CustomButtonProps } from "@/types";
 import cn from "clsx";
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
 const CustomButton = ( {
   title,
@@ -14,34 +14,41 @@ const CustomButton = ( {
   const buttonVariants = {
     primary: "btn-primary",
     secondary: "btn-secondary",
+    tertiary: "btn-tertiary",
   };
 
   const textVariants = {
     primary: "text-secondary",
     secondary: "text-background",
+    tertiary: "text-background",
   };
 
   return (
     <TouchableOpacity
       onPress={ onPress }
       className={ cn(
-        "custom-btn",
         buttonVariants[ variant ],
-        isLoading ? "opacity-50" : "",
+        isLoading && "btn-disabled",
         customStyles
       ) }
       disabled={ isLoading }
+      activeOpacity={ 0.7 }
     >
-      <Text
-        className={ cn(
-          "text text-lg font-bold",
-          textVariants[ variant ],
-          textStyles
-        ) }
-      >
-        {title}
-      </Text>
+      {isLoading ? (
+        <ActivityIndicator color={ variant === "primary" ? "#FC7942" : "#FFF9F7" } />
+      ) : (
+        <Text
+          className={ cn(
+            "font-bold text-base",
+            textVariants[ variant ],
+            textStyles
+          ) }
+        >
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };
+
 export default CustomButton;

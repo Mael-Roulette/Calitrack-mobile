@@ -1,30 +1,16 @@
 import ExerciseItem from "@/components/exercises/ExerciseItem";
 import PageHeader from "@/components/headers/PageHeader";
 import { MAX_CUSTOM_EXERCISES } from "@/constants/value";
+import { useExerciseFilters } from "@/hooks/useExerciseFilters";
 import { useExercicesStore } from "@/store";
-import { Exercise } from "@/types";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseList = () => {
   const { exercices } = useExercicesStore();
-  const [ filteredExercises, setFilteredExercises ] = useState<Exercise[]>( [] );
-  const [ activeTab, setActiveTab ] = useState<"all" | "custom">( "all" );
-
-  useEffect( () => {
-    // Filtrer selon l'onglet actif
-    if ( activeTab === "all" ) {
-      // Tous les exercices SAUF les personnalisés
-      const allExercises = exercices.filter( ex => !ex.isCustom );
-      setFilteredExercises( allExercises );
-    } else {
-      // Uniquement les exercices personnalisés de l'utilisateur
-      const customExercises = exercices.filter( ex => ex.isCustom === true );
-      setFilteredExercises( customExercises );
-    }
-  }, [ exercices, activeTab ] );
+  const { activeTab, setActiveTab, filteredExercises } = useExerciseFilters( exercices );
 
   const goToExerciseDetails = ( id: string ) => {
     router.push( {

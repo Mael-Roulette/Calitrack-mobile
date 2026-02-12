@@ -10,7 +10,7 @@ export interface CustomButtonProps {
 	customStyles?: string;
 	textStyles?: string;
 	isLoading?: boolean;
-	variant?: "primary" | "secondary";
+	variant?: "primary" | "secondary" | "tertiary";
 }
 
 export interface CustomInputProps {

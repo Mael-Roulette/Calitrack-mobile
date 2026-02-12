@@ -3,35 +3,17 @@ import ExercisesSelectionModal from "@/components/exercises/ExercisesSelectionMo
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
+import { useGoalLabels } from "@/hooks/useGoalLabels";
 import { Exercise } from "@/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-interface LabelConfig {
-	total: string;
-	progress: string;
-}
-
-const LABEL_CONFIGS: Record<string, LabelConfig> = {
-  hold: {
-    total: "Temps de hold à atteindre",
-    progress: "Temps de hold actuel",
-  },
-  repetition: {
-    total: "Nombre de répétition à atteindre",
-    progress: "Nombre de répétition actuel",
-  },
-  default: {
-    total: "Max à atteindre",
-    progress: "Max actuel",
-  },
-};
 
 export default function AddGoal () {
   const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
   const [ selectedExercise, setSelectedExercise ] = useState<Exercise[]>( [] );
   const [ isSubmitting, setIsSubmitting ] = useState( false );
+  const labels = useGoalLabels( selectedExercise[ 0 ] );
 
   const handleExerciseModalVisibility = () => {
     setIsModalVisible( !isModalVisible );
@@ -41,12 +23,6 @@ export default function AddGoal () {
     setSelectedExercise( exercises );
     setIsModalVisible( false );
   };
-
-  // Calcul des labels basé sur l'exercice sélectionné
-  const labels = useMemo( () => {
-    if ( !selectedExercise?.[ 0 ]?.format ) return LABEL_CONFIGS.default;
-    return LABEL_CONFIGS[ selectedExercise[ 0 ].format ] || LABEL_CONFIGS.default;
-  }, [ selectedExercise ] );
 
   const submit = () => {
 

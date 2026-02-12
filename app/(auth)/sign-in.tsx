@@ -1,5 +1,6 @@
 import { signIn } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
+import { validators } from "@/utils/validation";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -14,11 +15,14 @@ const SignIn = () => {
 
     const { email, password } = form;
 
-    if ( !email || !password )
-      return Alert.alert(
-        "Erreur",
-        "Entrer un email et un mot de passe valide."
-      );
+    if ( !validators.email( email ) ) {
+      return Alert.alert( "Erreur", "Email invalide" );
+    }
+
+    const passwordValidation = validators.password( form.password );
+    if ( !passwordValidation.valid ) {
+      return Alert.alert( "Erreur", passwordValidation.error );
+    }
 
     setIsSubmitting( true );
 

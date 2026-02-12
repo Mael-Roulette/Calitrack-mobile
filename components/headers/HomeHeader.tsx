@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HeaderContainer } from "./HeaderContainer";
+import { useWeekCalendar } from "@/hooks/useWeekCalendar";
 
 interface HomeHeaderProps {
   greeting: string;
@@ -15,31 +16,7 @@ export default function HomeHeader ( {
   onCalendarPress
 }: HomeHeaderProps ) {
   const insets = useSafeAreaInsets();
-  const currentDay = new Date().getDate();
-
-  function getMonday ( d: Date ) {
-    d = new Date( d );
-    let day = d.getDay(),
-      diff = d.getDate() - day + ( day === 0 ? -6 : 1 );
-    return new Date( d.setDate( diff ) );
-  }
-
-  // Générer les jours de la semaine actuelle
-  function getWeekDays () {
-    const monday = getMonday( new Date() );
-    const dayLabels = [ "L", "M", "M", "J", "V", "S", "D" ];
-
-    return dayLabels.map( ( label, index ) => {
-      const date = new Date( monday );
-      date.setDate( monday.getDate() + index );
-      return {
-        label,
-        date: date.getDate()
-      };
-    } );
-  }
-
-  const days = getWeekDays();
+  const { days, currentDay } = useWeekCalendar();
 
   return (
     <HeaderContainer paddingTop={ insets.top }>

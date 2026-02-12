@@ -1,5 +1,6 @@
 import { useExercicesStore } from "@/store";
 import { Exercise } from "@/types";
+import { toggleExerciseSelection } from "@/utils/selection";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -113,23 +114,9 @@ const ExerciseSelectionModal = ( {
   /* -------------------------------------------------- */
   /* ---------- Sélection des exercices ---------- */
   const handleExerciseToggle = useCallback( ( exercise: Exercise ) => {
-    setSelectedExercises( ( prev ) => {
-      const isAlreadySelected = prev.some( ( ex ) => ex.$id === exercise.$id );
-
-      if ( isAlreadySelected ) {
-        // Désélectionner l'exercice
-        return prev.filter( ( ex ) => ex.$id !== exercise.$id );
-      } else {
-        // Si une limite est définie et atteinte, retirer le premier exercice
-        if ( selectableExercise && prev.length >= selectableExercise ) {
-          // Retirer le premier exercice et ajouter le nouveau
-          return [ ...prev.slice( 1 ), exercise ];
-        }
-        // Sinon, ajouter simplement l'exercice
-        return [ ...prev, exercise ];
-      }
-    } );
-
+    setSelectedExercises( ( prev ) =>
+      toggleExerciseSelection( prev, exercise, selectableExercise )
+    );
   }, [ selectableExercise ] );
 
   const isExerciseSelected = useCallback(

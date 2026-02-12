@@ -3,6 +3,7 @@ import { getExerciseImage } from "@/constants/exercises";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { useExercicesStore, useGoalsStore } from "@/store";
 import { Exercise } from "@/types";
+import { getDifficultyInfo } from "@/utils/exercises";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -41,24 +42,7 @@ const ExerciseDetails = () => {
 
   let difficultyInfo;
   if ( !loading ) {
-    const getDifficultyColor = ( difficulty: string ) => {
-      switch ( difficulty ) {
-        case "beginner":
-          return { traduction: "Débutant", color: "#3b82f6" };
-        case "novice":
-          return { traduction: "Novice", color: "#22c55e" };
-        case "intermediate":
-          return { traduction: "Intermédiaire", color: "#eab308" };
-        case "advanced":
-          return { traduction: "Avancé", color: "#f97316" };
-        case "expert":
-          return { traduction: "Expert", color: "#ef4444" };
-        default:
-          return { traduction: "Novice", color: "#22c55e" };
-      }
-    };
-
-    difficultyInfo = getDifficultyColor( exercise!.difficulty );
+    difficultyInfo = getDifficultyInfo( exercise!.difficulty );
   }
 
   return (
@@ -97,7 +81,7 @@ const ExerciseDetails = () => {
 
                 <View className="flex-row">
                   <Text className="text text-xl font-bold">Difficulté : </Text>
-                  <Text className="text text-xl font-bold text-secondary">{ difficultyInfo ? difficultyInfo.traduction : exercise!.difficulty }</Text>
+                  <Text className="text text-xl font-bold text-secondary">{ difficultyInfo ? difficultyInfo.label : exercise!.difficulty }</Text>
                 </View>
 
                 <View>

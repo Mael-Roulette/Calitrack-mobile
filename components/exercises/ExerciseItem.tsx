@@ -22,7 +22,7 @@ export default function ExerciseItem ( { exercise, onPress }: ExerciseItemProps 
       </View>
 
       <View className="bg-primary/60 p-3">
-        <Text className="z-10 text text-background text-ellipsis line-clamp-1">{exercise.name}</Text>
+        <Text className="z-10 label-text text-background text-ellipsis line-clamp-1">{exercise.name}</Text>
       </View>
     </TouchableOpacity>
   );
