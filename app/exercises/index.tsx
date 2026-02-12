@@ -1,6 +1,6 @@
 import ExerciseItem from "@/components/exercises/ExerciseItem";
 import PageHeader from "@/components/headers/PageHeader";
-import { MAX_CUSTOM_EXERCISES } from "@/constants/value";
+import { LIMITS } from "@/constants/value";
 import { useExerciseFilters } from "@/hooks/useExerciseFilters";
 import { useExercicesStore } from "@/store";
 import { router } from "expo-router";
@@ -56,7 +56,7 @@ const ExerciseList = () => {
       {/* Content */ }
       <View className="flex-1 px-2 pt-4">
         { activeTab === "custom" &&
-          <Text className="indicator-text mb-4">Nombre d&apos;exercices personnalisés : { filteredExercises.length } / { MAX_CUSTOM_EXERCISES } </Text>
+          <Text className="indicator-text mb-4">Nombre d&apos;exercices personnalisés : { filteredExercises.length } / { LIMITS.MAX_CUSTOM_EXERCISES } </Text>
         }
 
         <FlatList

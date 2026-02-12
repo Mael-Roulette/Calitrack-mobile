@@ -1,5 +1,6 @@
 import { createUser } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
+import { validators } from "@/utils/validation";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -12,11 +13,18 @@ const SignUp = () => {
   const submit = async () => {
     const { name, email, password } = form;
 
-    if ( !name || !email || !password )
-      return Alert.alert(
-        "Erreur",
-        "Entrer un pseudo, un email et un mot de passe valide."
-      );
+    if ( !validators.exerciseName( name ) ) {
+      return Alert.alert( "Erreur", "Le pseudo doit contenir entre 3 et 50 caractères" );
+    }
+
+    if ( !validators.email( email ) ) {
+      return Alert.alert( "Erreur", "Email invalide" );
+    }
+
+    const passwordValidation = validators.password( password );
+    if ( !passwordValidation.valid ) {
+      return Alert.alert( "Erreur", passwordValidation.error );
+    }
 
     setIsSubmitting( true );
 

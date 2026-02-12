@@ -3,6 +3,7 @@ import { getExerciseImage } from "@/constants/exercises";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { useExercicesStore, useGoalsStore } from "@/store";
 import { Exercise } from "@/types";
+import { showAlert } from "@/utils/alert";
 import { getDifficultyInfo } from "@/utils/exercises";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
@@ -24,21 +25,27 @@ const ExerciseDetails = () => {
   const { removeExercise } = useExercicesStore();
   const { refreshGoals } = useGoalsStore();
 
-  useEffect( () => {
-    const fetchExercise = async () => {
-      setLoading( true );
-      try {
-        const response = await getExerciseById( id as string );
-        setExercise( response as unknown as Exercise );
-      } catch ( error ) {
-        console.error( "Erreur lors de la récupération de l'exercice", error );
-        router.push( "/exercises" );
-      } finally {
-        setLoading( false );
-      }
-    };
-    fetchExercise();
-  }, [ id ] );
+  useEffect(() => {
+  const fetchExercise = async () => {
+    setLoading(true);
+    try {
+      const response = await getExerciseById(id as string);
+      setExercise(response as unknown as Exercise);
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'exercice", error);
+
+      showAlert.error("Impossible de charger l'exercice");
+      showAlert.confirm(
+        "Supprimer l'exercice",
+        "Êtes-vous sûr ?",
+        () => router.push("/exercises")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchExercise();
+}, [id]);
 
   let difficultyInfo;
   if ( !loading ) {
