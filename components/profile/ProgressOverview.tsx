@@ -1,7 +1,7 @@
 import { useAuthStore, useGoalsStore } from "@/store";
 import React, { useMemo } from "react";
 import { Text, View } from "react-native";
-import PrimaryGradient from "./PrimaryGradient";
+import PrimaryGradient from "../ui/PrimaryGradient";
 
 const ProgressOverview = () => {
   const { goals } = useGoalsStore();

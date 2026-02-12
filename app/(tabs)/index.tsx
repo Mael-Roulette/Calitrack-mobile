@@ -1,5 +1,5 @@
 import HomeHeader from "@/components/headers/HomeHeader";
-import TrainingDay from "@/components/trainings/TrainingDay";
+import EmptyState from "@/components/ui/EmptyState";
 import { useAuthStore, useExercicesStore } from "@/store";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -33,14 +33,24 @@ export default function HomePage () {
             weekInfo="Semaine 1 - Planche"
             onCalendarPress={ () => {} }
           />
+          
           <ScrollView className="flex-1 bg-background px-5">
             <View className="gap-4 pt-5">
               <Text className="text">Ma séance du jour</Text>
-              <TrainingDay title="Front lever" duration={ 90 } />
+              <EmptyState
+                title="Aucun entrainement prévu aujourd'hui"
+                buttonText="Modifier mes séances"
+                handlePress={ () => router.push( "/(tabs)/week" )}
+              />
             </View>
 
             <View className="gap-4 pt-6">
               <Text className="text">Mes objectifs</Text>
+              <EmptyState
+                title="Aucun objectif en cours"
+                buttonText="Ajouter un objectif"
+                handlePress={ () => router.push( "/(tabs)/goals" )}
+              />
             </View>
           </ScrollView>
         </>
