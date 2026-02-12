@@ -33,7 +33,7 @@ export default function HomePage () {
             weekInfo="Semaine 1 - Planche"
             onCalendarPress={ () => {} }
           />
-          
+
           <ScrollView className="flex-1 bg-background px-5">
             <View className="gap-4 pt-5">
               <Text className="text">Ma séance du jour</Text>
@@ -49,7 +49,7 @@ export default function HomePage () {
               <EmptyState
                 title="Aucun objectif en cours"
                 buttonText="Ajouter un objectif"
-                handlePress={ () => router.push( "/(tabs)/goals" )}
+                handlePress={ () => router.push( "/goal/add-goal" )}
               />
             </View>
           </ScrollView>

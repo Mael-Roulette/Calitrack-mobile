@@ -1,7 +1,8 @@
 import { Training } from "@/types";
 import { formatDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
+import CustomButton from "../ui/CustomButton";
 import PrimaryGradient from "../ui/PrimaryGradient";
 
 interface TrainingDayProps {
@@ -21,9 +22,11 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
           </View>
         </View>
 
-        <TouchableOpacity className="btn-primary border-0">
-          <Text className="text-secondary font-bold text-lg">Voir ma séance</Text>
-        </TouchableOpacity>
+        <CustomButton
+          title="Voir ma séance"
+          onPress={ () => {} }
+          customStyles="border-0"
+        />
       </View>
     </PrimaryGradient>
   );

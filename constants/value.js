@@ -4,9 +4,6 @@ export const MAX_TRAININGS = 6;
 export const MAX_GOALS = 4;
 export const MAX_CUSTOM_EXERCISES = 10;
 
-export const DAYS_EN = [ "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ];
-export const DAYS_FR = [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ];
-
 export const DAYS_TRANSLATION = [
   { label: "Lundi", value: "monday" },
   { label: "Mardi", value: "tuesday" },
@@ -16,5 +13,6 @@ export const DAYS_TRANSLATION = [
   { label: "Samedi", value: "saturday" },
   { label: "Dimanche", value: "sunday" },
 ];
+
 export const APP_VERSION = Constants.expoConfig?.version || "1.0.0";
 export const LEGAL_CONTENT_UPDATED_AT = "14 août 2025";

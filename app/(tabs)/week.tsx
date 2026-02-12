@@ -1,6 +1,7 @@
 import SimpleHeader from "@/components/headers/SimpleHeader";
+import CustomButton from "@/components/ui/CustomButton";
 import { router } from "expo-router";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoalsPage () {
@@ -14,9 +15,10 @@ export default function GoalsPage () {
         onAddPress={ () => {} }
       />
       <ScrollView className="flex-1 bg-background px-5 pt-5">
-        <TouchableOpacity className="btn-primary" onPress={ () => router.push( "/exercises" ) }>
-          <Text className="text-secondary font-bold text-lg">Voir les mouvements</Text>
-        </TouchableOpacity>
+        <CustomButton
+          title="Voir les mouvements"
+          onPress={ () => router.push( "/exercises" ) }
+        />
       </ScrollView>
     </SafeAreaView>
   );

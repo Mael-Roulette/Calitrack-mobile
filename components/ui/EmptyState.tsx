@@ -1,4 +1,5 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
+import CustomButton from "./CustomButton";
 import PrimaryGradient from "./PrimaryGradient";
 
 interface EmptyStateProps {
@@ -13,9 +14,11 @@ export default function EmptyState ( { title, buttonText, handlePress }: EmptySt
       <View className='px-4 py-4 gap-5'>
         <Text className="text text-background">{ title }</Text>
 
-        <TouchableOpacity className="btn-primary border-0" onPress={ handlePress }>
-          <Text className="text-secondary font-bold text-lg">{ buttonText }</Text>
-        </TouchableOpacity>
+        <CustomButton
+          title={ buttonText }
+          onPress={ handlePress }
+          customStyles="border-0"
+        />
       </View>
     </PrimaryGradient>
   );
