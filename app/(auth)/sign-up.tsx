@@ -1,9 +1,11 @@
+import CustomButton from "@/components/ui/CustomButton";
+import CustomInput from "@/components/ui/CustomInput";
 import { createUser } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
 import { validators } from "@/utils/validation";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 const SignUp = () => {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
@@ -48,47 +50,41 @@ const SignUp = () => {
         </Text>
 
         <View className='gap-6'>
-          <View className="gap-2">
-            <Text className="text">Pseudo</Text>
-            <TextInput
-              placeholder='Entrer votre pseudo'
-              value={ form.name }
-              onChangeText={ ( text: string ) =>
-                setForm( ( prev ) => ( { ...prev, name: text } ) )
-              }
-              className="custom-input"
-            />
-          </View>
+          <CustomInput
+            label="Pseudo"
+            placeholder="Entrer votre pseudo"
+            value={ form.name }
+            onChangeText={ ( text: string ) =>
+              setForm( ( prev ) => ( { ...prev, name: text } ) )
+            }
+          />
 
-          <View className="gap-2">
-            <Text className="text">Email</Text>
-            <TextInput
-              placeholder='Entrer votre email'
-              value={ form.email }
-              onChangeText={ ( text: string ) =>
-                setForm( ( prev ) => ( { ...prev, email: text } ) )
-              }
-              keyboardType='email-address'
-              className="custom-input"
-            />
-          </View>
+          <CustomInput
+            label="Email"
+            placeholder="Entrer votre email"
+            value={ form.email }
+            onChangeText={ ( text: string ) =>
+              setForm( ( prev ) => ( { ...prev, email: text } ) )
+            }
+            keyboardType='email-address'
+          />
 
-          <View className="gap-2">
-            <Text className="text">Mot de passe</Text>
-            <TextInput
-              placeholder='Entrer votre mot de passe'
-              value={ form.password }
-              onChangeText={ ( text: string ) =>
-                setForm( ( prev ) => ( { ...prev, password: text } ) )
-              }
-              secureTextEntry={ true }
-              className="custom-input"
-            />
-          </View>
+          <CustomInput
+            label="Mot de passe"
+            placeholder="Entrer votre mot de passe"
+            secureTextEntry
+            value={ form.password }
+            onChangeText={ ( text: string ) =>
+              setForm( ( prev ) => ( { ...prev, password: text } ) )
+            }
+          />
 
-          <TouchableOpacity onPress={ submit } disabled={ isSubmitting } className="btn-secondary">
-            <Text className="text-background font-bold text-lg">Inscription</Text>
-          </TouchableOpacity>
+          <CustomButton
+            title="Inscription"
+            onPress={ submit }
+            isLoading={ isSubmitting }
+            variant="secondary"
+          />
         </View>
       </View>
 

@@ -1,6 +1,7 @@
+import CustomButton from "@/components/ui/CustomButton";
 import { router } from "expo-router";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
 
 const Index = () => {
   const signin = () => {
@@ -23,13 +24,16 @@ const Index = () => {
       </View>
 
       <View className='gap-4 mb-14'>
-        <TouchableOpacity onPress={ signin } className="btn-secondary">
-          <Text className="text-background font-bold text-lg">Connexion</Text>
-        </TouchableOpacity>
+        <CustomButton
+          title="Connexion"
+          onPress={ signin }
+          variant="secondary"
+        />
 
-        <TouchableOpacity onPress={ signup } className="btn-primary">
-          <Text className="text-secondary font-bold text-lg">Inscription</Text>
-        </TouchableOpacity>
+        <CustomButton
+          title="Inscription"
+          onPress={ signup }
+        />
       </View>
     </View>
   );

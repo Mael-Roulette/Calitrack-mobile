@@ -1,9 +1,11 @@
+import CustomButton from "@/components/ui/CustomButton";
+import CustomInput from "@/components/ui/CustomInput";
 import { signIn } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
 import { validators } from "@/utils/validation";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 const SignIn = () => {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
@@ -44,35 +46,31 @@ const SignIn = () => {
         <Text className='title'>Me connecter</Text>
 
         <View className='gap-6'>
-          <View className='gap-2'>
-            <Text className="text">Email</Text>
-            <TextInput
-              placeholder='Entrer votre email'
-              value={ form.email }
-              onChangeText={ ( text: string ) =>
-                setForm( ( prev ) => ( { ...prev, email: text } ) )
-              }
-              keyboardType='email-address'
-              className="custom-input"
-              autoCapitalize="none"
-            />
-          </View>
+          <CustomInput
+            label="Email"
+            placeholder="Entrer votre email"
+            value={ form.email }
+            onChangeText={ ( text: string ) =>
+              setForm( ( prev ) => ( { ...prev, email: text } ) )
+            }
+          />
 
-          <View className='gap-2'>
-            <Text className="text">Mot de passe</Text>
-            <TextInput
-              placeholder='Entrer votre mot de passe'
-              value={ form.password }
-              onChangeText={ ( text: string ) =>
-                setForm( ( prev ) => ( { ...prev, password: text } ) )
-              }
-              secureTextEntry
-              className="custom-input text-primary"
-            />
-          </View>
-          <TouchableOpacity onPress={ submit } disabled={ isSubmitting } className="btn-secondary">
-            <Text className="text-background font-bold text-lg">Connexion</Text>
-          </TouchableOpacity>
+          <CustomInput
+            label="Mot de passe"
+            placeholder="Entrer votre mot de passe"
+            secureTextEntry
+            value={ form.password }
+            onChangeText={ ( text: string ) =>
+              setForm( ( prev ) => ( { ...prev, password: text } ) )
+            }
+          />
+
+          <CustomButton
+            title="Connexion"
+            onPress={ submit }
+            isLoading={ isSubmitting }
+            variant="secondary"
+          />
         </View>
       </View>
 
