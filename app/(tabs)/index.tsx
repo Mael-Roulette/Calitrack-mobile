@@ -1,6 +1,8 @@
+import GoalItem from "@/components/goals/GoalItem";
 import HomeHeader from "@/components/headers/HomeHeader";
 import EmptyState from "@/components/ui/EmptyState";
 import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
+import { Goal } from "@/types";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -8,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomePage () {
   const { user, isLoading } = useAuthStore();
-  const { fetchUserGoals } = useGoalsStore();
+  const { fetchUserGoals, getActiveGoals } = useGoalsStore();
   const { fetchExercises } = useExercicesStore();
 
   useEffect( () => {
@@ -21,6 +23,8 @@ export default function HomePage () {
     fetchExercises();
     fetchUserGoals();
   }, [ user ] );
+
+  const inProgressGoals = getActiveGoals();
 
   return (
     <SafeAreaView  style={ { flex: 1, backgroundColor: "#FC7942" } }>
@@ -38,7 +42,7 @@ export default function HomePage () {
 
           <ScrollView className="flex-1 bg-background px-5">
             <View className="gap-4 pt-5">
-              <Text className="text">Ma séance du jour</Text>
+              <Text className="text text-xl">Ma séance du jour</Text>
               <EmptyState
                 title="Aucun entrainement prévu aujourd'hui"
                 buttonText="Modifier mes séances"
@@ -47,12 +51,18 @@ export default function HomePage () {
             </View>
 
             <View className="gap-4 pt-6">
-              <Text className="text">Mes objectifs</Text>
-              <EmptyState
-                title="Aucun objectif en cours"
-                buttonText="Ajouter un objectif"
-                handlePress={ () => router.push( "/goal/add-goal" )}
-              />
+              <Text className="text text-xl">Mes objectifs</Text>
+              { inProgressGoals.length === 0 ?
+                <EmptyState
+                  title="Aucun objectif en cours"
+                  buttonText="Ajouter un objectif"
+                  handlePress={ () => router.push( "/goal/add-goal" )}
+                />
+                :
+                inProgressGoals.map( ( goal: Goal ) => (
+                  <GoalItem key={ goal.$id } goal={ goal } />
+                ))
+              }
             </View>
           </ScrollView>
         </>

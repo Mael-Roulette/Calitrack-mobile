@@ -32,7 +32,7 @@
 	}
 
 	.label-text {
-		@apply text-sm text-primary-100 font-sregular;
+		@apply text-base text-primary-100 font-sregular;
 	}
 }
 

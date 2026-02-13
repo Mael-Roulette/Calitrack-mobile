@@ -12,7 +12,7 @@ export default function EmptyState ( { title, buttonText, handlePress }: EmptySt
   return (
     <PrimaryGradient>
       <View className='px-4 py-4 gap-5'>
-        <Text className="text text-background">{ title }</Text>
+        <Text className="text text-lg text-background">{ title }</Text>
 
         <CustomButton
           title={ buttonText }

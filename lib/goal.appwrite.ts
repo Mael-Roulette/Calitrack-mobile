@@ -1,7 +1,7 @@
 import { LIMITS } from "@/constants/value";
 import { CreateGoalParams, Goal, UpdateGoalParams } from "@/types";
 import { buildGoalObject } from "@/utils/goals";
-import { ID, Permission, Query, Role } from "react-native-appwrite";
+import { ID, Permission, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 import { getCurrentUser } from "./user.appwrite";
 
@@ -79,9 +79,6 @@ export const getGoalsFromUser = async (): Promise<Goal[]> => {
   const response = await tablesDB.listRows( {
     databaseId,
     tableId: goalTable,
-    queries: [
-      Query.orderDesc( "$createdAt" ),
-    ],
   } );
 
   return Promise.all( response.rows.map( buildGoalObject ) );

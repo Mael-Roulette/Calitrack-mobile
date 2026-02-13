@@ -1,4 +1,5 @@
 import { Exercise } from "@/types";
+import { memo, useCallback } from "react";
 import { Modal, Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";
 import CustomInput from "../ui/CustomInput";
@@ -14,7 +15,7 @@ interface UpdateGoalModalProps {
   isUpdating: boolean;
 }
 
-export default function UpdateGoalModal ( {
+function UpdateGoalModal ( {
   modalVisible,
   setModalVisible,
   exercise,
@@ -24,39 +25,51 @@ export default function UpdateGoalModal ( {
   handleUpdateProgress,
   isUpdating
 }: UpdateGoalModalProps ) {
+
+  const handleClose = useCallback( () => {
+    if ( !isUpdating ) {
+      setModalVisible( false );
+    }
+  }, [ isUpdating, setModalVisible ] );
+
   return (
     <Modal
-      animationType='slide'
+      animationType='fade'
       transparent={ true }
       visible={ modalVisible }
       statusBarTranslucent={ true }
-      onRequestClose={ () => setModalVisible( false ) }
+      onRequestClose={ handleClose }
     >
       <View className='flex-1 justify-center items-center bg-black/50'>
-        <View className='bg-background w-[80%] p-5 rounded-xl'>
-          <Text className='text-xl font-calsans text-primary mb-4'>
+        <View className='bg-background w-[85%] p-6 rounded-xl'>
+          <Text className='text-2xl font-calsans text-primary mb-2'>
             { exercise.name }
           </Text>
 
+          <Text className='indicator-text text-lg mb-4'>
+            Progression actuelle : { progress }
+          </Text>
+
           <CustomInput
-            label='Ajouter une progression'
+            label='Nouvelle progression'
             value={ newProgress }
-            placeholder={ `${ progress }` }
+            placeholder={ `Ex: ${ progress + 1 }` }
             keyboardType='numeric'
             onChangeText={ setNewProgress }
           />
 
-          <View className='flex-col gap-2 mt-5'>
-            <CustomButton
-              title='Annuler'
-              onPress={ () => setModalVisible( false ) }
-            />
-
+          <View className='flex-col gap-3 mt-6'>
             <CustomButton
               title='Mettre à jour'
               onPress={ handleUpdateProgress }
               isLoading={ isUpdating }
               variant='secondary'
+            />
+
+            <CustomButton
+              title='Annuler'
+              onPress={ handleClose }
+              variant='primary'
             />
           </View>
         </View>
@@ -64,3 +77,14 @@ export default function UpdateGoalModal ( {
     </Modal>
   );
 }
+
+// Mémoriser le composant
+export default memo( UpdateGoalModal, ( prevProps, nextProps ) => {
+  // Ne re-render que si les props essentielles ont changé
+  return (
+    prevProps.modalVisible === nextProps.modalVisible &&
+    prevProps.newProgress === nextProps.newProgress &&
+    prevProps.isUpdating === nextProps.isUpdating &&
+    prevProps.progress === nextProps.progress
+  );
+} );

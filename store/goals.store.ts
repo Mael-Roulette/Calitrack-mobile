@@ -3,105 +3,158 @@ import { Goal } from "@/types";
 import { create } from "zustand";
 import useAuthStore from "./auth.store";
 
-type GoalState = {
+interface GoalState {
 	goals: Goal[];
 	isLoadingGoals: boolean;
+	error: string | null;
 	loaded: boolean;
 
+	// Actions de base
 	setGoals: ( goals: Goal[] ) => void;
 	setIsLoadingGoals: ( value: boolean ) => void;
+	setError: ( error: string | null ) => void;
+
+	// Actions CRUD
 	fetchUserGoals: () => Promise<void>;
 	refreshGoals: () => Promise<void>;
 	addGoalStore: ( goal: Goal ) => void;
 	updateGoalStore: ( goalId: string, updatedGoal: Partial<Goal> ) => void;
 	deleteGoalStore: ( goalId: string ) => void;
-};
+
+	// Actions utilitaires
+	getGoalById: ( goalId: string ) => Goal | undefined;
+	getActiveGoals: () => Goal[];
+	getFinishedGoals: () => Goal[];
+	clearGoals: () => void;
+}
 
 const useGoalsStore = create<GoalState>( ( set, get ) => ( {
   goals: [],
   isLoadingGoals: false,
+  error: null,
   loaded: false,
 
-  setGoals: ( goals: Goal[] ) => set( { goals } ),
+  // Setters
+  setGoals: ( goals: Goal[] ) => set( { goals, error: null } ),
   setIsLoadingGoals: ( value: boolean ) => set( { isLoadingGoals: value } ),
+  setError: ( error: string | null ) => set( { error } ),
 
+  // Récupération initiale des objectifs
   fetchUserGoals: async () => {
     const { isAuthenticated } = useAuthStore.getState();
-    if ( !isAuthenticated ) return;
 
+    if ( !isAuthenticated ) {
+      set( { error: "Utilisateur non authentifié" } );
+      return;
+    }
+
+    // Éviter les appels multiples
     if ( get().loaded ) return;
 
-    set( { isLoadingGoals: true } );
+    set( { isLoadingGoals: true, error: null } );
 
     try {
-      const documents = await getGoalsFromUser();
-      const goals = documents.map(
-        ( doc ) =>
-					( {
-					  $id: doc.$id,
-					  $createdAt: doc.$createdAt,
-					  $updatedAt: doc.$updatedAt,
-					  exercise: doc.exercise,
-					  progress: doc.progress,
-					  progressHistory: doc.progressHistory,
-					  total: doc.total,
-					  state: doc.state,
-					} ) as Goal
-      );
-      set( { goals, loaded: true } );
+      const goals = await getGoalsFromUser();
+      set( {
+        goals,
+        loaded: true,
+        error: null
+      } );
     } catch ( error ) {
-      console.error( "Erreur lors de la récupération des objectifs:", error );
-      set( { goals: [] } );
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Erreur lors de la récupération des objectifs";
+
+      console.error( "Erreur fetchUserGoals:", error );
+      set( {
+        goals: [],
+        error: errorMessage,
+        loaded: false
+      } );
     } finally {
       set( { isLoadingGoals: false } );
     }
   },
 
+  // Rafraîchir les objectifs
   refreshGoals: async () => {
     const { isAuthenticated } = useAuthStore.getState();
-    if ( !isAuthenticated ) return;
 
-    set( { isLoadingGoals: true } );
+    if ( !isAuthenticated ) {
+      set( { error: "Utilisateur non authentifié" } );
+      return;
+    }
+
+    set( { isLoadingGoals: true, error: null } );
 
     try {
-      const documents = await getGoalsFromUser();
-      const goals = documents.map(
-        ( doc ) =>
-					( {
-					  $id: doc.$id,
-					  $createdAt: doc.$createdAt,
-					  $updatedAt: doc.$updatedAt,
-					  exercise: doc.exercise,
-					  progress: doc.progress,
-					  progressHistory: doc.progressHistory,
-					  total: doc.total,
-					  state: doc.state,
-					} ) as Goal
-      );
-      set( { goals } );
+      const goals = await getGoalsFromUser();
+      set( {
+        goals,
+        error: null
+      } );
     } catch ( error ) {
-      console.error( "Erreur lors du refresh des objectifs:", error );
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Erreur lors du rafraîchissement des objectifs";
+
+      console.error( "Erreur refreshGoals:", error );
+      set( { error: errorMessage } );
     } finally {
       set( { isLoadingGoals: false } );
     }
   },
 
+  // Ajouter un objectif au store
   addGoalStore: ( goal: Goal ) => {
-    set( ( state ) => ( { goals: [ ...state.goals, goal ] } ) );
+    set( ( state ) => ( {
+      goals: [ goal, ...state.goals ],
+      error: null
+    } ) );
   },
 
+  // Mettre à jour un objectif
   updateGoalStore: ( goalId: string, updatedGoal: Partial<Goal> ) => {
     set( ( state ) => ( {
       goals: state.goals.map( ( goal ) =>
-        goal.$id === goalId ? { ...goal, ...updatedGoal } : goal
+        goal.$id === goalId
+          ? { ...goal, ...updatedGoal }
+          : goal
       ),
+      error: null
     } ) );
   },
 
+  // Supprimer un objectif
   deleteGoalStore: ( goalId: string ) => {
     set( ( state ) => ( {
-      goals: state.goals.filter( ( goal ) => goal.$id !== goalId )
+      goals: state.goals.filter( ( goal ) => goal.$id !== goalId ),
+      error: null
     } ) );
+  },
+
+  // Récupérer un objectif par son ID
+  getGoalById: ( goalId: string ) => {
+    return get().goals.find( ( goal ) => goal.$id === goalId );
+  },
+
+  // Récupérer les objectifs en cours
+  getActiveGoals: () => {
+    return get().goals.filter( ( goal ) => goal.state === "in-progress" );
+  },
+
+  // Récupérer les objectifs terminés
+  getFinishedGoals: () => {
+    return get().goals.filter( ( goal ) => goal.state === "finish" );
+  },
+
+  // Réinitialiser les objectifs
+  clearGoals: () => {
+    set( {
+      goals: [],
+      loaded: false,
+      error: null
+    } );
   }
 } ) );
 
