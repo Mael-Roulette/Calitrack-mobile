@@ -3,6 +3,7 @@ import { Models } from "react-native-appwrite";
 export interface User extends Models.Document {
 	name: string;
 	email: string;
+	accountId: string;
 	avatar: string;
 	roles: ( "user" | "student" | "coach" )[];
 }

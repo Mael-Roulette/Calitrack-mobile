@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function GoalsPage () {
+export default async function GoalsPage () {
   return (
     <SafeAreaView  style={ { flex: 1, backgroundColor: "#FC7942" } }>
       <SimpleHeader

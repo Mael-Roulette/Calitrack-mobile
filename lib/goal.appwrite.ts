@@ -49,9 +49,9 @@ export const createGoal = async ( {
       state: "in-progress",
     },
     permissions: [
-      Permission.read( Role.user( currentUser.$id ) ),
-      Permission.update( Role.user( currentUser.$id ) ),
-      Permission.delete( Role.user( currentUser.$id ) ),
+      Permission.read( Role.user( currentUser.accountId ) ),
+      Permission.update( Role.user( currentUser.accountId ) ),
+      Permission.delete( Role.user( currentUser.accountId ) ),
     ],
   } );
 
