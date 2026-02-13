@@ -1,8 +1,29 @@
+import { Exercise } from "@/types";
 import { Modal, Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";
 import CustomInput from "../ui/CustomInput";
 
-export default function UpdateGoalModal () {
+interface UpdateGoalModalProps {
+  modalVisible: boolean;
+  setModalVisible: ( value: boolean ) => void;
+  exercise: Exercise;
+  progress: number;
+  newProgress: string;
+  setNewProgress: ( value: string ) => void;
+  handleUpdateProgress: () => void;
+  isUpdating: boolean;
+}
+
+export default function UpdateGoalModal ( {
+  modalVisible,
+  setModalVisible,
+  exercise,
+  progress,
+  newProgress,
+  setNewProgress,
+  handleUpdateProgress,
+  isUpdating
+}: UpdateGoalModalProps ) {
   return (
     <Modal
       animationType='slide'
@@ -20,20 +41,21 @@ export default function UpdateGoalModal () {
           <CustomInput
             label='Ajouter une progression'
             value={ newProgress }
-            placeholder={ `${progress}` }
+            placeholder={ `${ progress }` }
             keyboardType='numeric'
             onChangeText={ setNewProgress }
           />
 
           <View className='flex-col gap-2 mt-5'>
             <CustomButton
+              title='Annuler'
+              onPress={ () => setModalVisible( false ) }
+            />
+
+            <CustomButton
               title='Mettre à jour'
               onPress={ handleUpdateProgress }
               isLoading={ isUpdating }
-            />
-            <CustomButton
-              title='Annuler'
-              onPress={ () => setModalVisible( false ) }
               variant='secondary'
             />
           </View>

@@ -1,6 +1,6 @@
 import HomeHeader from "@/components/headers/HomeHeader";
 import EmptyState from "@/components/ui/EmptyState";
-import { useAuthStore, useExercicesStore } from "@/store";
+import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomePage () {
   const { user, isLoading } = useAuthStore();
+  const { fetchUserGoals } = useGoalsStore();
   const { fetchExercises } = useExercicesStore();
 
   useEffect( () => {
@@ -18,7 +19,8 @@ export default function HomePage () {
 
   useEffect( () => {
     fetchExercises();
-  }, [ fetchExercises, user ] );
+    fetchUserGoals();
+  }, [ user ] );
 
   return (
     <SafeAreaView  style={ { flex: 1, backgroundColor: "#FC7942" } }>
