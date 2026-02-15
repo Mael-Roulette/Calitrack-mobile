@@ -1,5 +1,5 @@
 // components/headers/PageHeader.tsx
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,13 +8,15 @@ import { HeaderContainer } from "./HeaderContainer";
 interface PageHeaderProps {
   title: string;
   onBackPress?: () => void;
-  onAddPress?: () => void;
+  onRightPress?: () => void;
+  rightIcon?: "add" | "menu";
 }
 
 export default function PageHeader ( {
   title,
   onBackPress,
-  onAddPress
+  onRightPress,
+  rightIcon = "add"
 }: PageHeaderProps ) {
   const insets = useSafeAreaInsets();
 
@@ -38,12 +40,17 @@ export default function PageHeader ( {
           <Text className="title text-background flex-1 truncate" numberOfLines={ 1 }>{title}</Text>
         </View>
 
-        {onAddPress && (
+        {onRightPress && (
           <TouchableOpacity
             className="bg-background rounded-full p-2"
-            onPress={ onAddPress }
+            onPress={ onRightPress }
           >
-            <Ionicons name="add-circle-outline" size={ 24 } className="text-primary" />
+            { rightIcon === "add" &&
+              <Ionicons name="add-circle-outline" size={ 24 } className="text-primary" />
+            }
+            { rightIcon === "menu" &&
+            <Entypo name="dots-three-vertical" size={ 24 } className="text-primary" />
+            }
           </TouchableOpacity>
         )}
       </View>

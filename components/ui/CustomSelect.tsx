@@ -9,12 +9,12 @@ import {
 } from "react-native";
 
 export type Option<T extends string> = {
-  label: string;
-  value: T;
+  readonly label: string;
+  readonly value: T;
 };
 
 type CustomSelectProps<T extends string> = {
-  options: Option<T>[];
+  options: readonly Option<T>[];
   value: T | null;
   onChange: ( value: T ) => void;
   placeholder?: string;
@@ -57,7 +57,7 @@ function CustomSelect<T extends string> ( {
         >
           <View className="bg-white rounded-md w-4/5 max-h-1/2 py-2">
             <FlatList
-              data={ options }
+              data={ options as Option<T>[] }
               keyExtractor={ ( item ) => item.value }
               renderItem={ ( { item } ) => (
                 <TouchableOpacity

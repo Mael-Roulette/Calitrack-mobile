@@ -1,7 +1,7 @@
 import PageHeader from "@/components/headers/PageHeader";
+import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { getExerciseImage } from "@/constants/exercises";
 import { getExerciseById } from "@/lib/exercise.appwrite";
-import { useExercicesStore, useGoalsStore } from "@/store";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { getDifficultyInfo } from "@/utils/exercises";
@@ -21,9 +21,6 @@ const ExerciseDetails = () => {
   const [ exercise, setExercise ] = useState<Exercise>();
   const [ loading, setLoading ] = useState( true );
   const [ showMenu, setShowMenu ] = useState( false );
-
-  const { removeExercise } = useExercicesStore();
-  const { refreshGoals } = useGoalsStore();
 
   useEffect(() => {
   const fetchExercise = async () => {
@@ -47,6 +44,21 @@ const ExerciseDetails = () => {
     difficultyInfo = getDifficultyInfo( exercise!.difficulty );
   }
 
+  const items: ActionMenuItem[] = [
+  {
+    icon: "edit",
+    text: "Modifier",
+    onPress: () => {},
+  },
+  {
+    icon: "trash-2",
+    text: "Supprimer",
+    onPress: () => {},
+    color: "#ef4444",
+    textColor: "#ef4444",
+  },
+];
+
   return (
     <SafeAreaView className='flex-1 bg-secondary' edges={ [ "bottom" ] }>
       <View className='flex-1'>
@@ -58,7 +70,9 @@ const ExerciseDetails = () => {
         ) : (
           <>
             <PageHeader
-              title="Les mouvements"
+              title={ exercise!.name }
+              onRightPress={ exercise!.isCustom ? ( () => setShowMenu( true ) ): undefined }
+              rightIcon="menu"
             />
             <ScrollView className="px-5 bg-background">
               { !exercise!.isCustom &&
@@ -92,6 +106,12 @@ const ExerciseDetails = () => {
                 </View>
               </View>
             </ScrollView>
+
+            <ActionsMenu
+              visible={showMenu}
+              onClose={() => setShowMenu(false)}
+              items={items}
+            />
           </>
         ) }
       </View>
