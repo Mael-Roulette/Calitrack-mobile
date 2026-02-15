@@ -23,21 +23,21 @@ const ExerciseDetails = () => {
   const [ showMenu, setShowMenu ] = useState( false );
 
   useEffect(() => {
-  const fetchExercise = async () => {
-    setLoading(true);
-    try {
-      const response = await getExerciseById(id as string);
-      setExercise(response as unknown as Exercise);
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'exercice", error);
+    const fetchExercise = async () => {
+      setLoading(true);
+      try {
+        const response = await getExerciseById(id as string);
+        setExercise(response as unknown as Exercise);
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'exercice", error);
 
-      showAlert.error("Impossible de charger l'exercice",() => router.push("/exercises") );
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchExercise();
-}, [id]);
+        showAlert.error("Impossible de charger l'exercice",() => router.push("/exercises") );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExercise();
+  }, [ id ]);
 
   let difficultyInfo;
   if ( !loading ) {
@@ -45,19 +45,26 @@ const ExerciseDetails = () => {
   }
 
   const items: ActionMenuItem[] = [
-  {
-    icon: "edit",
-    text: "Modifier",
-    onPress: () => {},
-  },
-  {
-    icon: "trash-2",
-    text: "Supprimer",
-    onPress: () => {},
-    color: "#ef4444",
-    textColor: "#ef4444",
-  },
-];
+    {
+      icon: "edit",
+      text: "Modifier",
+      onPress: () => router.push( {
+        pathname: "/exercises/[id]/edit",
+        params: { id: exercise!.$id }
+      } )
+    },
+    {
+      icon: "trash-2",
+      text: "Supprimer",
+      onPress: () => {},
+      color: "#ef4444",
+      textColor: "#ef4444",
+    },
+  ];
+
+  const handleDelete = () => {
+
+  }
 
   return (
     <SafeAreaView className='flex-1 bg-secondary' edges={ [ "bottom" ] }>
@@ -84,7 +91,7 @@ const ExerciseDetails = () => {
                       contentFit="cover"
                     />
                   ) : (
-                    <Text className="title-4 text-background text-center">Illustration en cours de création…</Text>
+                    <Text className="title-3 text-background text-center">Illustration en cours de création…</Text>
                   ) }
                 </View>
               }

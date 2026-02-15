@@ -43,7 +43,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
       />
 
       <View>
-        <Text className='font-sregular text-lg text-primary mb-2'>Difficulté</Text>
+        <Text className='label-text mb-2'>Difficulté</Text>
         <CustomSelect
           options={ DIFFICULTY_OPTIONS }
           value={ formData.difficulty }
@@ -54,7 +54,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
       </View>
 
       <View>
-        <Text className='font-sregular text-lg text-primary mb-2'>Type</Text>
+        <Text className='label-text mb-2'>Type</Text>
         <CustomSelect
           options={ EXERCISE_TYPE_OPTIONS }
           value={ formData.type }
@@ -65,7 +65,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
       </View>
 
       <View>
-        <Text className='font-sregular text-lg text-primary mb-2'>Format</Text>
+        <Text className='label-text mb-2'>Format</Text>
         <CustomSelect
           options={ EXERCISE_FORMAT_OPTIONS }
           value={ formData.format }

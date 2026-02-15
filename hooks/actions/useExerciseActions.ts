@@ -1,4 +1,4 @@
-import { createCustomExercise } from "@/lib/exercise.appwrite";
+import { createCustomExercise, updateCustomExercise } from "@/lib/exercise.appwrite";
 import { useExercicesStore } from "@/store";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -9,7 +9,7 @@ export function useExerciseActions () {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
   const [ isUpdating, setIsUpdating ] = useState<boolean>( false );
   const [ isDeleting, setIsDeleting ] = useState<boolean>( false );
-  const { addExercise } = useExercicesStore();
+  const { addExercise, updateExercise } = useExercicesStore();
 
   /**
    * Action pour créer un exercice personnalisé
@@ -58,8 +58,58 @@ export function useExerciseActions () {
       }
     }, [ addExercise, isSubmitting ] );
 
+  /**
+   * Action pour modifier un exercice personnalisé
+   */
+  const handleUpdate = useCallback( async ( {
+    $id,
+    name,
+    description,
+    type,
+    difficulty,
+    format,
+    image
+  }: Exercise ) => {
+    if ( isUpdating ) return;
+
+    setIsUpdating( true );
+
+    try {
+      const response = await updateCustomExercise( {
+        $id,
+        name,
+        description,
+        type,
+        difficulty,
+        format,
+        image
+      } );
+
+      if ( !response ) {
+        showAlert.error(
+          "Erreur lors de la modification de l'exercice",
+          () => router.push( "/exercises" )
+        );
+        return;
+      }
+
+      updateExercise( $id, { name, description, type, difficulty, format, image } );
+    } catch ( error ) {
+      console.log( error );
+      showAlert.error(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue."
+      );
+    } finally {
+      router.push( "/exercises" );
+    }
+  }, [ isUpdating, updateExercise ] );
+
   return {
     handleCreate,
-    isSubmitting
+    handleUpdate,
+    isSubmitting,
+    isUpdating
   };
 }

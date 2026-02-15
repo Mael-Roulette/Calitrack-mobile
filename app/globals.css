@@ -4,18 +4,14 @@
 
 @layer base {
 	.title {
-		@apply text-3xl text-primary font-calsans;
-	}
-
-	.title-2 {
 		@apply text-2xl text-primary font-calsans;
 	}
 
-	.title-3 {
+	.title-2 {
 		@apply text-xl text-primary font-calsans;
 	}
 
-	.title-4 {
+	.title-3 {
 		@apply text-lg text-primary font-calsans;
 	}
 

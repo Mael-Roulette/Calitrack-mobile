@@ -23,7 +23,7 @@ const ExerciseList = () => {
     <SafeAreaView className="bg-background flex-1" edges={ [ "bottom" ] }>
       <PageHeader
         title="Les mouvements"
-        onAddPress={ () => router.push( "/exercises/add-exercise" ) }
+        onRightPress={ () => router.push( "/exercises/add-exercise" ) }
       />
       {/* Custom Tabs */ }
       <View className="flex-row border-b border-primary-100/20">
