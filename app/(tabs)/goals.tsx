@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function GoalsPage () {
   const {
     goals,
-    isLoadingGoals,
+    isLoading,
     error,
     getActiveGoals,
     getFinishedGoals
@@ -25,9 +25,9 @@ export default function GoalsPage () {
   // Combiner les objectifs pour la FlatList
   const allGoals = [ ...inProgressGoals, ...finishedGoals ];
 
-  const handleAddGoal = useCallback( () => {
+  const handleAddGoal = () => {
     router.push( "/goal/add-goal" );
-  }, [] );
+  };
 
   const renderGoalItem = useCallback( ( { item }: { item: any } ) => (
     <GoalItem goal={ item } />
@@ -56,9 +56,9 @@ export default function GoalsPage () {
         handlePress={ handleAddGoal }
       />
     </View>
-  ), [ handleAddGoal ] );
+  ), [] );
 
-  if ( error && !isLoadingGoals ) {
+  if ( error && !isLoading ) {
     return (
       <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
         <SimpleHeader
@@ -87,7 +87,7 @@ export default function GoalsPage () {
       />
 
       <View className="flex-1 bg-background">
-        { isLoadingGoals ? (
+        { isLoading ? (
           <View className="flex-1 justify-center items-center">
             <ActivityIndicator size="large" color="#FC7942" />
             <Text className="text mt-4">Chargement de vos objectifs...</Text>

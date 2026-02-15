@@ -1,6 +1,6 @@
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-import { Platform } from 'react-native';
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
 
 /**
  * Configuration des notifications
@@ -37,20 +37,20 @@ export class NotificationService {
    */
   async requestPermissions (): Promise<boolean> {
     if ( !Device.isDevice ) {
-      console.log( 'Must use physical device for push notifications' );
+      console.log( "Must use physical device for push notifications" );
       return false;
     }
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
-    if ( existingStatus !== 'granted' ) {
+    if ( existingStatus !== "granted" ) {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
 
-    if ( finalStatus !== 'granted' ) {
-      console.log( 'Failed to get push token for push notification!' );
+    if ( finalStatus !== "granted" ) {
+      console.log( "Failed to get push token for push notification!" );
       return false;
     }
 
@@ -64,26 +64,26 @@ export class NotificationService {
    */
   async scheduleDailyNotification ( time: string, enabled: boolean ) {
     // Annuler l'ancienne notification quotidienne
-    await this.cancelNotification( 'daily-reminder' );
+    await this.cancelNotification( "daily-reminder" );
 
     if ( !enabled ) return;
 
-    const [ hours, minutes ] = time.split( ':' ).map( Number );
+    const [ hours, minutes ] = time.split( ":" ).map( Number );
 
     // Vérifier que l'heure est valide
     if ( hours < 0 || hours > 23 || minutes < 0 || minutes > 59 ) {
-      console.error( 'Invalid time format' );
+      console.error( "Invalid time format" );
       return;
     }
 
-    if ( Platform.OS === 'ios' ) {
+    if ( Platform.OS === "ios" ) {
       // Sur iOS, on peut utiliser le trigger calendar
       await Notifications.scheduleNotificationAsync( {
-        identifier: 'daily-reminder',
+        identifier: "daily-reminder",
         content: {
           title: "C'est l'heure de s'entraîner ! 💪",
           body: "N'oubliez pas votre séance d'aujourd'hui",
-          data: { type: 'daily-reminder' },
+          data: { type: "daily-reminder" },
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
@@ -105,30 +105,36 @@ export class NotificationService {
    * @param time heure de la notification
    */
   private async scheduleAndroidDailyNotifications ( time: string ) {
-    const [ hours, minutes ] = time.split( ':' ).map( Number );
+    const [ hours, minutes ] = time.split( ":" ).map( Number );
+    const scheduled: string[] = [];
 
-    // Programmer pour les 30 prochains jours
     for ( let day = 0; day < 30; day++ ) {
-      const notificationDate = new Date();
-      notificationDate.setDate( notificationDate.getDate() + day );
-      notificationDate.setHours( hours, minutes, 0, 0 );
+      try {
+        const notificationDate = new Date();
+        notificationDate.setDate( notificationDate.getDate() + day );
+        notificationDate.setHours( hours, minutes, 0, 0 );
 
-      // Ne programmer que si l'heure n'est pas déjà passée
-      if ( notificationDate > new Date() ) {
-        await Notifications.scheduleNotificationAsync( {
-          identifier: `daily-reminder-${day}`,
-          content: {
-            title: "C'est l'heure de s'entraîner ! 💪",
-            body: "N'oublie pas ta séance d'aujourd'hui",
-            data: { type: 'daily-reminder' },
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: notificationDate,
-          },
-        } );
+        if ( notificationDate > new Date() ) {
+          await Notifications.scheduleNotificationAsync( {
+            identifier: `daily-reminder-${day}`,
+            content: {
+              title: "C'est l'heure de s'entraîner ! 💪",
+              body: "N'oublie pas ta séance d'aujourd'hui",
+              data: { type: "daily-reminder" },
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.DATE,
+              date: notificationDate,
+            },
+          } );
+          scheduled.push( `daily-reminder-${day}` );
+        }
+      } catch ( error ) {
+        console.error( `Failed to schedule notification for day ${day}:`, error );
       }
     }
+
+    console.log( `Successfully scheduled ${scheduled.length}/30 notifications` );
   }
 
   /**
@@ -151,13 +157,13 @@ export class NotificationService {
    * Annule toutes les notifications quotidiennes (iOS et Android)
    */
   async cancelDailyNotifications () {
-    if ( Platform.OS === 'ios' ) {
-      await this.cancelNotification( 'daily-reminder' );
+    if ( Platform.OS === "ios" ) {
+      await this.cancelNotification( "daily-reminder" );
     } else {
       // Sur Android, annuler toutes les notifications quotidiennes
       const scheduledNotifications = await this.getScheduledNotifications();
       for ( const notif of scheduledNotifications ) {
-        if ( notif.identifier.startsWith( 'daily-reminder' ) ) {
+        if ( notif.identifier.startsWith( "daily-reminder" ) ) {
           await this.cancelNotification( notif.identifier );
         }
       }
@@ -189,7 +195,7 @@ export class NotificationService {
       content: {
         title,
         body,
-        data: { type: 'immediate' },
+        data: { type: "immediate" },
       },
       trigger: null,
     } );
@@ -202,10 +208,10 @@ export class NotificationService {
   async isDailyNotificationScheduled (): Promise<boolean> {
     const scheduledNotifications = await this.getScheduledNotifications();
 
-    if ( Platform.OS === 'ios' ) {
-      return scheduledNotifications.some( notif => notif.identifier === 'daily-reminder' );
+    if ( Platform.OS === "ios" ) {
+      return scheduledNotifications.some( notif => notif.identifier === "daily-reminder" );
     } else {
-      return scheduledNotifications.some( notif => notif.identifier.startsWith( 'daily-reminder' ) );
+      return scheduledNotifications.some( notif => notif.identifier.startsWith( "daily-reminder" ) );
     }
   }
 
@@ -214,16 +220,16 @@ export class NotificationService {
    * À appeler périodiquement (par exemple au lancement de l'app)
    */
   async renewAndroidNotifications () {
-    if ( Platform.OS !== 'android' ) return;
+    if ( Platform.OS !== "android" ) return;
 
     const scheduledNotifications = await this.getScheduledNotifications();
     const dailyNotifications = scheduledNotifications.filter( notif =>
-      notif.identifier.startsWith( 'daily-reminder' )
+      notif.identifier.startsWith( "daily-reminder" )
     );
 
     // Si il reste moins de 7 notifications, en reprogrammer
     if ( dailyNotifications.length < 7 ) {
-      console.log( 'Renouvellement des notifications Android nécessaire' );
+      console.log( "Renouvellement des notifications Android nécessaire" );
       // Vous pouvez récupérer l'heure depuis les préférences utilisateur
       // et relancer scheduleDailyNotification
     }

@@ -4,7 +4,7 @@ import { create } from "zustand";
 
 interface ExercisesStore {
 	exercices: Exercise[];
-	loading: boolean;
+	isLoading: boolean;
 	error: string | null;
 
 	// Actions
@@ -17,18 +17,18 @@ interface ExercisesStore {
 
 const useExercicesStore = create<ExercisesStore>( ( set ) => ( {
   exercices: [],
-  loading: false,
+  isLoading: false,
   error: null,
 
   fetchExercises: async () => {
-    set( { loading: true, error: null } );
+    set( { isLoading: true, error: null } );
     try {
       const exercises = await getAllExercises();
-      set( { exercices: exercises as any as Exercise[], loading: false } );
+      set( { exercices: exercises as any as Exercise[], isLoading: false } );
     } catch ( error ) {
       set( {
         error: error instanceof Error ? error.message : "Erreur inconnue",
-        loading: false
+        isLoading: false
       } );
     }
   },

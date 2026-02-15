@@ -34,12 +34,7 @@ const ExerciseDetails = () => {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'exercice", error);
 
-      showAlert.error("Impossible de charger l'exercice");
-      showAlert.confirm(
-        "Supprimer l'exercice",
-        "Êtes-vous sûr ?",
-        () => router.push("/exercises")
-      );
+      showAlert.error("Impossible de charger l'exercice",() => router.push("/exercises") );
     } finally {
       setLoading(false);
     }

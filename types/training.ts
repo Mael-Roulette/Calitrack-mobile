@@ -2,7 +2,7 @@ export interface Week {
 	$id: string;
 	name: string;
 	order: number;
-	trainings: Training[]
+	trainings: string[]
 }
 
 export interface Training {
@@ -12,7 +12,7 @@ export interface Training {
 	duration: number;
 	days?: string[];
 	note?: string;
-	week: Week;
+	week: string;
 }
 
 export interface Series {

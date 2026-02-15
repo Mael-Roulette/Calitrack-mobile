@@ -34,7 +34,6 @@ export const getAllExercises = async (): Promise<Models.Row[]> => {
         tableId: appwriteConfig.exerciseCollectionId,
         queries: [
           Query.equal( "isCustom", true ),
-          Permission.read( Role.user( currentAccount.$id ) ),
         ]
       } );
       customExercises = customResponse.rows;

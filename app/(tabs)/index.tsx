@@ -60,7 +60,7 @@ export default function HomePage () {
                 />
                 :
                 inProgressGoals.map( ( goal: Goal ) => (
-                  <GoalItem key={ goal.$id } goal={ goal } />
+                  <GoalItem key={ goal.$id } goal={ goal }  canDelete={ false } />
                 ))
               }
             </View>

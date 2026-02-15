@@ -5,7 +5,7 @@ import useAuthStore from "./auth.store";
 
 interface GoalState {
 	goals: Goal[];
-	isLoadingGoals: boolean;
+	isLoading: boolean;
 	error: string | null;
 	loaded: boolean;
 
@@ -30,18 +30,19 @@ interface GoalState {
 
 const useGoalsStore = create<GoalState>( ( set, get ) => ( {
   goals: [],
-  isLoadingGoals: false,
+  isLoading: false,
   error: null,
   loaded: false,
 
   // Setters
   setGoals: ( goals: Goal[] ) => set( { goals, error: null } ),
-  setIsLoadingGoals: ( value: boolean ) => set( { isLoadingGoals: value } ),
+  setIsLoadingGoals: ( value: boolean ) => set( { isLoading: value } ),
   setError: ( error: string | null ) => set( { error } ),
 
   // Récupération initiale des objectifs
   fetchUserGoals: async () => {
     const { isAuthenticated } = useAuthStore.getState();
+    const state = get();
 
     if ( !isAuthenticated ) {
       set( { error: "Utilisateur non authentifié" } );
@@ -49,9 +50,10 @@ const useGoalsStore = create<GoalState>( ( set, get ) => ( {
     }
 
     // Éviter les appels multiples
-    if ( get().loaded ) return;
+    if ( state.isLoading ) return; // Bloquer seulement pendant le chargement
+    if ( state.loaded && !state.error ) return; // OK si chargé sans erreur
 
-    set( { isLoadingGoals: true, error: null } );
+    set( { isLoading: true, error: null } );
 
     try {
       const goals = await getGoalsFromUser();
@@ -72,7 +74,7 @@ const useGoalsStore = create<GoalState>( ( set, get ) => ( {
         loaded: false
       } );
     } finally {
-      set( { isLoadingGoals: false } );
+      set( { isLoading: false } );
     }
   },
 
@@ -85,7 +87,7 @@ const useGoalsStore = create<GoalState>( ( set, get ) => ( {
       return;
     }
 
-    set( { isLoadingGoals: true, error: null } );
+    set( { isLoading: true, error: null } );
 
     try {
       const goals = await getGoalsFromUser();
@@ -101,7 +103,7 @@ const useGoalsStore = create<GoalState>( ( set, get ) => ( {
       console.error( "Erreur refreshGoals:", error );
       set( { error: errorMessage } );
     } finally {
-      set( { isLoadingGoals: false } );
+      set( { isLoading: false } );
     }
   },
 

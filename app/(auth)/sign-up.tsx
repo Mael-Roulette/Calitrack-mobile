@@ -15,7 +15,7 @@ const SignUp = () => {
   const submit = async () => {
     const { name, email, password } = form;
 
-    if ( !validators.exerciseName( name ) ) {
+    if ( !validators.username( name ) ) {
       return Alert.alert( "Erreur", "Le pseudo doit contenir entre 3 et 50 caractères" );
     }
 

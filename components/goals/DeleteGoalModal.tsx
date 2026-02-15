@@ -1,6 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { memo } from "react";
 import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from "react-native";
+import CustomButton from "../ui/CustomButton";
 
 interface DeleteGoalModalProps {
   showDelete: boolean;
@@ -52,33 +53,27 @@ function DeleteGoalModal ( {
               <TouchableOpacity
                 onPress={ handleDelete }
                 disabled={ isDeleting }
-                className={ `flex-row items-center justify-center px-4 py-3 w-full border-2 border-red-500 rounded-lg ${
+                className={ `flex-row items-center justify-center px-4 py-3 w-full border-2 border-red-500 bg-red-500 rounded-lg ${
                   isDeleting ? "opacity-50" : ""
                 }` }
               >
                 { isDeleting ? (
-                  <ActivityIndicator size="small" color="#ef4444" />
+                  <ActivityIndicator size="small" color="#FFF9F7" />
                 ) : (
                   <>
-                    <Feather name='trash-2' size={ 18 } color='#ef4444' />
-                    <Text className='ml-3 text-base text-red-500 font-sregular font-bold'>
+                    <Feather name='trash-2' size={ 18 } color='#FFF9F7' />
+                    <Text className='ml-3 text-base text-background font-sregular font-bold'>
                       Supprimer
                     </Text>
                   </>
                 ) }
               </TouchableOpacity>
 
-              <TouchableOpacity
+              <CustomButton
+                title="Annuler"
                 onPress={ () => setShowDelete( false ) }
-                disabled={ isDeleting }
-                className={ `flex-row items-center justify-center px-4 py-3 w-full bg-secondary rounded-lg ${
-                  isDeleting ? "opacity-50" : ""
-                }` }
-              >
-                <Text className='text-base text-background font-sregular font-bold'>
-                  Annuler
-                </Text>
-              </TouchableOpacity>
+                isLoading={ isDeleting }
+              />
             </View>
           </View>
         </TouchableOpacity>
