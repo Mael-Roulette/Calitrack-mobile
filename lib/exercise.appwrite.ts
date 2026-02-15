@@ -1,4 +1,4 @@
-import { MAX_CUSTOM_EXERCISES } from "@/constants/value";
+import { LIMITS } from "@/constants/value";
 import { Exercise } from "@/types";
 import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
 import { account, appwriteConfig, tablesDB } from "./appwrite";
@@ -143,7 +143,7 @@ export const createCustomExercise = async ( {
 
     const existingCustomExercises = await getCustomExercises( currentAccount.$id );
 
-    if ( existingCustomExercises.length >= MAX_CUSTOM_EXERCISES ) {
+    if ( existingCustomExercises.length >= LIMITS.MAX_CUSTOM_EXERCISES ) {
       return;
     }
 

@@ -1,5 +1,3 @@
-// store/exercises.stores.ts
-
 import { getAllExercises } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { create } from "zustand";
