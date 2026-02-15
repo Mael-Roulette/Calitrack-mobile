@@ -1,5 +1,5 @@
 import { createCustomExercise, deleteCustomExercise, updateCustomExercise } from "@/lib/exercise.appwrite";
-import { useExercicesStore } from "@/store";
+import { useAuthStore, useExercicesStore } from "@/store";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { router } from "expo-router";
@@ -10,6 +10,7 @@ export function useExerciseActions () {
   const [ isUpdating, setIsUpdating ] = useState<boolean>( false );
   const [ isDeleting, setIsDeleting ] = useState<boolean>( false );
   const { addExercise, updateExercise, removeExercise } = useExercicesStore();
+  const { user } = useAuthStore();
 
   /**
    * Action pour créer un exercice personnalisé
@@ -23,12 +24,17 @@ export function useExerciseActions () {
       format,
       image
     }: Omit<Exercise, "$id"> ) => {
+      if ( !user ) {
+        showAlert.error( "Utilisateur non connecté" );
+        return;
+      }
+
       if ( isSubmitting ) return;
 
       setIsSubmitting( true );
 
       try {
-        const response = await createCustomExercise( {
+        const response = await createCustomExercise( user, {
           name,
           description,
           type,
@@ -57,7 +63,7 @@ export function useExerciseActions () {
         setIsSubmitting( false );
         router.replace( "/exercises" );
       }
-    }, [ addExercise, isSubmitting ] );
+    }, [ addExercise, isSubmitting, user ] );
 
   /**
    * Action pour modifier un exercice personnalisé
@@ -71,6 +77,11 @@ export function useExerciseActions () {
     format,
     image
   }: Exercise ) => {
+    if ( !user ) {
+      showAlert.error( "Utilisateur non connecté" );
+      return;
+    }
+
     if ( isUpdating ) return;
 
     setIsUpdating( true );
@@ -106,12 +117,17 @@ export function useExerciseActions () {
       setIsUpdating( false );
       router.replace( "/exercises" );
     }
-  }, [ isUpdating, updateExercise ] );
+  }, [ isUpdating, updateExercise, user ] );
 
   /**
    * Action pour supprimer un exercice personnalisé
    */
   const handleDelete = useCallback( async ( $id : Exercise["$id"] ) => {
+    if ( !user ) {
+      showAlert.error( "Utilisateur non connecté" );
+      return;
+    }
+
     if ( isDeleting ) return { success: false, error: "Suppression en cours" };
 
     return new Promise<{ success: boolean; error?: string }>( ( resolve ) => {
@@ -146,7 +162,7 @@ export function useExerciseActions () {
         }
       );
     } );
-  }, [ isDeleting, removeExercise ] );
+  }, [ isDeleting, removeExercise, user ] );
 
   return {
     handleCreate,

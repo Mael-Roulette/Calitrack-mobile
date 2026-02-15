@@ -1,5 +1,5 @@
 import { createGoal, deleteGoal, updateGoal } from "@/lib/goal.appwrite";
-import { useGoalsStore } from "@/store";
+import { useAuthStore, useGoalsStore } from "@/store";
 import { showAlert } from "@/utils/alert";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
@@ -9,6 +9,7 @@ export function useGoalActions () {
   const [ isUpdating, setIsUpdating ] = useState( false );
   const [ isDeleting, setIsDeleting ] = useState( false );
   const { addGoalStore, updateGoalStore, deleteGoalStore } = useGoalsStore();
+  const { user } = useAuthStore();
 
   /**
    * Action pour créer un objectif
@@ -25,6 +26,11 @@ export function useGoalActions () {
       progress: string;
       onSuccess?: () => void;
     } ) => {
+      if ( !user ) {
+        showAlert.error( "Utilisateur non connecté" );
+        return;
+      }
+
       if ( isSubmitting ) return;
 
       try {
@@ -55,7 +61,7 @@ export function useGoalActions () {
 
         setIsSubmitting( true );
 
-        const response = await createGoal( {
+        const response = await createGoal( user, {
           exercise: exerciseId,
           total: parsedTotal,
           progress: parsedProgress,
@@ -78,7 +84,7 @@ export function useGoalActions () {
         router.push( "/(tabs)/goals" );
       }
     },
-    [ addGoalStore, isSubmitting ]
+    [ addGoalStore, isSubmitting, user ]
   );
 
   /**
@@ -86,6 +92,11 @@ export function useGoalActions () {
    */
   const handleUpdate = useCallback(
     async ( { goalId, progress }: { goalId: string, progress: number} ) => {
+      if ( !user ) {
+        showAlert.error( "Utilisateur non connecté" );
+        return;
+      }
+
       if ( isUpdating ) return { success: false, error: "Mise à jour en cours" };
 
       if ( isNaN( progress ) || progress <= 0 ) {
@@ -116,13 +127,18 @@ export function useGoalActions () {
         setIsUpdating( false );
       }
     },
-    [ isUpdating, updateGoalStore ]
+    [ isUpdating, updateGoalStore, user ]
   );
 
   /**
    * Action pour supprimer un objectif
    */
   const handleDelete = useCallback( async ( { goalId } : { goalId: string } ) => {
+    if ( !user ) {
+      showAlert.error( "Utilisateur non connecté" );
+      return;
+    }
+
     if ( isDeleting ) return { success: false, error: "Suppression en cours" };
 
     setIsDeleting( true );
@@ -143,7 +159,7 @@ export function useGoalActions () {
     } finally {
       setIsDeleting( false );
     }
-  }, [ isDeleting, deleteGoalStore ] );
+  }, [ user, isDeleting, deleteGoalStore ] );
 
   return {
     handleCreate,

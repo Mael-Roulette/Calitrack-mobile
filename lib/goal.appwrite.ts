@@ -1,9 +1,8 @@
 import { LIMITS } from "@/constants/value";
-import { CreateGoalParams, Goal, UpdateGoalParams } from "@/types";
+import { CreateGoalParams, Goal, UpdateGoalParams, User } from "@/types";
 import { buildGoalObject } from "@/utils/goals";
 import { ID, Permission, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
-import { getCurrentUser } from "./user.appwrite";
 
 const goalTable = appwriteConfig.goalCollectionId;
 const databaseId = appwriteConfig.databaseId;
@@ -13,16 +12,11 @@ const databaseId = appwriteConfig.databaseId;
  * @param param0
  * @returns
  */
-export const createGoal = async ( {
+export const createGoal = async ( user: User, {
   exercise,
   progress,
   total,
 }: CreateGoalParams ) => {
-  const currentUser = await getCurrentUser();
-  if ( !currentUser ) {
-    throw new Error( "Utilisateur non connecté" );
-  }
-
   // Vérifier limite objectifs actifs
   const existingGoals = await getGoalsFromUser();
   const activeGoals = existingGoals.filter(
@@ -49,9 +43,9 @@ export const createGoal = async ( {
       state: "in-progress",
     },
     permissions: [
-      Permission.read( Role.user( currentUser.accountId ) ),
-      Permission.update( Role.user( currentUser.accountId ) ),
-      Permission.delete( Role.user( currentUser.accountId ) ),
+      Permission.read( Role.user( user.accountId ) ),
+      Permission.update( Role.user( user.accountId ) ),
+      Permission.delete( Role.user( user.accountId ) ),
     ],
   } );
 
@@ -71,11 +65,6 @@ export const createGoal = async ( {
  * Permet de récupérer les objectifs de l'utilisateur connecté
  */
 export const getGoalsFromUser = async (): Promise<Goal[]> => {
-  const currentUser = await getCurrentUser();
-  if ( !currentUser ) {
-    throw new Error( "Utilisateur non connecté" );
-  }
-
   const response = await tablesDB.listRows( {
     databaseId,
     tableId: goalTable,

@@ -1,8 +1,7 @@
 import { LIMITS } from "@/constants/value";
-import { Exercise } from "@/types";
+import { Exercise, User } from "@/types";
 import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
-import { account, appwriteConfig, tablesDB } from "./appwrite";
-import { getCurrentUser } from "./user.appwrite";
+import { appwriteConfig, tablesDB } from "./appwrite";
 
 /**
  * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
@@ -11,9 +10,6 @@ import { getCurrentUser } from "./user.appwrite";
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
 export const getAllExercises = async (): Promise<Models.Row[]> => {
-  const currentAccount = await account.get();
-  if ( !currentAccount ) throw Error;
-
   try {
     // Récupérer les exercices généraux (isCustom = false ou null)
     const generalExercises = await tablesDB.listRows( {
@@ -55,11 +51,10 @@ export const getAllExercises = async (): Promise<Models.Row[]> => {
 
 /**
  * Permet de récupérer uniquement les exercices personnalisés de l'utilisateur
- * @param userId - ID de l'utilisateur
  * @returns {Promise<Models.Row[]>} - Liste des exercices personnalisés
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
-export const getCustomExercises = async ( userId: string ): Promise<Models.Row[]> => {
+export const getCustomExercises = async ( ): Promise<Models.Row[]> => {
   try {
     const response = await tablesDB.listRows( {
       databaseId: appwriteConfig.databaseId,
@@ -103,7 +98,7 @@ export const getExerciseById = async ( id: string ): Promise<Models.Row> => {
  * Permet de créer un exercice personnalisé pour un seul utilisateur
  * @returns l'exercice personnalisé
  */
-export const createCustomExercise = async ( {
+export const createCustomExercise = async ( user: User, {
   name,
   description,
   type,
@@ -112,10 +107,7 @@ export const createCustomExercise = async ( {
   image
 }: Omit<Exercise, "$id"> ) => {
   try {
-    const currentUser = await getCurrentUser();
-    if ( !currentUser ) throw Error;
-
-    const existingCustomExercises = await getCustomExercises( currentUser.$id );
+    const existingCustomExercises = await getCustomExercises();
 
     if ( existingCustomExercises.length >= LIMITS.MAX_CUSTOM_EXERCISES ) {
       return;
@@ -135,9 +127,9 @@ export const createCustomExercise = async ( {
         isCustom: true
       },
       permissions: [
-        Permission.read( Role.user( currentUser.accountId ) ),
-        Permission.update( Role.user( currentUser.accountId ) ),
-        Permission.delete( Role.user( currentUser.accountId ) ),
+        Permission.read( Role.user( user.accountId ) ),
+        Permission.update( Role.user( user.accountId ) ),
+        Permission.delete( Role.user( user.accountId ) ),
       ]
     } );
 
@@ -161,9 +153,6 @@ export const updateCustomExercise = async ( {
   image
 }: Exercise ) => {
   try {
-    const currentUser = await getCurrentUser();
-    if ( !currentUser ) throw Error;
-
     const customExercise = await tablesDB.updateRow( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
