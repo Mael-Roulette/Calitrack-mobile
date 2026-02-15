@@ -1,5 +1,5 @@
 import { Exercise } from "@/types";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { Modal, Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";
 import CustomInput from "../ui/CustomInput";
@@ -26,11 +26,11 @@ function UpdateGoalModal ( {
   isUpdating
 }: UpdateGoalModalProps ) {
 
-  const handleClose = useCallback( () => {
+  const handleClose = () => {
     if ( !isUpdating ) {
       setModalVisible( false );
     }
-  }, [ isUpdating, setModalVisible ] );
+  };
 
   return (
     <Modal
@@ -62,13 +62,13 @@ function UpdateGoalModal ( {
             <CustomButton
               title='Mettre à jour'
               onPress={ handleUpdateProgress }
-              isLoading={ isUpdating }
               variant='secondary'
             />
 
             <CustomButton
               title='Annuler'
               onPress={ handleClose }
+              isLoading={ isUpdating }
               variant='primary'
             />
           </View>

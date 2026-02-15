@@ -4,6 +4,7 @@ export const LIMITS = {
   MAX_TRAININGS: 6,
   MAX_GOALS: 4,
   MAX_CUSTOM_EXERCISES: 10,
+  MAX_WEEKS: 4,
 } as const;
 
 export const DAYS_TRANSLATION = [
