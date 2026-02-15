@@ -1,4 +1,4 @@
-import { createCustomExercise, updateCustomExercise } from "@/lib/exercise.appwrite";
+import { createCustomExercise, deleteCustomExercise, updateCustomExercise } from "@/lib/exercise.appwrite";
 import { useExercicesStore } from "@/store";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -9,7 +9,7 @@ export function useExerciseActions () {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
   const [ isUpdating, setIsUpdating ] = useState<boolean>( false );
   const [ isDeleting, setIsDeleting ] = useState<boolean>( false );
-  const { addExercise, updateExercise } = useExercicesStore();
+  const { addExercise, updateExercise, removeExercise } = useExercicesStore();
 
   /**
    * Action pour créer un exercice personnalisé
@@ -54,7 +54,8 @@ export function useExerciseActions () {
             : "Une erreur est survenue."
         );
       } finally {
-        router.push( "/exercises" );
+        setIsSubmitting( false );
+        router.replace( "/exercises" );
       }
     }, [ addExercise, isSubmitting ] );
 
@@ -102,14 +103,57 @@ export function useExerciseActions () {
           : "Une erreur est survenue."
       );
     } finally {
-      router.push( "/exercises" );
+      setIsUpdating( false );
+      router.replace( "/exercises" );
     }
   }, [ isUpdating, updateExercise ] );
+
+  /**
+   * Action pour supprimer un exercice personnalisé
+   */
+  const handleDelete = useCallback( async ( $id : Exercise["$id"] ) => {
+    if ( isDeleting ) return { success: false, error: "Suppression en cours" };
+
+    return new Promise<{ success: boolean; error?: string }>( ( resolve ) => {
+      showAlert.confirm(
+        "Suppression",
+        "Vous êtes sur le point de supprimer un exercice. Cette action est irréversible, êtes-vous sûr de continuer ?",
+        async () => {
+          setIsDeleting( true );
+
+          try {
+            await deleteCustomExercise( $id );
+            removeExercise( $id );
+
+            router.replace( "/exercises" );
+
+            resolve( { success: true } );
+          } catch ( error ) {
+            console.error( "Erreur suppression exercice:", error );
+            const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Une erreur est survenue lors de la suppression.";
+
+            showAlert.error( errorMessage );
+            resolve( { success: false, error: errorMessage } );
+          } finally {
+            setIsDeleting( false );
+          }
+        },
+        () => {
+          resolve( { success: false, error: "Suppression annulée" } );
+        }
+      );
+    } );
+  }, [ isDeleting, removeExercise ] );
 
   return {
     handleCreate,
     handleUpdate,
+    handleDelete,
     isSubmitting,
-    isUpdating
+    isUpdating,
+    isDeleting
   };
 }

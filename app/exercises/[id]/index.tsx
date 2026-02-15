@@ -1,6 +1,7 @@
 import PageHeader from "@/components/headers/PageHeader";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { getExerciseImage } from "@/constants/exercises";
+import { useExerciseActions } from "@/hooks/actions/useExerciseActions";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -21,6 +22,7 @@ const ExerciseDetails = () => {
   const [ exercise, setExercise ] = useState<Exercise>();
   const [ loading, setLoading ] = useState( true );
   const [ showMenu, setShowMenu ] = useState( false );
+  const { handleDelete, isDeleting } = useExerciseActions();
 
   useEffect(() => {
     const fetchExercise = async () => {
@@ -56,15 +58,11 @@ const ExerciseDetails = () => {
     {
       icon: "trash-2",
       text: "Supprimer",
-      onPress: () => {},
+      onPress: () => handleDelete( exercise!.$id ),
       color: "#ef4444",
       textColor: "#ef4444",
     },
   ];
-
-  const handleDelete = () => {
-
-  }
 
   return (
     <SafeAreaView className='flex-1 bg-secondary' edges={ [ "bottom" ] }>

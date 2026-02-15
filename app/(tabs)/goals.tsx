@@ -3,9 +3,9 @@ import SimpleHeader from "@/components/headers/SimpleHeader";
 import EmptyState from "@/components/ui/EmptyState";
 import { LIMITS } from "@/constants/value";
 import { useGoalsStore } from "@/store";
+import { Goal } from "@/types";
 import { router } from "expo-router";
-import { useCallback } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoalsPage () {
@@ -24,35 +24,6 @@ export default function GoalsPage () {
   const handleAddGoal = () => {
     router.push( "/goal/add-goal" );
   };
-
-  const renderGoalItem = useCallback( ( { item }: { item: any } ) => (
-    <GoalItem goal={ item } />
-  ), [] );
-
-  const keyExtractor = useCallback( ( item: any ) => item.$id, [] );
-
-  const renderHeader = useCallback( () => {
-    if ( canAddGoal ) return null;
-
-    return (
-      <View className="mb-4 p-4 bg-yellow-100 rounded-lg border border-yellow-300">
-        <Text className="text-yellow-800 text-center font-sregular">
-          Vous avez atteint le nombre maximum d&apos;objectifs en cours ({ LIMITS.MAX_GOALS }).
-          Terminez ou supprimez un objectif pour en ajouter un nouveau.
-        </Text>
-      </View>
-    );
-  }, [ canAddGoal ] );
-
-  const renderEmptyState = useCallback( () => (
-    <View className="px-5">
-      <EmptyState
-        title="Aucun objectif en cours"
-        buttonText="Ajouter un objectif"
-        handlePress={ handleAddGoal }
-      />
-    </View>
-  ), [] );
 
   if ( error && !isLoading ) {
     return (
@@ -89,7 +60,7 @@ export default function GoalsPage () {
             <Text className="text mt-4">Chargement de vos objectifs...</Text>
           </View>
         ) : (
-          <View className="flex-col gap-6 mt-5">
+          <ScrollView className="flex-col gap-6 mt-5">
             {inProgressGoals.length === 0 ? (
               <View className="px-5 pt-5">
                 <EmptyState
@@ -101,31 +72,21 @@ export default function GoalsPage () {
             ) : (
               <View className="px-5">
                 <Text className="title-2 mb-3">Mes objectifs en cours</Text>
-                <FlatList
-                  data={ inProgressGoals }
-                  renderItem={ renderGoalItem }
-                  keyExtractor={ keyExtractor }
-                  showsVerticalScrollIndicator={ false }
-                  ListHeaderComponent={ renderHeader }
-                  ListEmptyComponent={ renderEmptyState }
-                />
+                { inProgressGoals.map( ( goal: Goal ) => (
+                  <GoalItem key={ goal.$id } goal={ goal } />
+                ) )}
               </View>
             )}
 
             { finishedGoals.length !== 0 &&
               <View className="px-5">
                 <Text className="title-2 mb-3">Mes objectifs finis</Text>
-                <FlatList
-                  data={ finishedGoals }
-                  renderItem={ renderGoalItem }
-                  keyExtractor={ keyExtractor }
-                  showsVerticalScrollIndicator={ false }
-                  ListHeaderComponent={ renderHeader }
-                  ListEmptyComponent={ renderEmptyState }
-                />
+                { finishedGoals.map( ( goal: Goal ) => (
+                  <GoalItem key={ goal.$id } goal={ goal } />
+                ) )}
               </View>
             }
-          </View>
+          </ScrollView>
         ) }
       </View>
     </SafeAreaView>
