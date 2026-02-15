@@ -85,18 +85,12 @@ export function useGoalActions () {
    * Action pour mettre à jour un objectif
    */
   const handleUpdate = useCallback(
-    async ( { goalId, progress, totalGoal }: { goalId: string, progress: number, totalGoal: number} ) => {
+    async ( { goalId, progress }: { goalId: string, progress: number} ) => {
       if ( isUpdating ) return { success: false, error: "Mise à jour en cours" };
 
-      // Validation
       if ( isNaN( progress ) || progress <= 0 ) {
         showAlert.error( "Veuillez entrer une valeur valide." );
         return { success: false, error: "Valeur invalide" };
-      }
-
-      if ( progress > totalGoal ) {
-        showAlert.error( "La progression ne peut pas être supérieure à l'objectif." );
-        return { success: false, error: "Progression trop élevée" };
       }
 
       setIsUpdating( true );

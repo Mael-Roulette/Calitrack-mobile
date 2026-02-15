@@ -102,7 +102,7 @@ export const updateGoal = async ( {
 
   const newState =
     progress >= currentRow.targetValue
-      ? "finish"
+      ? "finished"
       : "in-progress";
 
   const updatedRow = await tablesDB.updateRow( {

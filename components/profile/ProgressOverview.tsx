@@ -7,7 +7,7 @@ const ProgressOverview = () => {
   const { goals } = useGoalsStore();
   const { user } = useAuthStore();
   const finishGoalsNumber = useMemo(
-    () => goals.filter( ( goal ) => goal.state === "finish" ).length,
+    () => goals.filter( ( goal ) => goal.state === "finished" ).length,
     [ goals ]
   );
 

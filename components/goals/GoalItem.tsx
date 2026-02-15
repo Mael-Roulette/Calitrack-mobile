@@ -32,14 +32,13 @@ function GoalItem({ goal, canDelete = true }: GoalItemProps) {
 
   // État de l'objectif
   const isInProgress = goal.state === "in-progress";
-  const isFinished = goal.state === "finish";
+  const isFinished = goal.state === "finished";
 
   // Gestion de la mise à jour
   const handleUpdateProgress = useCallback(async () => {
     const parsedProgress = Number(newProgress);
     const result = await handleUpdate({
       goalId: goal.$id,
-      totalGoal: goal.total,
       progress: parsedProgress
     });
 

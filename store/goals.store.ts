@@ -147,7 +147,7 @@ const useGoalsStore = create<GoalState>( ( set, get ) => ( {
 
   // Récupérer les objectifs terminés
   getFinishedGoals: () => {
-    return get().goals.filter( ( goal ) => goal.state === "finish" );
+    return get().goals.filter( ( goal ) => goal.state === "finished" );
   },
 
   // Réinitialiser les objectifs

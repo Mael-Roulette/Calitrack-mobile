@@ -10,7 +10,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoalsPage () {
   const {
-    goals,
     isLoading,
     error,
     getActiveGoals,
@@ -21,9 +20,6 @@ export default function GoalsPage () {
   const finishedGoals = getFinishedGoals();
   const activeGoalsCount = inProgressGoals.length;
   const canAddGoal = activeGoalsCount < LIMITS.MAX_GOALS;
-
-  // Combiner les objectifs pour la FlatList
-  const allGoals = [ ...inProgressGoals, ...finishedGoals ];
 
   const handleAddGoal = () => {
     router.push( "/goal/add-goal" );
@@ -92,24 +88,44 @@ export default function GoalsPage () {
             <ActivityIndicator size="large" color="#FC7942" />
             <Text className="text mt-4">Chargement de vos objectifs...</Text>
           </View>
-        ) : goals.length === 0 ? (
-          <View className="px-5 pt-5">
-            <EmptyState
-              title="Aucun objectif créé"
-              buttonText="Créer mon premier objectif"
-              handlePress={ handleAddGoal }
-            />
-          </View>
         ) : (
-          <FlatList
-            data={ allGoals }
-            renderItem={ renderGoalItem }
-            keyExtractor={ keyExtractor }
-            contentContainerStyle={ { padding: 20 } }
-            showsVerticalScrollIndicator={ false }
-            ListHeaderComponent={ renderHeader }
-            ListEmptyComponent={ renderEmptyState }
-          />
+          <View className="flex-col gap-6 mt-5">
+            {inProgressGoals.length === 0 ? (
+              <View className="px-5 pt-5">
+                <EmptyState
+                  title="Aucun objectif en cours"
+                  buttonText="Ajouter un objectif"
+                  handlePress={ handleAddGoal }
+                />
+              </View>
+            ) : (
+              <View className="px-5">
+                <Text className="title-2 mb-3">Mes objectifs en cours</Text>
+                <FlatList
+                  data={ inProgressGoals }
+                  renderItem={ renderGoalItem }
+                  keyExtractor={ keyExtractor }
+                  showsVerticalScrollIndicator={ false }
+                  ListHeaderComponent={ renderHeader }
+                  ListEmptyComponent={ renderEmptyState }
+                />
+              </View>
+            )}
+
+            { finishedGoals.length !== 0 &&
+              <View className="px-5">
+                <Text className="title-2 mb-3">Mes objectifs finis</Text>
+                <FlatList
+                  data={ finishedGoals }
+                  renderItem={ renderGoalItem }
+                  keyExtractor={ keyExtractor }
+                  showsVerticalScrollIndicator={ false }
+                  ListHeaderComponent={ renderHeader }
+                  ListEmptyComponent={ renderEmptyState }
+                />
+              </View>
+            }
+          </View>
         ) }
       </View>
     </SafeAreaView>
