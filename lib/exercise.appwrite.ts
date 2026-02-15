@@ -5,7 +5,7 @@ import { account, appwriteConfig, tablesDB } from "./appwrite";
 
 /**
  * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
- * @param userId - ID de l'utilisateur (optionnel) pour récupérer aussi ses exercices personnalisés
+ * @param userId - ID de l'utilisateur pour récupérer aussi ses exercices personnalisés
  * @returns {Promise<Models.Row[]>} - Liste des exercices disponibles
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
@@ -48,32 +48,6 @@ export const getAllExercises = async (): Promise<Models.Row[]> => {
     console.error( "Erreur lors de la récupération des exercices:", error );
     throw new Error(
       error instanceof Error ? error.message : "Impossible de récupérer les exercices"
-    );
-  }
-};
-
-/**
- * Permet de récupérer uniquement les exercices généraux
- * @returns {Promise<Models.Row[]>} - Liste des exercices généraux
- * @throws {Error} - Si les exercices n'ont pas pu être récupérés
- */
-export const getGeneralExercises = async (): Promise<Models.Row[]> => {
-  try {
-    const response = await tablesDB.listRows( {
-      databaseId: appwriteConfig.databaseId,
-      tableId: appwriteConfig.exerciseCollectionId,
-      queries: [
-        Query.or( [
-          Query.equal( "isCustom", false ),
-          Query.isNull( "isCustom" )
-        ] )
-      ]
-    } );
-    return response.rows;
-  } catch ( error ) {
-    console.error( "Erreur lors de la récupération des exercices généraux:", error );
-    throw new Error(
-      error instanceof Error ? error.message : "Impossible de récupérer les exercices généraux"
     );
   }
 };

@@ -1,13 +1,14 @@
 import { createGoal, deleteGoal, updateGoal } from "@/lib/goal.appwrite";
 import { useGoalsStore } from "@/store";
 import { showAlert } from "@/utils/alert";
+import { router } from "expo-router";
 import { useCallback, useState } from "react";
 
 export function useGoalActions () {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
   const [ isUpdating, setIsUpdating ] = useState( false );
   const [ isDeleting, setIsDeleting ] = useState( false );
-  const { updateGoalStore, deleteGoalStore } = useGoalsStore();
+  const { addGoalStore, updateGoalStore, deleteGoalStore } = useGoalsStore();
 
   /**
    * Action pour créer un objectif
@@ -65,9 +66,7 @@ export function useGoalActions () {
           return;
         }
 
-        showAlert.success( response.message.body, () => {
-          onSuccess?.();
-        } );
+        addGoalStore( response.goal );
       } catch ( error ) {
         console.log( error );
         showAlert.error(
@@ -76,10 +75,10 @@ export function useGoalActions () {
             : "Une erreur est survenue."
         );
       } finally {
-        setIsSubmitting( false );
+        router.push( "/(tabs)/goals" );
       }
     },
-    [ isSubmitting ]
+    [ addGoalStore, isSubmitting ]
   );
 
   /**

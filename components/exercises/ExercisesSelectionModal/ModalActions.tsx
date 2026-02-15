@@ -12,7 +12,6 @@ export function ModalActions ( { selectedCount, onCancel, onConfirm }: ModalActi
     <View className='flex-row gap-3'>
       <CustomButton
         title='Annuler'
-        variant='secondary'
         onPress={ onCancel }
         customStyles="flex-1"
       />
@@ -20,6 +19,7 @@ export function ModalActions ( { selectedCount, onCancel, onConfirm }: ModalActi
         title={ `Confirmer (${selectedCount})` }
         onPress={ onConfirm }
         customStyles="flex-1"
+        variant='secondary'
       />
     </View>
   );
