@@ -32,7 +32,7 @@ export default function PageHeader ( {
           <Ionicons name="arrow-back" size={ 28 } color="white" />
         </TouchableOpacity>
 
-        <Text className="title text-background">{title}</Text>
+        <Text className="title text-background flex-1 truncate" numberOfLines={ 1 }>{title}</Text>
       </View>
     </HeaderContainer>
   );
