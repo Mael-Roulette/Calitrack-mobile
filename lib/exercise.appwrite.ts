@@ -178,6 +178,7 @@ export const updateCustomExercise = async ( {
  * @param id id de l'exercice à supprimer
  */
 export const deleteCustomExercise = async ( id: string ) => {
+  // TODO: Régler problème de suppression
   try {
     await tablesDB.deleteRow( {
       databaseId: appwriteConfig.databaseId,

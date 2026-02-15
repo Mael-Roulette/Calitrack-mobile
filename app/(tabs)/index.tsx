@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomePage () {
   const { user, isLoading } = useAuthStore();
-  const { fetchUserGoals, getActiveGoals } = useGoalsStore();
+  const { fetchUserGoals, getActiveGoals, isLoading: isGoalsLoading } = useGoalsStore();
   const { fetchExercises } = useExercicesStore();
 
   useEffect( () => {
@@ -36,7 +36,6 @@ export default function HomePage () {
         <>
           <HomeHeader
             greeting={ `Salut ${user?.name}`}
-            weekInfo="Semaine 1 - Planche"
             onCalendarPress={ () => {} }
           />
 
@@ -52,19 +51,25 @@ export default function HomePage () {
 
             <View className="gap-4 pt-6">
               <Text className="text text-xl">Mes objectifs</Text>
-              <View>
-                { inProgressGoals.length === 0 ?
-                  <EmptyState
-                    title="Aucun objectif en cours"
-                    buttonText="Ajouter un objectif"
-                    handlePress={ () => router.push( "/goal/add-goal" )}
-                  />
-                  :
-                  inProgressGoals.map( ( goal: Goal ) => (
-                    <GoalItem key={ goal.$id } goal={ goal }  canDelete={ false } />
-                  ))
-                }
-              </View>
+              { isGoalsLoading ? (
+                <View>
+                  <Text className="text mt-4">Chargement de vos objectifs...</Text>
+                </View>
+              ) : (
+                <View>
+                  { inProgressGoals.length === 0 ?
+                    <EmptyState
+                      title="Aucun objectif en cours"
+                      buttonText="Ajouter un objectif"
+                      handlePress={ () => router.push( "/goal/add-goal" )}
+                    />
+                    :
+                    inProgressGoals.map( ( goal: Goal ) => (
+                      <GoalItem key={ goal.$id } goal={ goal }  canDelete={ false } />
+                    ))
+                  }
+                </View>
+              )}
             </View>
           </ScrollView>
         </>

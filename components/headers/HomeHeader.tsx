@@ -1,12 +1,12 @@
+import { useWeekCalendar } from "@/hooks/useWeekCalendar";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HeaderContainer } from "./HeaderContainer";
-import { useWeekCalendar } from "@/hooks/useWeekCalendar";
 
 interface HomeHeaderProps {
   greeting: string;
-  weekInfo: string;
+  weekInfo?: string;
   onCalendarPress?: () => void;
 }
 
@@ -20,11 +20,13 @@ export default function HomeHeader ( {
 
   return (
     <HeaderContainer paddingTop={ insets.top }>
-      <View className="flex-row justify-between items-start mb-6">
+      <View className="flex-row justify-between items-center mb-6">
         {/* Greeting */}
         <View>
           <Text className="title text-background mb-2">{greeting}</Text>
-          <Text className="text text-background font-bold text-xl">{weekInfo}</Text>
+          { weekInfo &&  (
+            <Text className="text text-background font-bold text-xl">{weekInfo}</Text>
+          )}
         </View>
 
         {/* Bouton calendrier */}
