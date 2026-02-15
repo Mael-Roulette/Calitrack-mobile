@@ -1,4 +1,4 @@
-import { useGoalActions } from "@/hooks/actions/useGoalsActions";
+import { useGoalActions } from "@/hooks/actions/useGoalActions";
 import { Goal } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { memo, useCallback, useMemo, useState } from "react";
@@ -16,10 +16,7 @@ function GoalItem({ goal, canDelete = true }: GoalItemProps) {
   const [showDelete, setShowDelete] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [newProgress, setNewProgress] = useState("");
-  const { handleUpdate, handleDelete, isUpdating, isDeleting } = useGoalActions(
-    goal.$id,
-    goal.total
-  );
+  const { handleUpdate, handleDelete, isUpdating, isDeleting } = useGoalActions();
 
   // Calculer la progression actuelle
   const currentProgress = useMemo(
@@ -40,7 +37,11 @@ function GoalItem({ goal, canDelete = true }: GoalItemProps) {
   // Gestion de la mise à jour
   const handleUpdateProgress = useCallback(async () => {
     const parsedProgress = Number(newProgress);
-    const result = await handleUpdate(parsedProgress);
+    const result = await handleUpdate({
+      goalId: goal.$id,
+      totalGoal: goal.total,
+      progress: parsedProgress
+    });
 
     if (result.success) {
       setModalVisible(false);
@@ -50,7 +51,9 @@ function GoalItem({ goal, canDelete = true }: GoalItemProps) {
 
   // Gestion de la suppression
   const handleDeleteGoal = useCallback(async () => {
-    const result = await handleDelete();
+    const result = await handleDelete({
+      goalId: goal.$id
+    });
 
     if (result.success) {
       setShowDelete(false);

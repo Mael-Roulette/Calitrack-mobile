@@ -3,10 +3,9 @@ import ExercisesSelectionModal from "@/components/exercises/ExercisesSelectionMo
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
+import { useGoalActions } from "@/hooks/actions/useGoalActions";
 import { useGoalLabels } from "@/hooks/useGoalLabels";
-import { createGoal } from "@/lib/goal.appwrite";
 import { Exercise } from "@/types";
-import { showAlert } from "@/utils/alert";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,8 +15,8 @@ export default function AddGoal () {
   const [ selectedExercise, setSelectedExercise ] = useState<Exercise[]>( [] );
   const [ total, setTotal ] = useState<string>( "" );
   const [ progress, setProgress ] = useState<string>( "" );
-  const [ isSubmitting, setIsSubmitting ] = useState( false );
   const labels = useGoalLabels( selectedExercise[ 0 ] );
+  const { handleCreate, isSubmitting } = useGoalActions();
 
   const handleExerciseModalVisibility = () => {
     setIsModalVisible( !isModalVisible );
@@ -28,59 +27,17 @@ export default function AddGoal () {
     setIsModalVisible( false );
   };
 
-  const submit = async () => {
-    if ( isSubmitting ) return;
-
-    try {
-      if ( !selectedExercise.length ) {
-        showAlert.error( "Veuillez sélectionner un mouvement." );
-        return;
-      }
-
-      const parsedTotal = Number( total );
-      const parsedProgress = Number( progress );
-
-      if ( isNaN( parsedTotal ) || isNaN( parsedProgress ) || parsedTotal <= 0 || parsedProgress < 0 ) {
-        showAlert.error( "Veuillez entrer des valeurs valides." );
-        return;
-      }
-
-      if ( parsedProgress > parsedTotal ) {
-        showAlert.error(
-          "La progression ne peut pas être supérieure à l'objectif."
-        );
-        return;
-      }
-
-      setIsSubmitting( true );
-
-      const response = await createGoal( {
-        exercise: selectedExercise[ 0 ].$id,
-        total: parsedTotal,
-        progress: parsedProgress,
-      } );
-
-      if ( !response.goal ) {
-        showAlert.error( response.message.body );
-        return;
-      }
-
-      showAlert.success( response.message.body, () => {
+  const submit = () => {
+    handleCreate( {
+      exerciseId: selectedExercise[ 0 ]?.$id,
+      total,
+      progress,
+      onSuccess: () => {
         setSelectedExercise( [] );
         setTotal( "" );
         setProgress( "" );
-      } );
-
-    } catch ( error ) {
-      console.log( error );
-      showAlert.error(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue."
-      );
-    } finally {
-      setIsSubmitting( false );
-    }
+      },
+    } );
   };
 
 
