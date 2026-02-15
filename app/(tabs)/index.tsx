@@ -52,17 +52,19 @@ export default function HomePage () {
 
             <View className="gap-4 pt-6">
               <Text className="text text-xl">Mes objectifs</Text>
-              { inProgressGoals.length === 0 ?
-                <EmptyState
-                  title="Aucun objectif en cours"
-                  buttonText="Ajouter un objectif"
-                  handlePress={ () => router.push( "/goal/add-goal" )}
-                />
-                :
-                inProgressGoals.map( ( goal: Goal ) => (
-                  <GoalItem key={ goal.$id } goal={ goal }  canDelete={ false } />
-                ))
-              }
+              <View>
+                { inProgressGoals.length === 0 ?
+                  <EmptyState
+                    title="Aucun objectif en cours"
+                    buttonText="Ajouter un objectif"
+                    handlePress={ () => router.push( "/goal/add-goal" )}
+                  />
+                  :
+                  inProgressGoals.map( ( goal: Goal ) => (
+                    <GoalItem key={ goal.$id } goal={ goal }  canDelete={ false } />
+                  ))
+                }
+              </View>
             </View>
           </ScrollView>
         </>
