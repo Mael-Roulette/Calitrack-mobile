@@ -55,7 +55,7 @@ const ExerciseList = () => {
       </View>
 
       {/* Content */ }
-      <View className="flex-1 px-2 pt-4">
+      <View className="flex-1 px-2 pt-4 pb-5">
         { activeTab === "custom" &&
           <Text className="indicator-text mb-4">Nombre d&apos;exercices personnalisés : { filteredExercises.length } / { LIMITS.MAX_CUSTOM_EXERCISES } </Text>
         }
@@ -63,7 +63,7 @@ const ExerciseList = () => {
         <FlatList
           data={ filteredExercises }
           renderItem={ ( { item } ) => (
-            <View style={ { flex: 1, margin: 5 } }>
+            <View style={ { flex: 1, maxWidth: "50%", padding: 5 } }>
               <ExerciseItem
                 exercise={ item }
                 onPress={ () => goToExerciseDetails( item.$id ) }
@@ -78,6 +78,7 @@ const ExerciseList = () => {
             </Text>
           }
           numColumns={ 2 }
+          columnWrapperStyle={ { paddingHorizontal: 0 } }
         />
       </View>
     </SafeAreaView>
