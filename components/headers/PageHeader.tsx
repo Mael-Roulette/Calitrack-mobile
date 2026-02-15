@@ -8,11 +8,13 @@ import { HeaderContainer } from "./HeaderContainer";
 interface PageHeaderProps {
   title: string;
   onBackPress?: () => void;
+  onAddPress?: () => void;
 }
 
 export default function PageHeader ( {
   title,
   onBackPress,
+  onAddPress
 }: PageHeaderProps ) {
   const insets = useSafeAreaInsets();
 
@@ -26,13 +28,24 @@ export default function PageHeader ( {
 
   return (
     <HeaderContainer paddingTop={ insets.top + 12 }>
-      <View className="flex-row items-center gap-4">
-        {/* Back button */}
-        <TouchableOpacity onPress={ handleBack }>
-          <Ionicons name="arrow-back" size={ 28 } color="white" />
-        </TouchableOpacity>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-4 flex-1">
+          {/* Back button */}
+          <TouchableOpacity onPress={ handleBack }>
+            <Ionicons name="arrow-back" size={ 28 } color="white" />
+          </TouchableOpacity>
 
-        <Text className="title text-background flex-1 truncate" numberOfLines={ 1 }>{title}</Text>
+          <Text className="title text-background flex-1 truncate" numberOfLines={ 1 }>{title}</Text>
+        </View>
+
+        {onAddPress && (
+          <TouchableOpacity
+            className="bg-background rounded-full p-2"
+            onPress={ onAddPress }
+          >
+            <Ionicons name="add-circle-outline" size={ 24 } className="text-primary" />
+          </TouchableOpacity>
+        )}
       </View>
     </HeaderContainer>
   );
