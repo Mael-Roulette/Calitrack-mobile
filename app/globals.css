@@ -3,65 +3,69 @@
 @tailwind utilities;
 
 @layer base {
-	.title {
-		@apply text-2xl text-primary font-calsans;
-	}
+    .title {
+        @apply text-2xl text-primary font-calsans;
+    }
 
-	.title-2 {
-		@apply text-xl text-primary font-calsans;
-	}
+    .title-2 {
+        @apply text-xl text-primary font-calsans;
+    }
 
-	.title-3 {
-		@apply text-lg text-primary font-calsans;
-	}
+    .title-3 {
+        @apply text-lg text-primary font-calsans;
+    }
 
-	.text {
-		@apply text-base text-primary font-sregular;
-	}
+    .text {
+        @apply text-base text-primary font-sregular;
+    }
 
-	.text-lg-custom {
-		@apply text-lg text-primary font-sregular;
-	}
+    .text-lg-custom {
+        @apply text-lg text-primary font-sregular;
+    }
 
-	.indicator-text {
-		@apply text-primary-100 italic text-base font-sregular;
-	}
+    .indicator-text {
+        @apply text-primary-100 italic text-base font-sregular;
+    }
 
-	.label-text {
-		@apply text-base text-primary-100 font-sregular;
-	}
+    .label-text {
+        @apply text-base text-primary-100 font-sregular;
+    }
 }
 
 @layer components {
-	.btn-primary {
-		@apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-background border-2 border-secondary min-h-[48px];
-	}
+    .btn-primary {
+        @apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-background border-2 border-secondary min-h-[48px];
+    }
 
-	.btn-secondary {
-		@apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-secondary min-h-[48px];
-	}
+    .btn-secondary {
+        @apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-secondary min-h-[48px];
+    }
 
-	.btn-tertiary {
-		@apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-primary min-h-[48px];
-	}
+    .btn-tertiary {
+        @apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-primary min-h-[48px];
+    }
 
-	.btn-disabled {
-		@apply opacity-50;
-	}
+    .btn-quartenary {
+        @apply flex-row items-center justify-center w-full rounded-lg py-6 px-5 bg-primary/10 border border-primary border-dashed min-h-[48px];
+    }
 
-	.custom-input {
-		@apply bg-background border border-primary-100 rounded-lg text-primary pl-4 py-3 text-base font-sregular min-h-[48px];
-	}
+    .btn-disabled {
+        @apply opacity-50;
+    }
 
-	.custom-option {
-		@apply text-base text-primary font-sregular;
-	}
+    .custom-input {
+        @apply bg-background border border-primary-100 rounded-lg text-primary pl-4 py-3 text-base font-sregular min-h-[48px];
+    }
 
-	.badge {
-		@apply px-3 py-1 rounded-full bg-background;
-	}
+    .custom-option {
+        @apply text-base text-primary font-sregular;
+    }
 
-	.badge-text {
-		@apply text-sm text-primary font-sregular;
-	}
+    .badge {
+        @apply px-3 py-1 rounded-full bg-background;
+    }
+
+    .badge-text {
+        @apply text-sm text-primary font-sregular;
+    }
 }

@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import ActionsMenu, { ActionMenuItem } from "../../ui/ActionsMenu";
 import CustomButton from "../../ui/CustomButton";
+import WeekEditModal from "./WeekEditModal";
 import { Week } from "@/types";
 import { router } from "expo-router";
 import useWeekActions from "@/hooks/actions/useWeekActions";
@@ -13,19 +14,27 @@ interface WeekItemProps {
 
 export default function WeekItem ( { week }: WeekItemProps ) {
   const [ showMenu, setShowMenu ] = useState<boolean>( false );
-  const { handleDelete, isDeleting } = useWeekActions();
+  const [ showEditModal, setShowEditModal ] = useState<boolean>( false );
+  const { handleDelete, handleDuplicate, isDeleting, isDuplicating } = useWeekActions();
 
   const handleDeleteWeek = useCallback( async () => {
-    await handleDelete( {
-      weekId: week.$id
-    } );
+    await handleDelete( { weekId: week.$id } );
   }, [ handleDelete, week.$id ] );
+
+  const handleDuplicateWeek = useCallback( async () => {
+    await handleDuplicate( { weekId: week.$id } );
+  }, [ handleDuplicate, week.$id ] );
 
   const items: ActionMenuItem[] = [
     {
+      icon: "edit-2",
+      text: "Modifier",
+      onPress: () => setShowEditModal( true ),
+    },
+    {
       icon: "copy",
       text: "Dupliquer",
-      onPress: () => {}
+      onPress: () => handleDuplicateWeek(),
     },
     {
       icon: "trash-2",
@@ -35,7 +44,6 @@ export default function WeekItem ( { week }: WeekItemProps ) {
       textColor: "#ef4444",
     },
   ];
-
 
   return (
     <View className="relative">
@@ -49,18 +57,26 @@ export default function WeekItem ( { week }: WeekItemProps ) {
             <Entypo name="dots-three-vertical" size={ 20 } className="text-primary" />
           </TouchableOpacity>
         </View>
+
         <CustomButton
           title="Voir la semaine"
           variant="secondary"
           textStyles="text-lg"
-          isLoading={ isDeleting }
+          isLoading={ isDeleting || isDuplicating }
           onPress={ () => router.push( `/week/${week.$id}/page` ) }
         />
       </View>
+
       <ActionsMenu
         visible={ showMenu }
         onClose={ () => setShowMenu( false ) }
         items={ items }
+      />
+
+      <WeekEditModal
+        modalVisible={ showEditModal }
+        setModalVisible={ setShowEditModal }
+        week={ week }
       />
     </View>
   );

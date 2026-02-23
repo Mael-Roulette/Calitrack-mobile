@@ -4,20 +4,29 @@ import { create } from "zustand";
 import useAuthStore from "./auth.store";
 
 interface WeekStoreProps {
- 	weeks: Week[];
- 	isLoading: boolean;
+  weeks: Week[];
+  isLoading: boolean;
   error: string | null;
 
-  // Actions de base
   setWeeks: ( weeks: Week[] ) => void;
   setIsLoading: ( isLoading: boolean ) => void;
   setError: ( error: string | null ) => void;
 
-  // Actions CRUD
   fetchUserWeeks: () => Promise<void>;
- 	addWeekStore: ( week: Week ) => Promise<void>;
- 	updateWeekStore: ( week: Week, { name, order }: { name: string, order: number } ) => Promise<void>;
- 	deleteWeekStore: ( weekid: string ) => Promise<void>;
+  addWeekStore: ( week: Week ) => Promise<void>;
+  /**
+   * Met à jour le nom et l'ordre d'une semaine dans le store.
+   * Si swappedWeekId est fourni, l'ancienne semaine conflictuelle
+   * reçoit oldOrder (swap côté client).
+   */
+  updateWeekStore: ( params: {
+    weekId: string;
+    name: string;
+    newOrder: number;
+    swappedWeekId: string | null;
+    oldOrder: number;
+  } ) => void;
+  deleteWeekStore: ( weekId: string ) => Promise<void>;
 }
 
 const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
@@ -25,12 +34,10 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
   isLoading: false,
   error: null,
 
-  // Setters
-  setWeeks: ( weeks: Week[] ) => set( { weeks, error: null } ),
-  setIsLoading: ( isLoading: boolean ) => set( { isLoading } ),
-  setError: ( error: string | null ) => set( { error } ),
+  setWeeks: ( weeks ) => set( { weeks, error: null } ),
+  setIsLoading: ( isLoading ) => set( { isLoading } ),
+  setError: ( error ) => set( { error } ),
 
-  // Récupération initiale des semaines
   fetchUserWeeks: async () => {
     const { isAuthenticated } = useAuthStore.getState();
     const state = get();
@@ -40,47 +47,52 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
       return;
     }
 
-    if ( state.isLoading ) return; // Bloquer seulement pendant le chargement
+    if ( state.isLoading ) return;
 
     set( { isLoading: true, error: null } );
 
     try {
       const weeks = await getUserWeeks() as unknown as Week[];
-      set( {
-        weeks: weeks || [],
-        error: null
-      } );
+      set( { weeks: weeks || [], error: null } );
     } catch ( error ) {
       const errorMessage = error instanceof Error
         ? error.message
         : "Erreur lors de la récupération des semaines";
 
       console.error( "Erreur fetchUserWeeks:", error );
-      set( {
-        weeks: [],
-        error: errorMessage,
-        isLoading: false
-      } );
+      set( { weeks: [], error: errorMessage, isLoading: false } );
     } finally {
       set( { isLoading: false } );
     }
   },
 
-  addWeekStore: async ( week: Week ) => {
+  addWeekStore: async ( week ) => {
     set( ( state ) => ( {
       weeks: [ ...state.weeks, week ],
-      error: null
+      error: null,
     } ) );
   },
 
-  updateWeekStore: async () => { },
+  updateWeekStore: ( { weekId, name, newOrder, swappedWeekId, oldOrder } ) => {
+    set( ( state ) => ( {
+      weeks: state.weeks
+        .map( ( w ) => {
+          if ( w.$id === weekId ) return { ...w, name, order: newOrder };
+          if ( swappedWeekId && w.$id === swappedWeekId ) return { ...w, order: oldOrder };
+          return w;
+        } )
+        // Retrier par ordre pour que la liste reste cohérente
+        .sort( ( a, b ) => ( a.order as number ) - ( b.order as number ) ),
+      error: null,
+    } ) );
+  },
 
-  deleteWeekStore: async ( weekId: string ) => {
+  deleteWeekStore: async ( weekId ) => {
     set( ( state ) => ( {
       weeks: state.weeks.filter( ( week ) => week.$id !== weekId ),
-      error: null
+      error: null,
     } ) );
-  }
+  },
 } ) );
 
 export default useWeeksStore;
