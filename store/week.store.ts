@@ -67,13 +67,20 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
     }
   },
 
-  addWeekStore: async () => { },
+  addWeekStore: async ( { name, order }: { name: string, order: number } ) => {
+    try {
+      const weeks = await getUserWeeks() as unknown as Week[];
+      set( { weeks, error: null } );
+    } catch ( error ) {
+      console.error( error );
+    }
+  },
 
   updateWeekStore: async () => { },
 
   deleteWeekStore: async ( weekId: string ) => {
     set( ( state ) => ( {
-      goals: state.weeks.filter( ( week ) => week.$id !== weekId ),
+      weeks: state.weeks.filter( ( week ) => week.$id !== weekId ),
       error: null
     } ) );
   }
