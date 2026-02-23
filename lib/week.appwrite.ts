@@ -1,6 +1,6 @@
 import { LIMITS } from "@/constants/value";
 import { User } from "@/types";
-import { ID, Permission, Role } from "react-native-appwrite";
+import { ID, Models, Permission, Role } from "react-native-appwrite";
 import { account, appwriteConfig, tablesDB } from "./appwrite";
 
 /**

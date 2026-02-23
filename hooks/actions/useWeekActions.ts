@@ -1,6 +1,7 @@
 import { createWeek, deleteWeek } from "@/lib/week.appwrite";
 import { useAuthStore } from "@/store";
 import useWeeksStore from "@/store/week.store";
+import { Week } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
@@ -27,22 +28,23 @@ export default function useWeekActions () {
 
       const response = await createWeek( user, { name, order } );
 
-      if ( !response!.newWeek ) {
-        console.log( response!.message );
-        showAlert.error( response!.message.body );
+      if ( !response ) {
+        showAlert.error( "Limite de semaines atteinte." );
         return;
       }
 
-      addWeekStore( { name, order } );
+      if ( !response.newWeek ) {
+        showAlert.error( response.message.body );
+        return;
+      }
+
+      await addWeekStore( response.newWeek as unknown as Week );
     } catch ( error ) {
-      console.log( error );
       showAlert.error(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue."
+        error instanceof Error ? error.message : "Une erreur est survenue."
       );
     } finally {
-      router.push( "/(tabs)/weeks" );
+      setIsSubmitting( false );
     }
   }, [ addWeekStore, isSubmitting, user ] );
 

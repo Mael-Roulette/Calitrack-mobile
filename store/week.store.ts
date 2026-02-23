@@ -15,7 +15,7 @@ interface WeekStoreProps {
 
   // Actions CRUD
   fetchUserWeeks: () => Promise<void>;
- 	addWeekStore: ( { name, order }: { name: string, order: number } ) => Promise<void>;
+ 	addWeekStore: ( week: Week ) => Promise<void>;
  	updateWeekStore: ( week: Week, { name, order }: { name: string, order: number } ) => Promise<void>;
  	deleteWeekStore: ( weekid: string ) => Promise<void>;
 }
@@ -47,8 +47,7 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
     try {
       const weeks = await getUserWeeks() as unknown as Week[];
       set( {
-        weeks,
-        isLoading: true,
+        weeks: weeks || [],
         error: null
       } );
     } catch ( error ) {
@@ -67,13 +66,11 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
     }
   },
 
-  addWeekStore: async ( { name, order }: { name: string, order: number } ) => {
-    try {
-      const weeks = await getUserWeeks() as unknown as Week[];
-      set( { weeks, error: null } );
-    } catch ( error ) {
-      console.error( error );
-    }
+  addWeekStore: async ( week: Week ) => {
+    set( ( state ) => ( {
+      weeks: [ ...state.weeks, week ],
+      error: null
+    } ) );
   },
 
   updateWeekStore: async () => { },
