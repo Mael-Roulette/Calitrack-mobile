@@ -42,7 +42,7 @@ function GoalItem({ goal, canDelete = true }: GoalItemProps) {
       progress: parsedProgress
     });
 
-    if (result.success) {
+    if (result?.success) {
       setModalVisible(false);
       setNewProgress("");
     }
@@ -54,7 +54,7 @@ function GoalItem({ goal, canDelete = true }: GoalItemProps) {
       goalId: goal.$id
     });
 
-    if (result.success) {
+    if (result?.success) {
       setShowDelete(false);
     }
   }, [handleDelete]);

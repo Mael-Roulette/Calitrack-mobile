@@ -1,10 +1,11 @@
 import { Entypo } from "@expo/vector-icons";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import ActionsMenu, { ActionMenuItem } from "../../ui/ActionsMenu";
 import CustomButton from "../../ui/CustomButton";
 import { Week } from "@/types";
 import { router } from "expo-router";
+import useWeekActions from "@/hooks/actions/useWeekActions";
 
 interface WeekItemProps {
   week: Week;
@@ -12,6 +13,13 @@ interface WeekItemProps {
 
 export default function WeekItem ( { week }: WeekItemProps ) {
   const [ showMenu, setShowMenu ] = useState<boolean>( false );
+  const { handleDelete, isDeleting } = useWeekActions();
+
+  const handleDeleteWeek = useCallback( async () => {
+    await handleDelete( {
+      weekId: week.$id
+    } );
+  }, [ handleDelete, week.$id ] );
 
   const items: ActionMenuItem[] = [
     {
@@ -22,11 +30,12 @@ export default function WeekItem ( { week }: WeekItemProps ) {
     {
       icon: "trash-2",
       text: "Supprimer",
-      onPress: () => {},
+      onPress: () => handleDeleteWeek(),
       color: "#ef4444",
       textColor: "#ef4444",
     },
   ];
+
 
   return (
     <View className="relative">
@@ -44,6 +53,7 @@ export default function WeekItem ( { week }: WeekItemProps ) {
           title="Voir la semaine"
           variant="secondary"
           textStyles="text-lg"
+          isLoading={ isDeleting }
           onPress={ () => router.push( `/week/${week.$id}/page` ) }
         />
       </View>

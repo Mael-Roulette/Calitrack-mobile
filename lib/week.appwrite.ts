@@ -1,8 +1,12 @@
 import { LIMITS } from "@/constants/value";
 import { User } from "@/types";
 import { ID, Permission, Role } from "react-native-appwrite";
-import { appwriteConfig, tablesDB } from "./appwrite";
+import { account, appwriteConfig, tablesDB } from "./appwrite";
 
+/**
+ * Permet de récupérer les semaines d'un utilisateur donné
+ * @returns Les semaines de l'utilisateur
+ */
 export const getUserWeeks = async () => {
   try {
     const response = await tablesDB.listRows( {
@@ -19,6 +23,11 @@ export const getUserWeeks = async () => {
   }
 };
 
+/**
+ * Permet de créer une nouvelle semaine pour un utilisateur donné
+ * @param user L'utilisateur pour lequel créer la semaine
+ * @param param1 Nom et ordre de la semaine
+ */
 export const createWeek = async ( user: User, {
   name,
   order
@@ -28,6 +37,9 @@ export const createWeek = async ( user: User, {
   if ( existingWeeks.length >= LIMITS.MAX_WEEKS ) {
     return;
   }
+
+  console.log( user.accountId );
+  console.log( ( await account.get() ).$id );
 
   try {
     const newWeek = await tablesDB.createRow( {
@@ -58,6 +70,36 @@ export const createWeek = async ( user: User, {
       message: {
         title: "Erreur lors de la création",
         body: error instanceof Error ? error.message : "Impossible de créer la semaine",
+      },
+    };
+  }
+};
+
+/**
+ * Permet de supprimer une semaine donnée
+ * @param weekId l'id de la semaine à supprimer
+ * @returns Retourne un message de succès ou d'erreur
+ */
+export const deleteWeek = async ( weekId: string ) => {
+  try {
+    await tablesDB.deleteRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.weekCollectionId,
+      rowId: weekId,
+    } );
+
+    return {
+      message: {
+        title: "Semaine supprimée",
+        body: "Ta semaine a été supprimée avec succès.",
+      },
+    };
+  } catch ( error ) {
+    console.log( error );
+    return {
+      message: {
+        title: "Erreur lors de la suppression",
+        body: error instanceof Error ? error.message : "Impossible de supprimer la semaine",
       },
     };
   }

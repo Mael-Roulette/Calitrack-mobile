@@ -1,7 +1,7 @@
-import { User, Week } from "@/types";
+import { getUserWeeks } from "@/lib/week.appwrite";
+import { Week } from "@/types";
 import { create } from "zustand";
 import useAuthStore from "./auth.store";
-import { getUserWeeks } from "@/lib/week.appwrite";
 
 interface WeekStoreProps {
  	weeks: Week[];
@@ -15,9 +15,9 @@ interface WeekStoreProps {
 
   // Actions CRUD
   fetchUserWeeks: () => Promise<void>;
- 	createWeek: ( user: User, { name, order }: { name: string, order: number } ) => Promise<void>;
- 	updateWeek: ( user: User, week: Week, { name, order }: { name: string, order: number } ) => Promise<void>;
- 	deleteWeek: ( user: User, week: Week ) => Promise<void>;
+ 	addWeekStore: ( { name, order }: { name: string, order: number } ) => Promise<void>;
+ 	updateWeekStore: ( week: Week, { name, order }: { name: string, order: number } ) => Promise<void>;
+ 	deleteWeekStore: ( weekid: string ) => Promise<void>;
 }
 
 const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
@@ -67,11 +67,16 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
     }
   },
 
-  createWeek: async () => { },
+  addWeekStore: async () => { },
 
-  updateWeek: async () => { },
+  updateWeekStore: async () => { },
 
-  deleteWeek: async () => { },
+  deleteWeekStore: async ( weekId: string ) => {
+    set( ( state ) => ( {
+      goals: state.weeks.filter( ( week ) => week.$id !== weekId ),
+      error: null
+    } ) );
+  }
 } ) );
 
 export default useWeeksStore;
