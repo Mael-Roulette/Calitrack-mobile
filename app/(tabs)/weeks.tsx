@@ -1,5 +1,5 @@
 import SimpleHeader from "@/components/headers/SimpleHeader";
-import AddWeekModal from "@/components/trainings/week/AddWeekModal";
+import WeekModal from "@/components/trainings/week/WeekModal";
 import WeekItem from "@/components/trainings/week/WeekItem";
 import CustomButton from "@/components/ui/CustomButton";
 import EmptyState from "@/components/ui/EmptyState";
@@ -56,7 +56,7 @@ export default function GoalsPage () {
         />
       </View>
 
-      <AddWeekModal
+      <WeekModal
         modalVisible={ modalVisible }
         setModalVisible={ setModalVisible }
         nextOrder={ weeks.length + 1 }

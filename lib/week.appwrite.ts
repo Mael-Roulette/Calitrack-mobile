@@ -38,11 +38,6 @@ export const createWeek = async ( user: User, {
     return;
   }
 
-  const currentAccount = await account.get();
-  const accountId = currentAccount.$id;
-  console.log( user.accountId );
-  console.log( accountId );
-
   try {
     const newWeek = await tablesDB.createRow( {
       databaseId: appwriteConfig.databaseId,

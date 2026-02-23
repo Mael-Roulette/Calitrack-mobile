@@ -4,17 +4,17 @@ import useWeekActions from "@/hooks/actions/useWeekActions";
 import { useState } from "react";
 import { Modal, Text, View } from "react-native";
 
-interface AddWeekModalProps {
+interface WeekModalProps {
   modalVisible: boolean;
   setModalVisible: ( value: boolean ) => void;
   nextOrder: number;
 }
 
-export default function AddWeekModal ( {
+export default function WeekModal ( {
   modalVisible,
   setModalVisible,
   nextOrder
-}: AddWeekModalProps ) {
+}: WeekModalProps ) {
   const [ weekName, setWeekName ] = useState( "" );
   const { handleCreate, isSubmitting } = useWeekActions();
 
