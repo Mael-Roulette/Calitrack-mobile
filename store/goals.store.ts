@@ -3,7 +3,7 @@ import { Goal } from "@/types";
 import { create } from "zustand";
 import useAuthStore from "./auth.store";
 
-interface GoalState {
+interface GoalStoreeProps {
 	goals: Goal[];
 	isLoading: boolean;
 	error: string | null;
@@ -28,7 +28,7 @@ interface GoalState {
 	clearGoals: () => void;
 }
 
-const useGoalsStore = create<GoalState>( ( set, get ) => ( {
+const useGoalsStore = create<GoalStoreeProps>( ( set, get ) => ( {
   goals: [],
   isLoading: false,
   error: null,

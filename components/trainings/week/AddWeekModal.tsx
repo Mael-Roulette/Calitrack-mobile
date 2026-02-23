@@ -30,13 +30,18 @@ export default function AddWeekModal ( {
       return;
     }
 
-    await handleCreate( {
-      name: weekName.trim(),
-      order: nextOrder
-    } );
+    try {
+      await handleCreate( {
+        name: weekName.trim(),
+        order: nextOrder
+      } );
+    } catch ( error ) {
+      console.log( error );
+    } finally {
+      setWeekName( "" );
+      setModalVisible( false );
+    }
 
-    setWeekName( "" );
-    setModalVisible( false );
   };
 
   return (
@@ -63,7 +68,7 @@ export default function AddWeekModal ( {
               <CustomButton
                 title="Créer"
                 onPress={ handleSubmit }
-                isLoading={ !weekName.trim() || isSubmitting }
+                isLoading={ isSubmitting }
                 variant="secondary"
               />
               <CustomButton

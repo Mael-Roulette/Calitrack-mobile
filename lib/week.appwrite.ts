@@ -22,9 +22,9 @@ export const getUserWeeks = async () => {
 export const createWeek = async ( user: User, {
   name,
   order
-}: { name: string, order: number} ) => {
+}: { name: string, order: number } ) => {
+  // Vérifier la limite de semaines
   const existingWeeks = await getUserWeeks();
-
   if ( existingWeeks.length >= LIMITS.MAX_WEEKS ) {
     return;
   }
@@ -53,6 +53,7 @@ export const createWeek = async ( user: User, {
       },
     };
   } catch ( error ) {
+    console.log( error );
     return {
       message: {
         title: "Erreur lors de la création",

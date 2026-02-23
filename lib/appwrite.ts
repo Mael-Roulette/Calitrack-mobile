@@ -14,9 +14,9 @@ export const appwriteConfig = {
   userCollectionId: process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
   goalCollectionId: process.env.EXPO_PUBLIC_APPWRITE_GOAL_COLLECTION_ID!,
   weekCollectionId:
-		process.env.EXPO_PUBLIC_APPRWITE_WEEK_COLLECTION_ID!,
+		process.env.EXPO_PUBLIC_APPWRITE_WEEK_COLLECTION_ID!,
   trainingCollectionId:
-		process.env.EXPO_PUBLIC_APPRWITE_TRAINING_COLLECTION_ID!,
+		process.env.EXPO_PUBLIC_APPWRITE_TRAINING_COLLECTION_ID!,
   exerciseCollectionId:
 		process.env.EXPO_PUBLIC_APPWRITE_EXERCISE_COLLECTION_ID!,
   seriesCollectionId: process.env.EXPO_PUBLIC_APPWRITE_SERIES_COLLECTION_ID!,

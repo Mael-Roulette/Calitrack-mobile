@@ -25,6 +25,7 @@ export default function useWeekActions () {
       const response = await createWeek( user, { name, order } );
 
       if ( !response!.newWeek ) {
+        console.log( response!.message );
         showAlert.error( response!.message.body );
         return;
       }

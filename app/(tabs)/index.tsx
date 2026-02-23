@@ -2,6 +2,7 @@ import GoalItem from "@/components/goals/GoalItem";
 import HomeHeader from "@/components/headers/HomeHeader";
 import EmptyState from "@/components/ui/EmptyState";
 import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
+import useWeeksStore from "@/store/week.store";
 import { Goal } from "@/types";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -12,6 +13,7 @@ export default function HomePage () {
   const { user, isLoading } = useAuthStore();
   const { fetchUserGoals, getActiveGoals, isLoading: isGoalsLoading } = useGoalsStore();
   const { fetchExercises } = useExercicesStore();
+  const { fetchUserWeeks } = useWeeksStore();
 
   useEffect( () => {
     if ( !isLoading && !user ) {
@@ -22,6 +24,7 @@ export default function HomePage () {
   useEffect( () => {
     fetchExercises();
     fetchUserGoals();
+    fetchUserWeeks();
   }, [ user ] );
 
   const inProgressGoals = getActiveGoals();

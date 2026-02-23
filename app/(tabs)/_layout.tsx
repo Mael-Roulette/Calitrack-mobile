@@ -37,7 +37,7 @@ export default function TabsLayout () {
           }}
         />
         <Tabs.Screen
-          name="week"
+          name="weeks"
           options={{
             tabBarIcon: ({color, size}) => (
               <Feather name="calendar" size={size} color={color} />

@@ -2,7 +2,7 @@ import { getAllExercises } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { create } from "zustand";
 
-interface ExercisesStore {
+interface ExercisesStoreProps {
 	exercices: Exercise[];
 	isLoading: boolean;
 	error: string | null;
@@ -15,7 +15,7 @@ interface ExercisesStore {
 	setExercises: ( exercises: Exercise[] ) => void;
 }
 
-const useExercicesStore = create<ExercisesStore>( ( set ) => ( {
+const useExercicesStore = create<ExercisesStoreProps>( ( set ) => ( {
   exercices: [],
   isLoading: false,
   error: null,
