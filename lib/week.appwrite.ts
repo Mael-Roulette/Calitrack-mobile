@@ -212,3 +212,26 @@ export const deleteWeek = async ( weekId: string ) => {
     };
   }
 };
+
+/**
+ * récupération d'une semaine par son ID
+ */
+export const getWeekById = async ( weekId: string ) => {
+  try {
+    const response = await tablesDB.getRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.weekCollectionId,
+      rowId: weekId,
+    } );
+
+    return response;
+  } catch ( error ) {
+    console.log( error );
+    return {
+      message: {
+        title: "Erreur lors de la récupération",
+        body: error instanceof Error ? error.message : "Impossible de récupérer la semaine",
+      },
+    };
+  }
+};

@@ -14,11 +14,6 @@ interface WeekStoreProps {
 
   fetchUserWeeks: () => Promise<void>;
   addWeekStore: ( week: Week ) => Promise<void>;
-  /**
-   * Met à jour le nom et l'ordre d'une semaine dans le store.
-   * Si swappedWeekId est fourni, l'ancienne semaine conflictuelle
-   * reçoit oldOrder (swap côté client).
-   */
   updateWeekStore: ( params: {
     weekId: string;
     name: string;
@@ -27,6 +22,8 @@ interface WeekStoreProps {
     oldOrder: number;
   } ) => void;
   deleteWeekStore: ( weekId: string ) => Promise<void>;
+
+  getWeekById: ( weekId: string ) => Week | undefined;
 }
 
 const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
@@ -92,6 +89,11 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
       weeks: state.weeks.filter( ( week ) => week.$id !== weekId ),
       error: null,
     } ) );
+  },
+
+  // Récupérer un objectif par son ID
+  getWeekById: ( weekId: string ) => {
+    return get().weeks.find( ( week ) => week.$id === weekId );
   },
 } ) );
 
