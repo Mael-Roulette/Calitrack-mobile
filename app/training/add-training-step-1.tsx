@@ -5,12 +5,14 @@ import CustomTags from "@/components/ui/CustomTags";
 import CustomTimePicker from "@/components/ui/CustomTimePicker";
 import { DAYS_TRANSLATION } from "@/constants/value";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,14 +25,44 @@ export default function AddTrainingStep1 () {
   const [ duration, setDuration ] = useState( 0 );
   const [ days, setDays ] = useState<string[]>( [] );
   const [ note, setNote ] = useState( "" );
+  const [ errors, setErrors ] = useState<{ duration?: string; days?: string }>( {} );
+  const [ flexToggle, setFlexToggle ] = useState( false );
+
+  useEffect( () => {
+    const keyboardShowListener = Keyboard.addListener( "keyboardDidShow", () => {
+      setFlexToggle( false );
+    } );
+
+    const keyboardHideListener = Keyboard.addListener( "keyboardDidHide", () => {
+      setFlexToggle( true );
+    } );
+
+    return () => {
+      keyboardShowListener.remove();
+      keyboardHideListener.remove();
+    };
+  }, [] );
+
+  const validate = (): boolean => {
+    const newErrors: typeof errors = {};
+
+    if ( duration <= 0 ) {
+      newErrors.duration = "Veuillez définir une durée supérieure à 0.";
+    }
+
+    setErrors( newErrors );
+    return Object.keys( newErrors ).length === 0;
+  };
 
   const handleNext = () => {
+    if ( !validate() ) return;
+
     router.push( {
       pathname: "/training/add-training-step-2",
       params: {
         weekId,
         trainingName,
-        duration: duration,
+        duration: String( duration ),
         days: JSON.stringify( days ),
         note,
       },
@@ -38,12 +70,18 @@ export default function AddTrainingStep1 () {
   };
 
   return (
-    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
-      <PageHeader title={ trainingName || "Nom de l'entrainement" } />
+    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } } edges={ [ "bottom" ] }>
+      <PageHeader title={ trainingName || "Nouvel entraînement" } />
 
       <KeyboardAvoidingView
         behavior={ Platform.OS === "ios" ? "padding" : "height" }
-        style={ { flex: 1, backgroundColor: "#FFF9F7" } }
+        keyboardVerticalOffset={ Platform.OS === "ios" ? 0 : 0 }
+        style={
+          flexToggle
+            ? [ { flexGrow: 1 } ]
+            : [ { flex: 1 } ]
+        }
+        enabled={ !flexToggle }
       >
         <ScrollView
           className="flex-1 bg-background px-5"
@@ -51,39 +89,41 @@ export default function AddTrainingStep1 () {
           showsVerticalScrollIndicator={ false }
           contentContainerStyle={ { paddingTop: 24, paddingBottom: 40 } }
         >
-          {/* Durée */}
-          <View className="mb-6">
+          <View className="mb-1">
             <CustomTimePicker
               label="Durée de la séance"
-              value={ duration || 0 }
-              onChange={ ( durationMinutes ) =>
-                setDuration( () => durationMinutes )
-              }
+              value={ duration }
+              onChange={ ( durationMinutes ) => {
+                setDuration( durationMinutes );
+                if ( errors.duration ) setErrors( ( e ) => ( { ...e, duration: undefined } ) );
+              } }
               showSeconds={ false }
               minutesInterval={ 5 }
             />
           </View>
+          {errors.duration && (
+            <Text className="text-red-500 font-sregular text-sm mb-4">
+              {errors.duration}
+            </Text>
+          )}
+          {!errors.duration && <View className="mb-6" />}
 
-          {/* Jours attribués */}
           <View className="mb-6">
             <CustomTags
-              label="Jours de disponibilité"
-              placeholder="Sélectionnez vos jours d'entraînement..."
-              suggestions={ DAYS_TRANSLATION }
+              label="Jours de disponibilité (facultatif)"
+              placeholder="Sélectionnez vos jours..."
+              suggestions={ [ ...DAYS_TRANSLATION ] }
               value={ days }
-              onChangeText={ ( days: string[] ) => {
-                setDays( days );
-              } }
+              onChangeText={ ( selected: string[] ) => setDays( selected ) }
               maxTags={ 7 }
               allowCustomTags={ false }
             />
           </View>
 
-          {/* Note personnelle */}
           <View className="mb-8">
             <CustomInput
               label="Note personnelle (facultatif)"
-              placeholder="Ma note"
+              placeholder="Ex : Focus sur la forme, pause café après..."
               value={ note }
               onChangeText={ setNote }
               multiline
@@ -93,7 +133,6 @@ export default function AddTrainingStep1 () {
           </View>
         </ScrollView>
 
-        {/* Boutons d'action */}
         <View className="bg-background px-5 py-4 flex-row gap-3 border-t border-primary-100/10">
           <CustomButton
             title="Annuler"

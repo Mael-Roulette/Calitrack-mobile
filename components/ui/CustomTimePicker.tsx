@@ -9,9 +9,10 @@ interface TimePickerProps {
   showHours?: boolean;
   minutesInterval?: number;
   onChange: ( duration: number ) => void;
+  customStyles?: string;
 }
 
-const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true, minutesInterval = 1, onChange }: TimePickerProps ) => {
+const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true, minutesInterval = 1, onChange, customStyles }: TimePickerProps ) => {
   const [ visible, setVisible ] = useState( false );
 
   const formatDuration = ( totalSeconds: number ) => {
@@ -45,11 +46,11 @@ const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true,
 
   return (
     <View>
-      <Text className="text mb-2">{ label }</Text>
+      <Text className="label-text mb-2">{ label }</Text>
 
       <Pressable
         onPress={ () => setVisible( true ) }
-        className="custom-input py-3"
+        className={ `custom-input py-3 ${customStyles}` }
       >
         <Text className="text-lg text-primary">
           { formatDuration( value ) }
