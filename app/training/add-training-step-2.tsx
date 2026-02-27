@@ -21,7 +21,7 @@ const DEFAULT_SERIES_VALUES = {
   sets: 3,
   targetValue: 8,
   rpe: 7,
-  weight: 0,
+  weight: null,
   restMinutes: 2,
   restSeconds: 30,
 };
@@ -39,6 +39,8 @@ export default function AddTrainingStep2 () {
   const [ isModalVisible, setIsModalVisible ] = useState( false );
   const { handleCreate, isSubmitting } = useTrainingActions();
   const [ flexToggle, setFlexToggle ] = useState( false );
+  const [ showEmptyError, setShowEmptyError ] = useState( false );
+  const [ showWeightError, setShowWeightError ] = useState( false );
 
   useEffect( () => {
     const keyboardShowListener = Keyboard.addListener( "keyboardDidShow", () => {
@@ -73,7 +75,7 @@ export default function AddTrainingStep2 () {
   const handleUpdateSeries = (
     index: number,
     field: keyof SeriesForm,
-    value: number
+    value: number | null
   ) => {
     setSeriesList( ( prev ) =>
       prev.map( ( s, i ) => ( i === index ? { ...s, [ field ]: value } : s ) )
@@ -90,8 +92,13 @@ export default function AddTrainingStep2 () {
 
   const handleConfirm = async () => {
     if ( seriesList.length === 0 ) {
-      // Show inline error instead of alert for better UX
       setShowEmptyError( true );
+      return;
+    }
+
+    const hasEmptyWeight = seriesList.some( ( s ) => s.weight === null );
+    if ( hasEmptyWeight ) {
+      setShowWeightError( true );
       return;
     }
 
@@ -100,7 +107,7 @@ export default function AddTrainingStep2 () {
       sets: s.sets,
       targetValue: s.targetValue,
       rpe: s.rpe,
-      weight: s.weight,
+      weight: s.weight as number,
       restTime: s.restMinutes * 60 + s.restSeconds,
       order: s.order,
     } ) );
@@ -114,8 +121,6 @@ export default function AddTrainingStep2 () {
       series: seriesData,
     } );
   };
-
-  const [ showEmptyError, setShowEmptyError ] = useState( false );
 
   return (
     <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } } edges={ [ "bottom" ] }>
@@ -165,6 +170,11 @@ export default function AddTrainingStep2 () {
               {showEmptyError && (
                 <Text className="text-red-500 font-sregular text-sm mt-3">
                   Veuillez ajouter au moins une série.
+                </Text>
+              )}
+              { showWeightError && (
+                <Text className="text-red-500 font-sregular text-sm mt-3 text-center">
+                  Veuillez renseigner le poids pour toutes les séries.
                 </Text>
               )}
             </View>

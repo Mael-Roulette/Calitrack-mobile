@@ -43,10 +43,11 @@ const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true,
     return `${m}`;
   };
 
-
   return (
     <View>
-      <Text className="label-text mb-2">{ label }</Text>
+      { !!label && (
+        <Text className="label-text mb-2">{ label }</Text>
+      ) }
 
       <Pressable
         onPress={ () => setVisible( true ) }

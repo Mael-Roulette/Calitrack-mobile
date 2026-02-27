@@ -1,21 +1,11 @@
 import { LIMITS } from "@/constants/value";
-import { Series, Training, User } from "@/types";
+import { CreateSeriesInput, Series, Training, User } from "@/types";
 import { ID, Permission, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 
 const databaseId = appwriteConfig.databaseId;
 const trainingTable = appwriteConfig.trainingCollectionId;
 const seriesTable = appwriteConfig.seriesCollectionId;
-
-type CreateSeriesInput = {
-  exerciseId: string;
-  sets: number;
-  targetValue: number;
-  rpe: number;
-  weight: number;
-  restTime: number; // en secondes
-  order: number;
-};
 
 type CreateTrainingInput = {
   name: string;

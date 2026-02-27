@@ -37,3 +37,13 @@ export interface Exercise {
 	format: "hold" | "repetition";
 	isCustom?: boolean;
 }
+
+export interface CreateSeriesInput {
+  exerciseId: string;
+  sets: number;
+  targetValue: number;
+  rpe: number;
+  weight: number | null;
+  restTime: number; // en secondes
+  order: number;
+};

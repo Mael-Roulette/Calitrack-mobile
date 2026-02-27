@@ -1,10 +1,12 @@
 import CustomTimePicker from "@/components/ui/CustomTimePicker";
-import { NumericField } from "@/components/ui/NumericField";
 import { getExerciseImage } from "@/constants/exercises";
 import { Exercise } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Text, TouchableOpacity, View } from "react-native";
+import FieldInput from "./FieldInput";
+import FieldWrapper from "./FieldWrapper";
+import WeightInput from "./WeightInput";
 
 export type SeriesForm = {
   exerciseId: string;
@@ -12,7 +14,7 @@ export type SeriesForm = {
   sets: number;
   targetValue: number;
   rpe: number;
-  weight: number;
+  weight: number | null;
   restMinutes: number;
   restSeconds: number;
   order: number;
@@ -38,10 +40,11 @@ export default function SeriesCard ( {
 
   return (
     <View className="border border-secondary rounded-xl p-4 mb-3 bg-background">
+      {/* Header exercice */}
       <View className="flex-row items-center justify-between mb-4">
         <View className="flex-row items-center gap-3 flex-1">
           <View className="w-12 h-12 bg-secondary rounded-lg items-center justify-center overflow-hidden">
-            {imageSource ? (
+            { imageSource ? (
               <Image
                 source={ imageSource }
                 style={ { width: "100%", height: "100%" } }
@@ -49,7 +52,7 @@ export default function SeriesCard ( {
               />
             ) : (
               <Feather name="activity" size={ 20 } color="#FFF9F7" />
-            )}
+            ) }
           </View>
 
           <View className="flex-1">
@@ -57,13 +60,13 @@ export default function SeriesCard ( {
               className="font-sregular text-primary text-base"
               numberOfLines={ 1 }
             >
-              {series.exercise.name}
+              { series.exercise.name }
             </Text>
             <Text className="label-text text-sm">
-              {series.sets}x{" "}
-              {isHold
-                ? `${series.targetValue} seconde(s)`
-                : `${series.targetValue} répétition(s)`}
+              { series.sets }x{ " " }
+              { isHold
+                ? `${ series.targetValue } seconde(s)`
+                : `${ series.targetValue } répétition(s)` }
             </Text>
           </View>
         </View>
@@ -77,77 +80,57 @@ export default function SeriesCard ( {
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row gap-2 mb-3">
-        <NumericField
-          label="Séries"
-          value={ series.sets }
-          onChangeText={ ( v ) => onUpdate( index, "sets", Math.max( 1, parseInt( v ) || 1 ) ) }
-        />
-        <NumericField
-          label={ isHold ? "Durée (s)" : "Répétitions" }
-          value={ series.targetValue }
-          onChangeText={ ( v ) => onUpdate( index, "targetValue", Math.max( 1, parseInt( v ) || 1 ) ) }
-          suffix={ isHold ? "s" : undefined }
-        />
+      <View className="flex-row gap-2 mb-4">
+        <FieldWrapper label="Séries">
+          <FieldInput
+            value={ series.sets }
+            onChangeText={ ( v ) => onUpdate( index, "sets", Math.max( 1, parseInt( v ) || 1 ) ) }
+          />
+        </FieldWrapper>
+
+        <FieldWrapper label={ isHold ? "Durée (s)" : "Répétitions" }>
+          <FieldInput
+            value={ series.targetValue }
+            onChangeText={ ( v ) => onUpdate( index, "targetValue", Math.max( 1, parseInt( v ) || 1 ) ) }
+            suffix={ isHold ? "s" : undefined }
+          />
+        </FieldWrapper>
       </View>
-
       <View className="flex-row gap-2">
-        <NumericField
-          label="RPE"
-          value={ series.rpe }
-          onChangeText={ ( v ) => {
-            const num = parseInt( v ) || 0;
-            onUpdate( index, "rpe", Math.min( 10, Math.max( 0, num ) ) );
-          } }
-        />
 
-        <NumericField
-          label="Poids"
-          value={ series.weight }
-          onChangeText={ ( v ) => onUpdate( index, "weight", parseInt( v ) || 0 ) }
-          suffix="kg"
-        />
+        <FieldWrapper label="RPE">
+          <FieldInput
+            value={ series.rpe }
+            onChangeText={ ( v ) => {
+              const num = parseInt( v ) || 0;
+              onUpdate( index, "rpe", Math.min( 10, Math.max( 0, num ) ) );
+            } }
+          />
+        </FieldWrapper>
 
+        <FieldWrapper label="Poids">
+          <WeightInput
+            value={ series.weight }
+            onChange={ ( v ) => onUpdate( index, "weight", v as unknown as number ) }
+          />
+        </FieldWrapper>
 
-        <CustomTimePicker
-          label="Repos (minutes)"
-          value={ series.restMinutes }
-          onChange={ ( restMinutes ) => {
-
-          } }
-          showHours={ false }
-          minutesInterval={ 5 }
-          customStyles="border-secondary"
-        />
-
-        {/*<View className="flex-1 items-center gap-1">
-          <Text className="label-text text-xs text-center">Repos</Text>
-          <View className="border border-primary-100/40 rounded-lg flex-row items-center justify-center px-2 py-2 gap-1">
-            <TextInput
-              value={ String( series.restMinutes ) }
-              onChangeText={ ( v ) =>
-                onUpdate( index, "restMinutes", Math.max( 0, parseInt( v ) || 0 ) )
-              }
-              keyboardType="numeric"
-              className="text text-center"
-              style={ { width: 26 } }
-              selectTextOnFocus
-            />
-            <Text className="text-primary-100 text-sm font-sregular">m</Text>
-            <TextInput
-              value={ String( series.restSeconds ) }
-              onChangeText={ ( v ) => {
-                const num = parseInt( v ) || 0;
-                onUpdate( index, "restSeconds", Math.min( 59, Math.max( 0, num ) ) );
+        <FieldWrapper label="Repos">
+          <View style={ { height: 44 } } className="w-full justify-center">
+            <CustomTimePicker
+              label=""
+              value={ series.restMinutes * 60 + series.restSeconds }
+              showHours={ false }
+              showSeconds={ true }
+              minutesInterval={ 1 }
+              onChange={ ( totalSeconds ) => {
+                onUpdate( index, "restMinutes", Math.floor( totalSeconds / 60 ) );
+                onUpdate( index, "restSeconds", totalSeconds % 60 );
               } }
-              keyboardType="numeric"
-              className="text text-center"
-              style={ { width: 26 } }
-              selectTextOnFocus
+              customStyles="border-secondary py-0 h-full justify-center"
             />
-            <Text className="text-primary-100 text-sm font-sregular">s</Text>
           </View>
-        </View>*/}
+        </FieldWrapper>
       </View>
     </View>
   );

@@ -1,18 +1,9 @@
 import { createTraining } from "@/lib/training.appwrite";
 import { useAuthStore } from "@/store";
+import { CreateSeriesInput } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
-
-type CreateSeriesInput = {
-  exerciseId: string;
-  sets: number;
-  targetValue: number;
-  rpe: number;
-  weight: number;
-  restTime: number;
-  order: number;
-};
 
 type CreateTrainingInput = {
   weekId: string;
