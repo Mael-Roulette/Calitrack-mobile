@@ -4,6 +4,7 @@ import SeriesCard, { SeriesForm } from "@/components/trainings/series/SeriesCard
 import CustomButton from "@/components/ui/CustomButton";
 import useTrainingActions from "@/hooks/actions/useTrainingActions";
 import { Exercise } from "@/types";
+import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -15,13 +16,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const DEFAULT_SERIES_VALUES = {
   sets: 3,
   targetValue: 8,
   rpe: 7,
-  weight: null,
+  weight: 0,
   restMinutes: 2,
   restSeconds: 30,
 };
@@ -41,6 +43,7 @@ export default function AddTrainingStep2 () {
   const [ flexToggle, setFlexToggle ] = useState( false );
   const [ showEmptyError, setShowEmptyError ] = useState( false );
   const [ showWeightError, setShowWeightError ] = useState( false );
+  const [ isReordering, setIsReordering ] = useState( false );
 
   useEffect( () => {
     const keyboardShowListener = Keyboard.addListener( "keyboardDidShow", () => {
@@ -136,11 +139,8 @@ export default function AddTrainingStep2 () {
         }
         enabled={ !flexToggle }
       >
-        <ScrollView
-          className="flex-1 bg-background px-5"
-          showsVerticalScrollIndicator={ false }
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={ { paddingTop: 20, paddingBottom: 40 } }
+        <View
+          className="flex-1 bg-background px-5 pt-5 pb-8"
         >
           <View className="flex-row items-center justify-between mb-4">
             <Text className="title-2">
@@ -150,57 +150,97 @@ export default function AddTrainingStep2 () {
               </Text>
             </Text>
             {seriesList.length > 1 && (
-              <TouchableOpacity>
+              <TouchableOpacity onPress={ () => setIsReordering( !isReordering ) }>
                 <Text className="text-secondary font-sregular text-base">
-                  Réordonner
+                  {isReordering ? "Confirmer" : "Réordonner"}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
 
-          {seriesList.length === 0 && (
-            <View className="items-center py-10 border border-dashed border-primary-100/30 rounded-xl mb-4">
-              <Text className="label-text text-center text-base mb-1">
-                Aucune série ajoutée
-              </Text>
-              <Text className="label-text text-center text-sm px-6">
-                Appuyez sur &quot;Ajouter une série&quot; pour commencer à
-                construire votre entraînement
-              </Text>
-              {showEmptyError && (
-                <Text className="text-red-500 font-sregular text-sm mt-3">
-                  Veuillez ajouter au moins une série.
-                </Text>
+          {!isReordering ? (
+            <ScrollView
+              className="flex-1 bg-background"
+              showsVerticalScrollIndicator={ false }
+              keyboardShouldPersistTaps="handled"
+            >
+              {seriesList.length === 0 && (
+                <View className="items-center py-10 border border-dashed border-primary-100/30 rounded-xl mb-4">
+                  <Text className="label-text text-center text-base mb-1">
+                    Aucune série ajoutée
+                  </Text>
+                  <Text className="label-text text-center text-sm px-6">
+                    Appuyez sur &quot;Ajouter une série&quot; pour commencer à
+                    construire votre entraînement
+                  </Text>
+                  {showEmptyError && (
+                    <Text className="text-red-500 font-sregular text-sm mt-3">
+                      Veuillez ajouter au moins une série.
+                    </Text>
+                  )}
+                </View>
               )}
-              { showWeightError && (
-                <Text className="text-red-500 font-sregular text-sm mt-3 text-center">
+
+              {showWeightError && (
+                <Text className="text-red-500 font-sregular text-sm mb-3 text-center">
                   Veuillez renseigner le poids pour toutes les séries.
                 </Text>
               )}
+
+              {seriesList.map( ( series, index ) => (
+                <SeriesCard
+                  key={ `${series.exerciseId}-${index}` }
+                  series={ series }
+                  index={ index }
+                  onUpdate={ handleUpdateSeries }
+                  onDelete={ handleDeleteSeries }
+                />
+              ) )}
+
+              <TouchableOpacity
+                className="btn-quartenary mt-2 flex-row items-center justify-center gap-2"
+                onPress={ () => {
+                  setShowEmptyError( false );
+                  setIsModalVisible( true );
+                } }
+                disabled={ isSubmitting }
+              >
+                <Text className="text-lg-custom font-bold">+ Ajouter une série</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          ) : (
+            <View>
+              <DraggableFlatList
+                data={ seriesList }
+                keyExtractor={ ( item, index ) => `${item.exerciseId}-${index}` }
+                onDragEnd={ ( { data } ) => {
+                  setSeriesList( data.map( ( s, i ) => ( { ...s, order: i + 1 } ) ) );
+                } }
+                renderItem={ ( { item, drag, isActive }: RenderItemParams<SeriesForm> ) => (
+                  <ScaleDecorator>
+                    <TouchableOpacity
+                      onLongPress={ drag }
+                      disabled={ isActive }
+                      className={ `flex-row items-center py-4 border-b border-primary-100/10 ${
+                        isActive ? "opacity-70 bg-primary-100/5" : ""
+                      }` }
+                    >
+                      <Ionicons
+                        name="grid-outline"
+                        size={ 22 }
+                        color="#aaa"
+                        style={ { marginRight: 16 } }
+                      />
+                      <Text className="text-base font-sregular flex-1">
+                        {item.exercise?.name}
+                      </Text>
+                    </TouchableOpacity>
+                  </ScaleDecorator>
+                ) }
+              />
             </View>
           )}
-
-          {seriesList.map( ( series, index ) => (
-            <SeriesCard
-              key={ `${series.exerciseId}-${index}` }
-              series={ series }
-              index={ index }
-              onUpdate={ handleUpdateSeries }
-              onDelete={ handleDeleteSeries }
-            />
-          ) )}
-
-          <TouchableOpacity
-            className="btn-quartenary mt-2 flex-row items-center justify-center gap-2"
-            onPress={ () => {
-              setShowEmptyError( false );
-              setIsModalVisible( true );
-            } }
-            disabled={ isSubmitting }
-          >
-            <Text className="text-lg-custom font-bold">+ Ajouter une série</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        </View>
 
         <View className="bg-background px-5 py-4 flex-row gap-3 border-t border-primary-100/10">
           <CustomButton

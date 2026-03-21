@@ -10,17 +10,6 @@ interface AddTrainingModalProps {
   weekId: string;
 }
 
-/**
- * Point d'entrée du formulaire d'ajout d'entraînement.
- * Demande le nom avant de naviguer vers l'étape 1.
- *
- * Usage dans week/[id]/page.tsx :
- *   <AddTrainingModal
- *     modalVisible={modalVisible}
- *     setModalVisible={setModalVisible}
- *     weekId={week.$id}
- *   />
- */
 export default function AddTrainingModal ( {
   modalVisible,
   setModalVisible,

@@ -45,9 +45,7 @@ export default function useTrainingActions () {
           return { success: false };
         }
 
-        showAlert.success( "Entraînement créé avec succès !", () => {
-          router.replace( `/week/${weekId}/page` );
-        } );
+        router.replace( `/week/${weekId}/page` );
 
         return { success: true, data: response.newTraining };
       } catch ( error ) {
