@@ -19,5 +19,15 @@ export const DAYS_TRANSLATION = [
 
 export type DayValue = typeof DAYS_TRANSLATION[number]["value"];
 
+export const DAY_LABELS: Record<string, string> = {
+  monday: "Lun",
+  tuesday: "Mar",
+  wednesday: "Mer",
+  thursday: "Jeu",
+  friday: "Ven",
+  saturday: "Sam",
+  sunday: "Dim",
+};
+
 export const APP_VERSION = Constants.expoConfig?.version || "1.0.0";
 export const LEGAL_CONTENT_UPDATED_AT = "14 août 2025";
