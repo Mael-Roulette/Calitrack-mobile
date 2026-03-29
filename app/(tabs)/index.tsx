@@ -2,6 +2,7 @@ import GoalItem from "@/components/goals/GoalItem";
 import HomeHeader from "@/components/headers/HomeHeader";
 import EmptyState from "@/components/ui/EmptyState";
 import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
+import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Goal } from "@/types";
 import { router } from "expo-router";
@@ -14,6 +15,7 @@ export default function HomePage () {
   const { fetchUserGoals, getActiveGoals, isLoading: isGoalsLoading } = useGoalsStore();
   const { fetchExercises } = useExercicesStore();
   const { fetchUserWeeks } = useWeeksStore();
+  const { fetchUserTrainings } = useTrainingsStore();
 
   useEffect( () => {
     if ( !isLoading && !user ) {
@@ -25,6 +27,7 @@ export default function HomePage () {
     fetchExercises();
     fetchUserGoals();
     fetchUserWeeks();
+    fetchUserTrainings();
   }, [ user ] );
 
   const inProgressGoals = getActiveGoals();
@@ -48,7 +51,7 @@ export default function HomePage () {
               <EmptyState
                 title="Aucun entrainement prévu aujourd'hui"
                 buttonText="Modifier mes séances"
-                handlePress={ () => router.push( "/(tabs)/week" )}
+                handlePress={ () => router.push( "/weeks" )}
               />
             </View>
 

@@ -1,17 +1,19 @@
 /**
  * Formate des minutes
- * @param duration nombre de minutes à formater
+ * @param duration nombre de secondes à formater
  * @returns retourne l'heure au format 1h10 ou 40
  */
 export const formatDuration = (
   duration: number
 ): string => {
-  if ( duration < 60 ) {
-    return `${duration}`;
+  const durationInMinutes = duration / 60 ;
+
+  if ( durationInMinutes < 60 ) {
+    return `${durationInMinutes}`;
   }
 
-  const hours = Math.floor( duration / 60 );
-  const minutes = duration % 60;
+  const hours = Math.floor( durationInMinutes / 60 );
+  const minutes = durationInMinutes % 60;
 
   return minutes === 0
     ? `${hours}h`

@@ -18,7 +18,7 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
 
           <View className="flex-row gap-2 items-center">
             <Ionicons name="time" size={ 24 } color={ "#FFF9F7" } />
-            <Text className="text text-background">{ formatDuration( training.duration ) } minutes</Text>
+            <Text className="text text-background">{ formatDuration( training.duration ) }</Text>
           </View>
         </View>
 
