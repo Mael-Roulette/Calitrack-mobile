@@ -58,7 +58,16 @@ export const getTrainingById = async ( trainingId: string ) => {
       tableId: trainingTable,
       rowId: trainingId,
     } );
-    return response;
+
+    // Récupérer les séries liées à cet entraînement
+    const allSeries = await tablesDB.listRows( {
+      databaseId,
+      tableId: seriesTable,
+    } );
+
+    const series = allSeries.rows.filter( ( s ) => s.training === trainingId );
+
+    return { ...response, series };
   } catch ( error ) {
     console.error( "Erreur lors de la récupération de l'entraînement:", error );
     throw new Error(

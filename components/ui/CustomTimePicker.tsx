@@ -1,3 +1,4 @@
+import { formatSecondsDuration } from "@/utils/string";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { TimerPickerModal } from "react-native-timer-picker";
@@ -15,34 +16,6 @@ interface TimePickerProps {
 const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true, minutesInterval = 1, onChange, customStyles }: TimePickerProps ) => {
   const [ visible, setVisible ] = useState( false );
 
-  const formatDuration = ( totalSeconds: number ) => {
-    const h = Math.floor( totalSeconds / 3600 )
-      .toString()
-      .padStart( 2, "0" );
-
-    const m = Math.floor( ( totalSeconds % 3600 ) / 60 )
-      .toString()
-      .padStart( 2, "0" );
-
-    const s = Math.floor( totalSeconds % 60 )
-      .toString()
-      .padStart( 2, "0" );
-
-    if ( showHours && showSeconds ) {
-      return `${h}:${m}:${s}`;
-    }
-
-    if ( showHours && !showSeconds ) {
-      return `${h}:${m}`;
-    }
-
-    if ( !showHours && showSeconds ) {
-      return `${m}:${s}`;
-    }
-
-    return `${m}`;
-  };
-
   return (
     <View>
       { !!label && (
@@ -54,7 +27,7 @@ const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true,
         className={ `custom-input py-3 ${customStyles}` }
       >
         <Text className="text-lg text-primary">
-          { formatDuration( value ) }
+          { formatSecondsDuration( value ) }
         </Text>
       </Pressable>
 

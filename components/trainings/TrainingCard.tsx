@@ -1,6 +1,6 @@
 import { DAY_LABELS } from "@/constants/value";
 import { Training } from "@/types";
-import { formatDuration } from "@/utils/string";
+import { formatMinutesDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
@@ -34,7 +34,7 @@ export default function TrainingCard ( { training, onDelete }: TrainingCardProps
           <Text
             className={ "font-sregular text-base text-primary" }
           >
-            { formatDuration( training.duration ) }
+            { formatMinutesDuration( training.duration ) }
           </Text>
         </View>
       </View>

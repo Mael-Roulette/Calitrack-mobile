@@ -1,6 +1,6 @@
 import ExercisesSelectionModal from "@/components/exercises/ExercisesSelectionModal";
 import PageHeader from "@/components/headers/PageHeader";
-import SeriesCard, { SeriesForm } from "@/components/trainings/series/SeriesCard";
+import SeriesInputCard, { SeriesForm } from "@/components/trainings/series/SeriesInputCard";
 import CustomButton from "@/components/ui/CustomButton";
 import useTrainingActions from "@/hooks/actions/useTrainingActions";
 import { Exercise } from "@/types";
@@ -188,7 +188,7 @@ export default function AddTrainingStep2 () {
               )}
 
               {seriesList.map( ( series, index ) => (
-                <SeriesCard
+                <SeriesInputCard
                   key={ `${series.exerciseId}-${index}` }
                   series={ series }
                   index={ index }

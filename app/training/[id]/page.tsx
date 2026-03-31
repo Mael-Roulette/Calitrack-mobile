@@ -1,9 +1,10 @@
 import PageHeader from "@/components/headers/PageHeader";
+import SeriesCard from "@/components/trainings/series/SeriesCard";
 import { DAY_LABELS } from "@/constants/value";
 import { getTrainingById } from "@/lib/training.appwrite";
 import { Training } from "@/types";
 import { showAlert } from "@/utils/alert";
-import { formatDuration } from "@/utils/string";
+import { formatMinutesDuration } from "@/utils/string";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
@@ -64,20 +65,28 @@ export default function Page () {
                 ) ) }
               </ScrollView>
 
-              <View className="flex-row gap-1">
-                <Text className="text text-xl font-calsans">Durée : </Text>
-                <Text className="text text-xl">{ formatDuration( training!.duration ) }</Text>
+              <View className="flex-row items-end gap-1">
+                <Text className="text text-2xl font-calsans">Durée : </Text>
+                <Text className="text text-xl">{ formatMinutesDuration( training!.duration ) }</Text>
               </View>
 
               { training!.note &&
-                <View>
-                  <Text className="text text-xl font-calsans">Note personnelle : </Text>
+                <View className="mt-5">
+                  <Text className="text text-2xl font-calsans">Note personnelle : </Text>
                   <Text className="text text-xl">{ training!.note }</Text>
                 </View>
               }
 
-              <View>
-                <Text className="text text-xl font-calsans">Mes séries ( { training!.series?.length } )</Text>
+              <View className="mt-5">
+                <Text className="text text-2xl font-calsans">
+                  Mes séries ({ training!.series?.length ?? 0 })
+                </Text>
+
+                <View className="flex-col gap-2 mt-3">
+                  { training!.series?.map( ( serie, index ) => (
+                    <SeriesCard serie={ serie } key={ index } />
+                  ) ) }
+                </View>
               </View>
             </ScrollView>
           </>

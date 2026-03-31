@@ -1,5 +1,5 @@
 import { Training } from "@/types";
-import { formatDuration } from "@/utils/string";
+import { formatMinutesDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";
@@ -18,7 +18,7 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
 
           <View className="flex-row gap-2 items-center">
             <Ionicons name="time" size={ 24 } color={ "#FFF9F7" } />
-            <Text className="text text-background">{ formatDuration( training.duration ) }</Text>
+            <Text className="text text-background">{ formatMinutesDuration( training.duration ) }</Text>
           </View>
         </View>
 
