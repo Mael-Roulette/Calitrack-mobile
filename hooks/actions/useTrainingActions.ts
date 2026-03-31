@@ -1,6 +1,7 @@
-import { createTraining } from "@/lib/training.appwrite";
+import { createTraining, deleteTraining } from "@/lib/training.appwrite";
 import { useAuthStore } from "@/store";
-import { CreateSeriesInput } from "@/types";
+import useTrainingsStore from "@/store/training.store";
+import { CreateSeriesInput, Training } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
@@ -16,6 +17,8 @@ type CreateTrainingInput = {
 
 export default function useTrainingActions () {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
+  const [ isDeleting, setIsDeleting ] = useState( false );
+  const { addTrainingStore, deleteTrainingStore } = useTrainingsStore();
   const { user } = useAuthStore();
 
   const handleCreate = useCallback(
@@ -45,6 +48,8 @@ export default function useTrainingActions () {
           return { success: false };
         }
 
+        addTrainingStore( response.newTraining as unknown as Training );
+
         router.replace( `/week/${weekId}/page` );
 
         return { success: true, data: response.newTraining };
@@ -57,8 +62,42 @@ export default function useTrainingActions () {
         setIsSubmitting( false );
       }
     },
-    [ isSubmitting, user ]
+    [ isSubmitting, user, addTrainingStore ]
   );
 
-  return { handleCreate, isSubmitting };
+  /**
+   * Action pour supprimer un objectif
+   */
+  const handleDelete = useCallback( async ( { trainingId, weekId } : { trainingId: string, weekId: string } ) => {
+    if ( !user ) {
+      showAlert.error( "Utilisateur non connecté" );
+      return;
+    }
+
+    if ( isDeleting ) return { success: false, error: "Suppression en cours" };
+
+    setIsDeleting( true );
+
+    try {
+      await deleteTraining( trainingId );
+      deleteTrainingStore( trainingId );
+
+      router.replace( `/week/${weekId}/page` );
+
+      return { success: true };
+    } catch ( error ) {
+      console.error( "Erreur suppression objectif:", error );
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de la suppression.";
+
+      showAlert.error( errorMessage );
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsDeleting( false );
+    }
+  }, [ user, isDeleting, deleteTrainingStore ] );
+
+  return { handleCreate, handleDelete, isSubmitting, isDeleting };
 }

@@ -2,6 +2,7 @@ import { LIMITS } from "@/constants/value";
 import { CreateSeriesInput, Series, Training, User } from "@/types";
 import { ID, Permission, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
+import { getExerciseById } from "./exercise.appwrite";
 
 const databaseId = appwriteConfig.databaseId;
 const trainingTable = appwriteConfig.trainingCollectionId;
@@ -9,22 +10,37 @@ const seriesTable = appwriteConfig.seriesCollectionId;
 
 type CreateTrainingInput = {
   name: string;
-  duration: number;   // en minutes
+  duration: number;
   days?: string[];
   note?: string;
   series: CreateSeriesInput[];
 };
 
 /**
- * Récupère tous les entraînements de l'utilisateur connecté
+ * Récupère tous les entraînements avec leurs séries enrichies
  */
 export const getUserTrainings = async () => {
   try {
-    const response = await tablesDB.listRows( {
-      databaseId,
-      tableId: trainingTable,
-    } );
-    return response.rows;
+    const [ trainingsResponse, seriesResponse ] = await Promise.all( [
+      tablesDB.listRows( { databaseId, tableId: trainingTable } ),
+      tablesDB.listRows( { databaseId, tableId: seriesTable } ),
+    ] );
+
+    const enrichedSeries = await Promise.all(
+      seriesResponse.rows.map( async ( s ) => {
+        const exercise = await getExerciseById(
+          typeof s.exercise === "string" ? s.exercise : s.exercise.$id
+        );
+        return { ...s, exercise };
+      } )
+    ) as unknown as Series[];
+
+    return trainingsResponse.rows.map( ( training ) => ( {
+      ...training,
+      series: enrichedSeries
+        .filter( ( s ) => s.training === training.$id )
+        .sort( ( a, b ) => a.order - b.order ),
+    } ) );
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des entraînements:", error );
     throw new Error(
@@ -38,7 +54,7 @@ export const getUserTrainings = async () => {
  */
 export const getTrainingsByWeek = async ( weekId: string ) => {
   try {
-    const allTrainings = await getUserTrainings();
+    const allTrainings = await getUserTrainings() as unknown as Training[];
     return allTrainings.filter( ( t ) => t.week === weekId );
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des entraînements de la semaine:", error );
@@ -49,43 +65,13 @@ export const getTrainingsByWeek = async ( weekId: string ) => {
 };
 
 /**
- * Récupère un entraînement par son ID
- */
-export const getTrainingById = async ( trainingId: string ) => {
-  try {
-    const response = await tablesDB.getRow( {
-      databaseId,
-      tableId: trainingTable,
-      rowId: trainingId,
-    } );
-
-    // Récupérer les séries liées à cet entraînement
-    const allSeries = await tablesDB.listRows( {
-      databaseId,
-      tableId: seriesTable,
-    } );
-
-    const series = allSeries.rows.filter( ( s ) => s.training === trainingId );
-
-    return { ...response, series };
-  } catch ( error ) {
-    console.error( "Erreur lors de la récupération de l'entraînement:", error );
-    throw new Error(
-      error instanceof Error ? error.message : "Impossible de récupérer l'entraînement"
-    );
-  }
-};
-
-/**
  * Crée un entraînement et toutes ses séries pour une semaine donnée.
- * Vérifie la limite MAX_TRAININGS avant création.
  */
 export const createTraining = async (
   user: User,
   weekId: string,
   { name, duration, days, note, series }: CreateTrainingInput
 ) => {
-  // Vérifier la limite d'entraînements pour cette semaine
   const existingTrainings = await getTrainingsByWeek( weekId );
   if ( existingTrainings.length >= LIMITS.MAX_TRAININGS ) {
     return {
@@ -97,7 +83,6 @@ export const createTraining = async (
   }
 
   try {
-    // 1. Créer l'entraînement
     const newTraining = await tablesDB.createRow( {
       databaseId,
       tableId: trainingTable,
@@ -116,7 +101,6 @@ export const createTraining = async (
       ],
     } );
 
-    // 2. Créer chaque série liée à l'entraînement
     const createdSeries = await Promise.all(
       series.map( ( s ) =>
         tablesDB.createRow( {
@@ -199,30 +183,16 @@ export const updateTraining = async (
  */
 export const deleteTraining = async ( trainingId: string ) => {
   try {
-    // 1. Récupérer et supprimer toutes les séries liées
-    const allSeries = await tablesDB.listRows( {
-      databaseId,
-      tableId: seriesTable,
-    } );
-
+    const allSeries = await tablesDB.listRows( { databaseId, tableId: seriesTable } );
     const trainingSeries = allSeries.rows.filter( ( s ) => s.training === trainingId );
 
     await Promise.all(
       trainingSeries.map( ( s ) =>
-        tablesDB.deleteRow( {
-          databaseId,
-          tableId: seriesTable,
-          rowId: s.$id,
-        } )
+        tablesDB.deleteRow( { databaseId, tableId: seriesTable, rowId: s.$id } )
       )
     );
 
-    // 2. Supprimer l'entraînement
-    await tablesDB.deleteRow( {
-      databaseId,
-      tableId: trainingTable,
-      rowId: trainingId,
-    } );
+    await tablesDB.deleteRow( { databaseId, tableId: trainingTable, rowId: trainingId } );
 
     return {
       message: {
@@ -279,11 +249,7 @@ export const updateSeries = async (
  */
 export const deleteSeries = async ( seriesId: string ) => {
   try {
-    await tablesDB.deleteRow( {
-      databaseId,
-      tableId: seriesTable,
-      rowId: seriesId,
-    } );
+    await tablesDB.deleteRow( { databaseId, tableId: seriesTable, rowId: seriesId } );
 
     return {
       message: {

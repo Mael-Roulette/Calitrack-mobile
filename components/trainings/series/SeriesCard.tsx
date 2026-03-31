@@ -11,8 +11,6 @@ export default function SeriesCard ( { serie }: { serie: Series } ) {
     ? getExerciseImage( serie.exercise.image )
     : null;
 
-  console.log( serie.exercise.image );
-
   return (
     <View className="border border-secondary rounded-xl p-4 mb-3 bg-background">
       <View className="flex-row items-center gap-3 flex-1">

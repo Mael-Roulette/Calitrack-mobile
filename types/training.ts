@@ -23,7 +23,7 @@ export interface Series {
   sets: number;
   restTime?: number;
   order: number;
-  training: Training;
+  training: string;
   targetValue: number;
 }
 
