@@ -9,7 +9,7 @@ import {
 export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
-  platform: "com.calitrack.sportapp",
+  platform: "com.mael_rltt.calitrackts",
   databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
   userCollectionId: process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
   goalCollectionId: process.env.EXPO_PUBLIC_APPWRITE_GOAL_COLLECTION_ID!,
