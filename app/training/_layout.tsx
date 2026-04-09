@@ -7,6 +7,8 @@ export default function TrainingLayout () {
       <Stack screenOptions={ { headerShown: false } }>
         <Stack.Screen name="add-training-step-1" />
         <Stack.Screen name="add-training-step-2" />
+        <Stack.Screen name="edit-training-step-1" />
+        <Stack.Screen name="edit-training-step-2" />
       </Stack>
     </GestureHandlerRootView>
   );

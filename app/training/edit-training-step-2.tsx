@@ -1,0 +1,264 @@
+import ExercisesSelectionModal from "@/components/exercises/ExercisesSelectionModal";
+import PageHeader from "@/components/headers/PageHeader";
+import SeriesInputCard, { SeriesForm } from "@/components/trainings/series/SeriesInputCard";
+import CustomButton from "@/components/ui/CustomButton";
+import useTrainingActions from "@/hooks/actions/useTrainingActions";
+import useTrainingsStore from "@/store/training.store";
+import { Exercise } from "@/types";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const DEFAULT_SERIES_VALUES = {
+  sets: 3,
+  targetValue: 8,
+  rpe: 7,
+  weight: 0,
+  restMinutes: 2,
+  restSeconds: 30,
+};
+
+export default function EditTrainingStep2 () {
+  const params = useLocalSearchParams<{
+    trainingId: string;
+    trainingName: string;
+    duration: string;
+    days: string;
+    note: string;
+  }>();
+
+  const { currentTraining } = useTrainingsStore();
+  const [ seriesList, setSeriesList ] = useState<SeriesForm[]>( [] );
+  const [ isModalVisible, setIsModalVisible ] = useState( false );
+  const { handleUpdate, isSubmitting } = useTrainingActions();
+  const [ flexToggle, setFlexToggle ] = useState( false );
+  const [ showEmptyError, setShowEmptyError ] = useState( false );
+  const [ showWeightError, setShowWeightError ] = useState( false );
+  const [ isReordering, setIsReordering ] = useState( false );
+
+  // Pré-remplissage avec les séries existantes
+  useEffect( () => {
+    if ( currentTraining?.series && currentTraining.series.length > 0 ) {
+      const existingSeries: SeriesForm[] = currentTraining.series.map( ( s ) => {
+        const restMinutes = Math.floor( ( s.restTime ?? 0 ) / 60 );
+        const restSeconds = ( s.restTime ?? 0 ) % 60;
+        return {
+          exerciseId: s.exercise.$id,
+          exercise: s.exercise,
+          sets: s.sets,
+          targetValue: s.targetValue,
+          rpe: s.rpe,
+          weight: s.weight,
+          restMinutes,
+          restSeconds,
+          order: s.order,
+        };
+      } );
+      setSeriesList( existingSeries );
+    }
+  }, [ currentTraining ] );
+
+  useEffect( () => {
+    const showListener = Keyboard.addListener( "keyboardDidShow", () => setFlexToggle( false ) );
+    const hideListener = Keyboard.addListener( "keyboardDidHide", () => setFlexToggle( true ) );
+    return () => { showListener.remove(); hideListener.remove(); };
+  }, [] );
+
+  const handleExerciseSelected = ( exercises: Exercise[] ) => {
+    const exercise = exercises[ 0 ];
+    if ( !exercise ) return;
+
+    const newSeries: SeriesForm = {
+      ...DEFAULT_SERIES_VALUES,
+      exerciseId: exercise.$id,
+      exercise,
+      order: seriesList.length + 1,
+    };
+    setSeriesList( ( prev ) => [ ...prev, newSeries ] );
+  };
+
+  const handleUpdateSeries = ( index: number, field: keyof SeriesForm, value: number | null ) => {
+    setSeriesList( ( prev ) =>
+      prev.map( ( s, i ) => ( i === index ? { ...s, [ field ]: value } : s ) )
+    );
+  };
+
+  const handleDeleteSeries = ( index: number ) => {
+    setSeriesList( ( prev ) =>
+      prev.filter( ( _, i ) => i !== index ).map( ( s, i ) => ( { ...s, order: i + 1 } ) )
+    );
+  };
+
+  const handleConfirm = async () => {
+    if ( seriesList.length === 0 ) {
+      setShowEmptyError( true );
+      return;
+    }
+
+    const hasEmptyWeight = seriesList.some( ( s ) => s.weight === null );
+    if ( hasEmptyWeight ) {
+      setShowWeightError( true );
+      return;
+    }
+
+    const seriesData = seriesList.map( ( s ) => ( {
+      exerciseId: s.exerciseId,
+      sets: s.sets,
+      targetValue: s.targetValue,
+      rpe: s.rpe,
+      weight: s.weight as number,
+      restTime: s.restMinutes * 60 + s.restSeconds,
+      order: s.order,
+    } ) );
+
+    await handleUpdate( {
+      trainingId: params.trainingId,
+      name: params.trainingName,
+      duration: parseInt( params.duration ),
+      days: JSON.parse( params.days || "[]" ) as string[],
+      note: params.note || undefined,
+      series: seriesData,
+    } );
+  };
+
+  return (
+    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } } edges={ [ "bottom" ] }>
+      <PageHeader title={ params.trainingName || "Modifier l'entraînement" } />
+
+      <KeyboardAvoidingView
+        behavior={ Platform.OS === "ios" ? "padding" : "height" }
+        style={ flexToggle ? [ { flexGrow: 1 } ] : [ { flex: 1 } ] }
+        enabled={ !flexToggle }
+      >
+        <View className="flex-1 bg-background px-5 pt-5 pb-8">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="title-2">
+              Mes séries{" "}
+              <Text className="text-primary-100 font-sregular text-base">
+                ({seriesList.length})
+              </Text>
+            </Text>
+            {seriesList.length > 1 && (
+              <TouchableOpacity onPress={ () => setIsReordering( !isReordering ) }>
+                <Text className="text-secondary font-sregular text-base">
+                  {isReordering ? "Confirmer" : "Réordonner"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {!isReordering ? (
+            <ScrollView
+              className="flex-1 bg-background"
+              showsVerticalScrollIndicator={ false }
+              keyboardShouldPersistTaps="handled"
+            >
+              {seriesList.length === 0 && (
+                <View className="items-center py-10 border border-dashed border-primary-100/30 rounded-xl mb-4">
+                  <Text className="label-text text-center text-base mb-1">
+                    Aucune série ajoutée
+                  </Text>
+                  <Text className="label-text text-center text-sm px-6">
+                    Appuyez sur &quot;Ajouter une série&quot; pour commencer
+                  </Text>
+                  {showEmptyError && (
+                    <Text className="text-red-500 font-sregular text-sm mt-3">
+                      Veuillez ajouter au moins une série.
+                    </Text>
+                  )}
+                </View>
+              )}
+
+              {showWeightError && (
+                <Text className="text-red-500 font-sregular text-sm mb-3 text-center">
+                  Veuillez renseigner le poids pour toutes les séries.
+                </Text>
+              )}
+
+              {seriesList.map( ( series, index ) => (
+                <SeriesInputCard
+                  key={ `${series.exerciseId}-${index}` }
+                  series={ series }
+                  index={ index }
+                  onUpdate={ handleUpdateSeries }
+                  onDelete={ handleDeleteSeries }
+                />
+              ) )}
+
+              <TouchableOpacity
+                className="btn-quartenary mt-2 flex-row items-center justify-center gap-2"
+                onPress={ () => {
+                  setShowEmptyError( false );
+                  setIsModalVisible( true );
+                } }
+                disabled={ isSubmitting }
+              >
+                <Text className="text-lg-custom font-bold">+ Ajouter une série</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          ) : (
+            <View>
+              <DraggableFlatList
+                data={ seriesList }
+                keyExtractor={ ( item, index ) => `${item.exerciseId}-${index}` }
+                onDragEnd={ ( { data } ) => {
+                  setSeriesList( data.map( ( s, i ) => ( { ...s, order: i + 1 } ) ) );
+                } }
+                renderItem={ ( { item, drag, isActive }: RenderItemParams<SeriesForm> ) => (
+                  <ScaleDecorator>
+                    <TouchableOpacity
+                      onLongPress={ drag }
+                      disabled={ isActive }
+                      className={ `flex-row items-center py-4 border-b border-primary-100/10 ${
+                        isActive ? "opacity-70 bg-primary-100/5" : ""
+                      }` }
+                    >
+                      <Ionicons name="grid-outline" size={ 22 } color="#aaa" style={ { marginRight: 16 } } />
+                      <Text className="text-base font-sregular flex-1">{item.exercise?.name}</Text>
+                    </TouchableOpacity>
+                  </ScaleDecorator>
+                ) }
+              />
+            </View>
+          )}
+        </View>
+
+        <View className="bg-background px-5 py-4 flex-row gap-3 border-t border-primary-100/10">
+          <CustomButton
+            title="Précédent"
+            onPress={ () => router.back() }
+            customStyles="flex-1"
+            variant="primary"
+            isLoading={ isSubmitting }
+          />
+          <CustomButton
+            title="Enregistrer"
+            onPress={ handleConfirm }
+            customStyles="flex-1"
+            variant="secondary"
+            isLoading={ isSubmitting }
+          />
+        </View>
+      </KeyboardAvoidingView>
+
+      <ExercisesSelectionModal
+        isVisible={ isModalVisible }
+        onClose={ () => setIsModalVisible( false ) }
+        onExerciseSelected={ handleExerciseSelected }
+        initialSelectedExercises={ [] }
+        selectableExercise={ 1 }
+      />
+    </SafeAreaView>
+  );
+}

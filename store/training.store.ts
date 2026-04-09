@@ -17,6 +17,7 @@ interface TrainingStoreProps {
   fetchTrainingById: ( trainingId: string ) => void;
   getTrainingsByWeekCached: ( weekId: string ) => Training[];
   addTrainingStore: ( training: Training ) => void;
+  updateTrainingStore: ( trainingId: string, updatedTraining: Training ) => void;
   deleteTrainingStore: ( trainingId: string ) => void;
 }
 
@@ -74,6 +75,19 @@ const useTrainingsStore = create<TrainingStoreProps>( ( set, get ) => ( {
     set( ( state ) => ( {
       trainings: [ training, ...state.trainings ],
       error: null
+    } ) );
+  },
+
+  updateTrainingStore: ( trainingId: string, updatedTraining: Training ) => {
+    set( ( state ) => ( {
+      trainings: state.trainings.map( ( t ) =>
+        t.$id === trainingId ? updatedTraining : t
+      ),
+      currentTraining:
+        state.currentTraining?.$id === trainingId
+          ? updatedTraining
+          : state.currentTraining,
+      error: null,
     } ) );
   },
 

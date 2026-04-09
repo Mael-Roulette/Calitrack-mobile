@@ -30,6 +30,11 @@ export default function Page () {
 
   const items: ActionMenuItem[] = [
     {
+      icon: "edit-2",
+      text: "Modifier",
+      onPress: () => handleEditTraining(),
+    },
+    {
       icon: "trash-2",
       text: "Supprimer",
       onPress: () => handleDeleteTraining(),
@@ -37,6 +42,15 @@ export default function Page () {
       textColor: "#ef4444",
     },
   ];
+
+  const handleEditTraining = useCallback(() => {
+    if (currentTraining) {
+      router.push({
+        pathname: "/training/edit-training-step-1",
+        params: { trainingId: currentTraining.$id },
+      });
+    }
+  }, [currentTraining]);
 
   const handleDeleteTraining = useCallback( async () => {
     if ( currentTraining ) {
