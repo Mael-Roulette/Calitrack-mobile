@@ -1,6 +1,8 @@
 import GoalItem from "@/components/goals/GoalItem";
 import HomeHeader from "@/components/headers/HomeHeader";
+import TrainingDay from "@/components/trainings/TrainingDay";
 import EmptyState from "@/components/ui/EmptyState";
+import { useTodayTraining } from "@/hooks/useTodayTraining";
 import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
 import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
@@ -16,6 +18,7 @@ export default function HomePage () {
   const { fetchExercises } = useExercicesStore();
   const { fetchUserWeeks } = useWeeksStore();
   const { fetchUserTrainings } = useTrainingsStore();
+  const todayTraining = useTodayTraining();
 
   useEffect( () => {
     if ( !isLoading && !user ) {
@@ -48,11 +51,16 @@ export default function HomePage () {
           <ScrollView className="flex-1 bg-background px-5">
             <View className="gap-4 pt-5">
               <Text className="text text-xl">Ma séance du jour</Text>
-              <EmptyState
-                title="Aucun entrainement prévu aujourd'hui"
-                buttonText="Modifier mes séances"
-                handlePress={ () => router.push( "/weeks" )}
-              />
+
+              {todayTraining ? (
+                <TrainingDay training={todayTraining} />
+              ) : (
+                <EmptyState
+                  title="Aucun entraînement prévu aujourd'hui"
+                  buttonText="Modifier mes séances"
+                  handlePress={() => router.push("/weeks")}
+                />
+              )}
             </View>
 
             <View className="gap-4 pt-6">
