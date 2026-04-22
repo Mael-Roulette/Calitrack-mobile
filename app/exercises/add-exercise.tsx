@@ -7,7 +7,6 @@ import { showAlert } from "@/utils/alert";
 import { validators } from "@/utils/validation";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddExercise () {
   const { handleCreate, isSubmitting } = useExerciseActions();
@@ -48,7 +47,7 @@ export default function AddExercise () {
   };
 
   return (
-    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
+    <View className="flex-1">
       <PageHeader title="Ajouter un exercice" />
       <View className="flex-1 bg-background">
         <ScrollView className="flex-1">
@@ -63,6 +62,6 @@ export default function AddExercise () {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

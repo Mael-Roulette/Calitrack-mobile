@@ -17,7 +17,6 @@ import {
   View,
 } from "react-native";
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const DEFAULT_SERIES_VALUES = {
   sets: 3,
@@ -126,7 +125,7 @@ export default function AddTrainingStep2 () {
   };
 
   return (
-    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } } edges={ [ "bottom" ] }>
+    <View className="flex-1">
       <PageHeader title={ params.trainingName || "Nouvel entraînement" } />
 
       <KeyboardAvoidingView
@@ -267,6 +266,6 @@ export default function AddTrainingStep2 () {
         initialSelectedExercises={ [] }
         selectableExercise={ 1 }
       />
-    </SafeAreaView>
+    </View>
   );
 }

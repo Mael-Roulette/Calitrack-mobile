@@ -36,7 +36,7 @@ export default function HomePage () {
   const inProgressGoals = getActiveGoals();
 
   return (
-    <SafeAreaView  style={ { flex: 1, backgroundColor: "#FC7942" } }>
+    <View className="flex-1">
       { isLoading ? (
 				<View>
 					<Text className='title'>Chargement...</Text>
@@ -88,6 +88,6 @@ export default function HomePage () {
           </ScrollView>
         </>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

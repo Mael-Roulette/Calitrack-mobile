@@ -6,7 +6,6 @@ import { useGoalsStore } from "@/store";
 import { Goal } from "@/types";
 import { router } from "expo-router";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoalsPage () {
   const {
@@ -27,7 +26,7 @@ export default function GoalsPage () {
 
   if ( error && !isLoading ) {
     return (
-      <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
+      <View className="flex-1">
         <SimpleHeader
           title="Mes objectifs"
           subtitle="Ajouter une progression en cliquant sur un objectif"
@@ -40,12 +39,12 @@ export default function GoalsPage () {
             Une erreur est survenue lors du chargement de vos objectifs.
           </Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
+    <View className="flex-1">
       <SimpleHeader
         title="Mes objectifs"
         subtitle="Ajouter une progression en cliquant sur un objectif"
@@ -89,6 +88,6 @@ export default function GoalsPage () {
           </ScrollView>
         ) }
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

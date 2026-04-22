@@ -14,7 +14,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddTrainingStep1 () {
   const { weekId, trainingName } = useLocalSearchParams<{
@@ -70,7 +69,7 @@ export default function AddTrainingStep1 () {
   };
 
   return (
-    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } } edges={ [ "bottom" ] }>
+    <View className="flex-1">
       <PageHeader title={ trainingName || "Nouvel entraînement" } />
 
       <KeyboardAvoidingView
@@ -148,6 +147,6 @@ export default function AddTrainingStep1 () {
           />
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }

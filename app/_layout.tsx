@@ -5,7 +5,8 @@ import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { Platform, View } from "react-native";
+import { Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import "./globals.css";
 
 Notifications.setNotificationHandler( {
@@ -49,7 +50,7 @@ export default function RootLayout () {
   }
 
   return (
-    <View style={ { flex: 1, backgroundColor: "#FFF9F7" } }>
+    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
       <Stack screenOptions={ { headerShown: false } }>
         <Stack.Protected guard={ !isAuthenticated }>
           <Stack.Screen name="(auth)" />
@@ -59,6 +60,6 @@ export default function RootLayout () {
           <Stack.Screen name="(tabs)" />
         </Stack.Protected>
       </Stack>
-    </View>
+    </SafeAreaView>
   );
 };

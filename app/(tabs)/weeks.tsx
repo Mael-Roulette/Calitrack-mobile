@@ -18,7 +18,7 @@ export default function GoalsPage () {
   };
 
   return (
-    <SafeAreaView style={ { flex: 1, backgroundColor: "#FC7942" } }>
+    <View className="flex-1">
       <SimpleHeader
         title="Mes séances"
         subtitle="Vos semaines d'entraînement"
@@ -66,6 +66,6 @@ export default function GoalsPage () {
         setModalVisible={ setModalVisible }
         nextOrder={ weeks.length + 1 }
       />
-    </SafeAreaView>
+    </View>
   );
 }

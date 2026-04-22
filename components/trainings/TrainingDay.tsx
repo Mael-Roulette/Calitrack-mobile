@@ -14,7 +14,12 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
     <PrimaryGradient>
       <View className='px-4 py-4 gap-5'>
         <View className="flex-row items-center justify-between gap-5">
-          <Text className="text text-background flex-shrink truncate line-clamp-1">{ training.name }</Text>
+          <Text
+            numberOfLines={ 1 }
+            ellipsizeMode="tail"
+            className="text text-background flex-shrink">
+            { training.name }
+          </Text>
 
           <View className="flex-row gap-2 items-center">
             <Ionicons name="time" size={ 24 } color={ "#FFF9F7" } />

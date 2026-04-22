@@ -81,7 +81,7 @@ export default function EditExercise () {
   };
 
   return (
-    <SafeAreaView className='flex-1 bg-secondary' edges={ [ "bottom" ] }>
+    <View className="flex-1">
       <View className='flex-1 bg-background'>
         { loading ? (
           <View className='flex-1 items-center justify-center'>
@@ -106,6 +106,6 @@ export default function EditExercise () {
           </>
         ) }
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

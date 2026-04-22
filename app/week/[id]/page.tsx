@@ -9,7 +9,6 @@ import { Training } from "@/types";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
   const { id } = useLocalSearchParams();
@@ -60,16 +59,16 @@ export default function Page() {
 
   if (loading || !week) {
     return (
-      <SafeAreaView className="flex-1 bg-secondary" edges={["bottom"]}>
+      <View className="flex-1">
         <View className="flex-1 justify-center items-center">
           <Text>Chargement...</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-secondary" edges={["bottom"]}>
+    <View className="flex-1">
       <View className="flex-1">
         {week && (
           <>
@@ -111,6 +110,6 @@ export default function Page() {
           </>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

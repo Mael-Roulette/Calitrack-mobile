@@ -6,7 +6,6 @@ import { useExercicesStore } from "@/store";
 import { router } from "expo-router";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseList = () => {
   const { exercices } = useExercicesStore();
@@ -20,7 +19,7 @@ const ExerciseList = () => {
   };
 
   return (
-    <SafeAreaView className="bg-background flex-1" edges={ [ "bottom" ] }>
+    <View className="flex-1">
       <PageHeader
         title="Les mouvements"
         onRightPress={ () => router.push( "/exercises/add-exercise" ) }
@@ -81,7 +80,7 @@ const ExerciseList = () => {
           columnWrapperStyle={ { paddingHorizontal: 0 } }
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

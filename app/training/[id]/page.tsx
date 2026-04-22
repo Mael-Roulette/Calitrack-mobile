@@ -59,7 +59,7 @@ export default function Page () {
   }, [ handleDelete, currentTraining?.$id ] );
 
   return (
-    <SafeAreaView className='flex-1 bg-secondary' edges={ [ "bottom" ] }>
+    <View className="flex-1">
       <View className="flex-1">
         { !currentTraining ? (
           <View className='flex-1 items-center justify-center'>
@@ -122,6 +122,6 @@ export default function Page () {
         onClose={ () => setShowMenu( false ) }
         items={ items }
       />
-    </SafeAreaView>
+    </View>
   );
 }

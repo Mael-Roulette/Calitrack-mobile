@@ -65,7 +65,7 @@ const ExerciseDetails = () => {
   ];
 
   return (
-    <SafeAreaView className='flex-1 bg-secondary' edges={ [ "bottom" ] }>
+    <View className="flex-1">
       <View className='flex-1'>
         { loading ? (
           <View className='flex-1 items-center justify-center'>
@@ -120,7 +120,7 @@ const ExerciseDetails = () => {
           </>
         ) }
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

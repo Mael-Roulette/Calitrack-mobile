@@ -8,7 +8,6 @@ import { useGoalLabels } from "@/hooks/useGoalLabels";
 import { Exercise } from "@/types";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddGoal () {
   const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
@@ -42,7 +41,7 @@ export default function AddGoal () {
 
 
   return (
-    <SafeAreaView  style={ { flex: 1, backgroundColor: "#FC7942" } }>
+    <View className="flex-1">
       <PageHeader title="Ajouter un objectif" />
       <View className="flex-1 bg-background">
         <ScrollView className="flex-1 px-5">
@@ -104,6 +103,6 @@ export default function AddGoal () {
         initialSelectedExercises={ selectedExercise }
         selectableExercise={ 1 }
       />
-    </SafeAreaView>
+    </View>
   );
 }
