@@ -29,7 +29,7 @@ export default function PageHeader ( {
   };
 
   return (
-    <HeaderContainer paddingTop={ insets.top + 12 }>
+    <HeaderContainer paddingTop={ insets.top }>
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-4 flex-1">
           {/* Back button */}

@@ -32,7 +32,7 @@ export default function PageHeaderWithTabs ( {
   };
 
   return (
-    <HeaderContainer paddingTop={ insets.top + 12 }>
+    <HeaderContainer paddingTop={ insets.top }>
       <View className="flex-row justify-between items-center mb-4">
         <TouchableOpacity onPress={ handleBack }>
           <Ionicons name="arrow-back" size={ 28 } color="white" />
