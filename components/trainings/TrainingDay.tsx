@@ -1,6 +1,7 @@
 import { Training } from "@/types";
 import { formatMinutesDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";
 import PrimaryGradient from "../ui/PrimaryGradient";
@@ -10,6 +11,10 @@ interface TrainingDayProps {
 }
 
 export default function TrainingDay ( { training }: TrainingDayProps ) {
+  const handleLauchTraining = () => {
+    router.push( "/training/[id]/session" );
+  };
+
   return (
     <PrimaryGradient>
       <View className='px-4 py-4 gap-5'>
@@ -29,7 +34,7 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
 
         <CustomButton
           title="Voir ma séance"
-          onPress={ () => {} }
+          onPress={ handleLauchTraining }
           customStyles="border-0"
         />
       </View>
