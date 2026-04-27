@@ -12,7 +12,7 @@ interface TrainingDayProps {
 
 export default function TrainingDay ( { training }: TrainingDayProps ) {
   const handleLauchTraining = () => {
-    router.push( "/training/[id]/session" );
+    router.push( `/training/${training.$id}/session` );
   };
 
   return (
