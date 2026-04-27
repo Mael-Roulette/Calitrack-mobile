@@ -68,7 +68,9 @@ export default function SessionPage () {
               onBackPress={ handleQuitTraining }
             />
             <ScrollView className="bg-background">
-              <SessionSummary training={ currentTraining } goals={ goals } />
+              { sessionState === "summary" && (
+                <SessionSummary training={ currentTraining } goals={ goals } />
+              ) }
             </ScrollView>
           </>
         ) }
