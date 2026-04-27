@@ -34,11 +34,11 @@ export const formatSecondsDuration = ( totalSeconds: number,  showHours = true, 
     .padStart( 2, "0" );
 
   if ( showHours && showSeconds ) {
-    return `${h}:${m}:${s}`;
+    return `${h}h${m}:${s}`;
   }
 
   if ( showHours && !showSeconds ) {
-    return `${h}:${m}`;
+    return `${h}h${m}`;
   }
 
   if ( !showHours && showSeconds ) {

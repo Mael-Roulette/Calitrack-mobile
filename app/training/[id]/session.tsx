@@ -6,6 +6,7 @@ import { showAlert } from "@/utils/alert";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 // Les différents états de la session
 type SessionState = "summary" | "active" | "completed";
@@ -66,7 +67,9 @@ export default function SessionPage () {
               title={ `Session : ${currentTraining.name }` }
               onBackPress={ handleQuitTraining }
             />
-            <SessionSummary training={ currentTraining } goals={ goals } />
+            <ScrollView className="bg-background">
+              <SessionSummary training={ currentTraining } goals={ goals } />
+            </ScrollView>
           </>
         ) }
     </View>

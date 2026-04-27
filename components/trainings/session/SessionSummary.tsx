@@ -1,5 +1,6 @@
 import GoalItem from "@/components/goals/GoalItem";
 import { Goal, Series, Training } from "@/types";
+import { formatSecondsDuration } from "@/utils/string";
 import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import SeriesCard from "../series/SeriesCard";
@@ -41,15 +42,14 @@ const SessionSummary = ( { training, goals }: SummaryProps ) => {
   }, [ training, goals, trainingSeries ] );
 
   return (
-    <View className="px-5">
+    <View className="px-5 pt-5">
       <View>
         <View>
-          <Text className='text mb-5'>
-            <Text className="title-3">Durée: </Text> { Math.floor( training.duration / 3600 ) > 0
-              ? `${Math.floor( training.duration / 3600 )}h${Math.floor( ( training.duration % 3600 ) / 60 ) > 0 ? Math.floor( ( training.duration % 3600 ) / 60 ) : ""}`
-              : `${Math.floor( ( training.duration % 3600 ) / 60 )} min` }
+          <Text className='text-lg-custom mb-5'>
+            <Text className="title-2">Durée : </Text>
+            { formatSecondsDuration( training.duration, true, false )}
           </Text>
-          <Text className="title-3 mb-3">Mes exercices</Text>
+          <Text className="title-2 mb-3">Mes exercices ( { trainingSeries.length } )</Text>
           <FlatList
             data={ trainingSeries }
             renderItem={ ( { item }: { item: Series } ) => {
@@ -69,8 +69,8 @@ const SessionSummary = ( { training, goals }: SummaryProps ) => {
         </View>
 
         { relatedGoals && relatedGoals.length > 0 && (
-          <View className="mt-5">
-            <Text className='title-3 mb-3'>
+          <View className="mt-5 mb-5">
+            <Text className='title-2 mb-3'>
               Objectifs liés à l&apos;entraînement
             </Text>
             <FlatList
