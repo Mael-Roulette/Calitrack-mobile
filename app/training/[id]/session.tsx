@@ -87,20 +87,34 @@ export default function SessionPage () {
               title={ `Session : ${currentTraining.name }` }
               onBackPress={ handleQuitTraining }
             />
-            <ScrollView className="bg-background flex-1">
-              { sessionState === "summary" && (
-                <SessionSummary training={ currentTraining } goals={ goals } />
-              ) }
+            { sessionState === "summary" && (
+              <ScrollView
+                className="flex-1"
+                contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+              >
+                  <SessionSummary training={ currentTraining } goals={ goals } />
+              </ScrollView>
+            ) }
 
-              { sessionState === "active" && currentTraining?.series && (
+            { sessionState === "active" && currentTraining?.series && (
+              <View className="flex-1">
                 <SessionActive
                   series={ currentTraining.series }
                   currentIndex={ currentSeriesIndex }
                   onSeriesComplete={ handleSeriesComplete }
                 />
+              </View>
+            ) }
+
+            { sessionState === "completed" && currentTraining && sessionStartTime && (
+							<SessionRecap
+								training={ currentTraining }
+								startTime={ sessionStartTime }
+								endTime={ new Date() }
+							/>
 						) }
 
-            </ScrollView>
             <View className='px-5 py-3 bg-background'>
               { sessionState === "summary" && (
                 <CustomButton

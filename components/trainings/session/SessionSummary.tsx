@@ -42,7 +42,7 @@ const SessionSummary = ( { training, goals }: SummaryProps ) => {
   }, [ training, goals, trainingSeries ] );
 
   return (
-    <View className="px-5 pt-5">
+    <View className="px-5 pt-5 bg-background">
       <View>
         <View>
           <Text className='text-lg-custom mb-5'>

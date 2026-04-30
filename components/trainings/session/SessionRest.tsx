@@ -55,7 +55,7 @@ const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
   const rotateTransform = `rotate(-90, ${CENTER}, ${CENTER})`;
 
   return (
-    <>
+    <View className="flex-1 bg-background">
       <ScrollView className="flex-1 px-5">
         <View className="flex-row justify-center items-center gap-3 mt-2 mb-8">
           <Ionicons name="time-outline" size={40} color="#FC7942" />
@@ -118,7 +118,7 @@ const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
           <CustomButton title="Continuer" onPress={onRestComplete} />
         )}
       </View>
-    </>
+    </View>
   );
 };
 
