@@ -33,7 +33,7 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
         </View>
 
         <CustomButton
-          title="Voir ma séance"
+          title="Lancer ma séance"
           onPress={ handleLauchTraining }
           customStyles="border-0"
         />
