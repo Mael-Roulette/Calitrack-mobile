@@ -2,6 +2,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import { getExerciseImage } from "@/constants/exercises";
 import { Series } from "@/types";
 import WheelPicker from "@quidone/react-native-wheel-picker";
+import WheelPickerFeedback from "@quidone/react-native-wheel-picker-feedback";
 import { useState } from "react";
 import {
   Image,
@@ -42,11 +43,8 @@ export default function SessionSerieActive ( {
     label: exercise?.format === "hold" ? `${index}s` : `${index}rep`,
   } ) );
 
-  const [ value, setValue ] = useState( 0 );
-
   return (
     <View className="flex-1 bg-background">
-      {/* Contenu scrollable */}
       <ScrollView
         className="flex-1"
         contentContainerStyle={ { flexGrow: 1 } }
@@ -79,7 +77,6 @@ export default function SessionSerieActive ( {
             {exercise?.name ?? "Exercice"}
           </Text>
 
-          {/* Métriques */}
           <View className="flex-row gap-3 mb-6">
             <View className="flex-1 items-center">
               <Text className="label-text text-center mb-1">Objectif</Text>
@@ -108,13 +105,15 @@ export default function SessionSerieActive ( {
               value={ selectedValue }
               onValueChanged={ ( { item: { value } } ) => setSelectedValue( value ) }
               enableScrollByTapOnItem
+              onValueChanging={ () => {
+                WheelPickerFeedback.triggerImpact();
+              } }
             />
           </View>
         </View>
       </ScrollView>
 
-      {/* Footer fixe */}
-      <View className="px-5 py-4 bg-background border-t border-primary-100/10 gap-4">
+      <View className="px-5 py-3 bg-background border-t border-primary-100/10 gap-4">
         {/* Indicateurs de sets */}
         <View className="items-center gap-2">
           <Text className="label-text text-center">

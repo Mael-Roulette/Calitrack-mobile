@@ -14,3 +14,8 @@ export interface Performance {
     achievedValue: number;
     session: Session;
 }
+
+export type Performances = Record<
+  string, // seriesId
+  Record<number, number> // setNumber -> value
+>;
