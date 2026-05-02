@@ -85,10 +85,14 @@ export default function SeriesCard ( {
 
         {Array.from( { length: serie.sets } ).map( ( _, index ) => {
           const setNumber = index + 1;
-          const value = performances?.[ setNumber ];
+          const achieved = performances?.[ setNumber ];
 
           return (
-            <View key={ setNumber } className="flex-1 min-w-[30%] items-center gap-1">
+            <View
+              key={ setNumber }
+              className="items-center gap-1"
+              style={ { width: "30%", marginBottom: index >= 3 ? 8 : 0 } }
+            >
               <Text className="text text-xl" numberOfLines={ 1 }>
                 Set {setNumber}
               </Text>
@@ -97,7 +101,9 @@ export default function SeriesCard ( {
                 style={ { height: 44 } }
               >
                 <Text className="text">
-                  {value !== undefined ? value : "-"}
+                  {achieved !== undefined
+                    ? `${achieved} / ${serie.targetValue} ${ isHold ? "s" : "rep" }`
+                    : "-"}
                 </Text>
               </View>
             </View>

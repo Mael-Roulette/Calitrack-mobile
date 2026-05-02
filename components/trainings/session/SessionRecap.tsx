@@ -3,6 +3,7 @@ import { Training } from "@/types";
 import { Performances } from "@/types/session";
 import { formatSecondsDuration } from "@/utils/string";
 import { Text, View } from "react-native";
+import PerformanceRecap from "../performances/PerformanceRecap";
 
 interface SessionRecapProps {
   training: Training;
@@ -32,30 +33,13 @@ const SessionRecap = ( { training, startTime, endTime, performances }: SessionRe
 
       <Text className="title mt-4">Mes performances</Text>
       <View className="mt-2">
-        {training.series?.map( ( serie ) => {
-          const seriePerf = performances?.[ serie.$id ];
-
-          return (
-            <View key={ serie.$id } className="mb-4">
-              <Text className="title-2 mb-2">{serie.exercise.name}</Text>
-
-              <View className="flex-row flex-wrap gap-2">
-                {Array.from( { length: serie.sets } ).map( ( _, i ) => {
-                  const setNumber = i + 1;
-                  const value = seriePerf?.[ setNumber ];
-
-                  return (
-                    <View key={ setNumber } className="border border-secondary rounded-lg px-3 py-2">
-                      <Text className="text">
-                        Set {setNumber}: {value ?? "-"}
-                      </Text>
-                    </View>
-                  );
-                } )}
-              </View>
-            </View>
-          );
-        } )}
+        {training.series?.map( ( serie ) => (
+          <PerformanceRecap
+            key={ serie.$id }
+            serie={ serie }
+            performances={ performances?.[ serie.$id ] }
+          />
+        ) )}
       </View>
     </View>
   );
