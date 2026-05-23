@@ -19,24 +19,34 @@ export default function Session () {
   const { id } = useLocalSearchParams();
   const { currentTraining, fetchTrainingById } = useTrainingsStore();
   const { goals } = useGoalsStore();
+
+  // États de la session
+	const [ sessionState, setSessionState ] = useState<SessionState>( "summary" );
+	const [ currentSeriesIndex, setCurrentSeriesIndex ] = useState( 0 );
+	const [ sessionStartTime, setSessionStartTime ] = useState<Date>();
+	const [ sessionEndTime, setSessionEndTime ] = useState<Date>();
+  const [ sessionDuration, setSessionDuration ] = useState<number>();
   const [performances, setPerformances] = useState<Performances>({});
   const [ isFinishing, setIsFinishing ] = useState<boolean>( false );
 
   // Récupération de l'entrainement
   // Si l'id n'est pas fourni on retourne directement à l'accueil
-  if ( !id ) router.push( "/(tabs)" );
-
-  useEffect( () => {
+  useEffect(() => {
+    if (!id) {
+      router.push("/(tabs)");
+      return;
+    }
     const load = async () => {
       try {
-        await fetchTrainingById( id as string );
+        await fetchTrainingById(id as string);
       } catch {
-        showAlert.error( "Impossible de charger l'entrainement", () => router.push( "/weeks" ) );
+        showAlert.error("Impossible de charger l'entrainement", () =>
+          router.push("/weeks")
+        );
       }
     };
     load();
-  }, [ id ] );
-
+  }, [id]);
 
   /**
    * Permet de lancer la séance après le résumé de début
@@ -55,18 +65,55 @@ export default function Session () {
 			setCurrentSeriesIndex( prev => prev + 1 );
 		} else {
 			// Toutes les séries sont terminées
+      const endTime = new Date();
+      const durationMs = endTime.getTime() - sessionStartTime!.getTime();
+      setSessionDuration(Math.floor(durationMs / 1000));
+      setSessionEndTime(endTime);
+
 			setSessionState( "completed" );
 		}
 	};
 
-  const handleSessionEnd = () => {
+  const handleSessionEnd = async () => {
+    try {
+      setIsFinishing(true);
+      // TODO: sauvegarder la session
+      router.push("/(tabs)");
+    } catch {
+      showAlert.error("Impossible de terminer la séance", () => {});
+    } finally {
+      setIsFinishing(false);
+    }
+  };
 
-  }
-
-  	// États de la session
-	const [ sessionState, setSessionState ] = useState<SessionState>( "summary" );
-	const [ currentSeriesIndex, setCurrentSeriesIndex ] = useState( 0 );
-	const [ sessionStartTime, setSessionStartTime ] = useState<Date>();
+  const renderCompleted = () => {
+    if (!currentTraining || !sessionDuration) {
+      return (
+        <Text className="text-center text-secondary text-lg my-5">
+          Une erreur est survenue
+        </Text>
+      );
+    }
+    return (
+      <>
+        <PageHeader
+          title={`Session : ${currentTraining.name}`}
+          onBackPress={handleSessionEnd}
+        />
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <SessionRecap
+            training={currentTraining}
+            sessionDuration={sessionDuration}
+            performances={performances}
+          />
+        </ScrollView>
+      </>
+    );
+  };
 
   return (
     <View className="flex-1">
@@ -104,27 +151,7 @@ export default function Session () {
               </View>
             ) }
 
-            { sessionState === "completed" && currentTraining && sessionStartTime && (
-							<>
-                <PageHeader
-                  title={ `Session : ${currentTraining.name }` }
-                  onBackPress={ handleSessionEnd }
-                />
-                <ScrollView
-                  className="flex-1"
-                  contentContainerStyle={{ flexGrow: 1 }}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <SessionRecap
-                    training={currentTraining}
-                    startTime={sessionStartTime}
-                    endTime={new Date()}
-                    performances={performances}
-                  />
-                </ScrollView>
-              </>
-						) }
-
+            { sessionState === "completed" && renderCompleted() }
 
               { sessionState === "summary" && (
                 <View className="px-5 py-3">

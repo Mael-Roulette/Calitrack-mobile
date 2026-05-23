@@ -7,21 +7,17 @@ import PerformanceRecap from "../performances/PerformanceRecap";
 
 interface SessionRecapProps {
   training: Training;
-  startTime: Date;
-  endTime: Date;
+  sessionDuration: number;
   performances: Performances;
 }
 
-const SessionRecap = ( { training, startTime, endTime, performances }: SessionRecapProps ) => {
-  const durationMs = endTime.getTime() - startTime.getTime();
-  const durationSeconds = Math.floor( durationMs / 1000 );
-
+const SessionRecap = ( { training, sessionDuration, performances }: SessionRecapProps ) => {
   return (
     <View className="flex-1 px-5 pt-8 bg-background">
       <Text className="title text-center mb-4">Résumé de la séance</Text>
       <View className="flex-row gap-1 items-center mb-4">
         <Text className="title-2">Durée : </Text>
-        <Text className="text-lg-custom">{ formatSecondsDuration( durationSeconds, true, false ) }</Text>
+        <Text className="text-lg-custom">{ formatSecondsDuration( sessionDuration, true, false ) }</Text>
       </View>
 
       <CustomInput
