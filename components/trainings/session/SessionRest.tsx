@@ -104,7 +104,7 @@ const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
         </View>
       </ScrollView>
 
-      <View className="w-full gap-3 px-5">
+      <View className="w-full gap-3 px-5 pb-5">
         {timeRemaining > 0 ? (
           <>
             <CustomButton

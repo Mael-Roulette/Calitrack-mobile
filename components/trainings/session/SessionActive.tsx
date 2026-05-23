@@ -43,9 +43,9 @@ export default function SessionActive ( {
       },
     } ) );
 
-    const isLastSet = currentSet >= currentSeries.sets;
+    const isLastSeries = currentSeries.$id === series[ series.length - 1 ]?.$id;
 
-    if ( isLastSet ) {
+    if ( isLastSeries ) {
       onSeriesComplete();
     } else {
       setActiveState( "rest" );
@@ -53,8 +53,14 @@ export default function SessionActive ( {
   };
 
   const handleRestComplete = () => {
-    setCurrentSet( ( prev ) => prev + 1 );
-    setActiveState( "series" );
+    const isLastSet = currentSet >= currentSeries.sets;
+
+    if ( isLastSet ) {
+      onSeriesComplete();
+    } else {
+      setCurrentSet( ( prev ) => prev + 1 );
+      setActiveState( "series" );
+    }
   };
 
   if ( activeState === "rest" ) {
