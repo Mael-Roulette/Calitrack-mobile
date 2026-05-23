@@ -3,6 +3,7 @@ import SessionActive from "@/components/trainings/session/SessionActive";
 import SessionRecap from "@/components/trainings/session/SessionRecap";
 import SessionSummary from "@/components/trainings/session/SessionSummary";
 import CustomButton from "@/components/ui/CustomButton";
+import { useSessionActions } from "@/hooks/actions/useSessionAction";
 import { useGoalsStore } from "@/store";
 import useTrainingsStore from "@/store/training.store";
 import { Performances } from "@/types/session";
@@ -19,15 +20,14 @@ export default function Session () {
   const { id } = useLocalSearchParams();
   const { currentTraining, fetchTrainingById } = useTrainingsStore();
   const { goals } = useGoalsStore();
+  const { handleSave, isSaving } = useSessionActions();
 
   // États de la session
 	const [ sessionState, setSessionState ] = useState<SessionState>( "summary" );
 	const [ currentSeriesIndex, setCurrentSeriesIndex ] = useState( 0 );
 	const [ sessionStartTime, setSessionStartTime ] = useState<Date>();
-	const [ sessionEndTime, setSessionEndTime ] = useState<Date>();
   const [ sessionDuration, setSessionDuration ] = useState<number>();
   const [performances, setPerformances] = useState<Performances>({});
-  const [ isFinishing, setIsFinishing ] = useState<boolean>( false );
 
   // Récupération de l'entrainement
   // Si l'id n'est pas fourni on retourne directement à l'accueil
@@ -68,22 +68,22 @@ export default function Session () {
       const endTime = new Date();
       const durationMs = endTime.getTime() - sessionStartTime!.getTime();
       setSessionDuration(Math.floor(durationMs / 1000));
-      setSessionEndTime(endTime);
 
 			setSessionState( "completed" );
 		}
 	};
 
   const handleSessionEnd = async () => {
-    try {
-      setIsFinishing(true);
-      // TODO: sauvegarder la session
-      router.push("/(tabs)");
-    } catch {
-      showAlert.error("Impossible de terminer la séance", () => {});
-    } finally {
-      setIsFinishing(false);
-    }
+    if (!currentTraining || !sessionDuration) return;
+
+    const result = await handleSave({
+      trainingId: currentTraining.$id,
+      duration: sessionDuration,
+      performances,
+      onSuccess: () => router.push("/(tabs)"),
+    });
+
+    if (!result?.success) return;
   };
 
   const renderCompleted = () => {
@@ -167,7 +167,7 @@ export default function Session () {
                   <CustomButton
                     onPress={ handleSessionEnd }
                     title="Terminer la séance"
-                    isLoading={ isFinishing }
+                    isLoading={ isSaving }
                   />
                 </View>
               ) }
