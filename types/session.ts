@@ -1,17 +1,17 @@
-import { Series, Training } from ".";
+import { Training } from ".";
 
 export interface Session {
     $id: string;
     training: Training;
     duration: number;
     note: string;
-    performance: Performance[];
+    performances: Performance[];
     $createdAt: Date;
 }
 
 export interface Performance {
     $id: string;
-    series: Series;
+    series: string;
     achievedValue: number;
     session: Session;
 }

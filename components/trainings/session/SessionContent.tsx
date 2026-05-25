@@ -13,6 +13,7 @@ interface SessionContentProps {
 }
 
 const SessionContent = ( { sessionDuration, note, training, performances, isRecap }: SessionContentProps ) => {
+  console.log( performances );
   return (
     <View>
       <View className="flex-row gap-1 items-center mb-4">

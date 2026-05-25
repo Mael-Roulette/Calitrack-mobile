@@ -41,6 +41,7 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
 
     try {
       const sessions = await getUserSessions();
+
       set( { sessions: sessions || [], error: null } );
     } catch ( error ) {
       const errorMessage =

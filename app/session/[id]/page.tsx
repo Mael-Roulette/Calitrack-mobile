@@ -15,9 +15,11 @@ const SessionPage = () => {
     router.replace( "/planning" );
   }
 
-  const performances: Performances = ( session!.performance ?? [] ).reduce(
+  console.log( session?.performances );
+
+  const performances: Performances = ( session!.performances ?? [] ).reduce(
     ( acc, perf ) => {
-      const serieId = perf.series.$id;
+      const serieId = perf.series;
       if ( !acc[ serieId ] ) acc[ serieId ] = {};
       acc[ serieId ][ 1 ] = perf.achievedValue;
       return acc;
