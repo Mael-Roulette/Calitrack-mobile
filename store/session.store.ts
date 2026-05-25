@@ -1,0 +1,86 @@
+import { getUserSessions } from "@/lib/session.appwrite";
+import { Session } from "@/types/session";
+import { create } from "zustand";
+import { useAuthStore } from ".";
+
+interface SessionStoreProps {
+  sessions: Session[];
+  isLoading: boolean;
+  error: string | null;
+
+  setIsLoading: ( isLoading: boolean ) => void;
+  setError: ( error: string | null ) => void;
+
+  fetchUserSessions: () => Promise<void>;
+  addSessionStore: ( session: Session ) => void;
+  deleteSessionStore: ( sessionId: string ) => void;
+  getSessionsByTraining: ( trainingId: string ) => Session[];
+  getSessionById: ( sessionId: string ) => Session | undefined;
+}
+
+const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
+  sessions: [],
+  isLoading: false,
+  error: null,
+
+  setIsLoading: ( isLoading ) => set( { isLoading } ),
+  setError: ( error ) => set( { error } ),
+
+  fetchUserSessions: async () => {
+    const { isAuthenticated } = useAuthStore.getState();
+    const state = get();
+
+    if ( !isAuthenticated ) {
+      set( { error: "Utilisateur non authentifié" } );
+      return;
+    }
+
+    if ( state.isLoading ) return;
+
+    set( { isLoading: true, error: null } );
+
+    try {
+      const sessions = await getUserSessions();
+      set( { sessions: sessions || [], error: null } );
+    } catch ( error ) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la récupération des sessions";
+
+      console.error( "Erreur fetchUserSessions:", error );
+      set( { sessions: [], error: errorMessage } );
+    } finally {
+      set( { isLoading: false } );
+    }
+  },
+
+  // Optimistic add — appelé juste après saveSession()
+  addSessionStore: ( session ) => {
+    set( ( state ) => ( {
+      sessions: [ session, ...state.sessions ],
+      error: null,
+    } ) );
+  },
+
+  deleteSessionStore: ( sessionId ) => {
+    set( ( state ) => ( {
+      sessions: state.sessions.filter( ( s ) => s.$id !== sessionId ),
+      error: null,
+    } ) );
+  },
+
+  getSessionsByTraining: ( trainingId ) => {
+    return get().sessions.filter( ( s ) => {
+      const id =
+        typeof s.training === "string" ? s.training : s.training?.$id;
+      return id === trainingId;
+    } );
+  },
+
+  getSessionById: ( sessionId ) => {
+    return get().sessions.find( ( s ) => sessionId === s.$id );
+  }
+} ) );
+
+export default useSessionsStore;

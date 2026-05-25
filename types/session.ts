@@ -5,6 +5,7 @@ export interface Session {
     training: Training;
     duration: number;
     note: string;
+    performance: Performance[];
     $createdAt: Date;
 }
 

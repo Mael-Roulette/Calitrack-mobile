@@ -21,7 +21,8 @@ export function getWeekDays ( startDate?: Date ) {
 }
 
 export function formatDate ( date: Date ): string {
-  console.log( date );
+  const newDate = new Date( date );
+  const formattedDate = `${newDate.getDate()}/0${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
 
-  return "12/02/26";
+  return formattedDate;
 }

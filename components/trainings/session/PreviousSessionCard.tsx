@@ -2,6 +2,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import useWeeksStore from "@/store/week.store";
 import { Session } from "@/types/session";
 import { formatDate } from "@/utils/date";
+import { router } from "expo-router";
 import { Text, View } from "react-native";
 
 interface PreviousSessionCardProps {
@@ -13,7 +14,7 @@ const PreviousSessionCard = ( { session }: PreviousSessionCardProps ) => {
   const week = getWeekById( session.training.week );
 
   const handleSeePreviousSession = () => {
-
+    router.push( `./session/${session.$id}` );
   };
 
   return (
