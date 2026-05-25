@@ -14,7 +14,7 @@ const PreviousSessionCard = ( { session }: PreviousSessionCardProps ) => {
   const week = getWeekById( session.training.week );
 
   const handleSeePreviousSession = () => {
-    router.push( `./session/${session.$id}` );
+    router.push( `/session/${session.$id}/page` );
   };
 
   return (

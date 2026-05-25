@@ -6,11 +6,13 @@ import PerformanceRecap from "../performances/PerformanceRecap";
 
 interface SessionContentProps {
   sessionDuration: number,
+  note?: string,
   training: Training,
-  performances: Performances | Performance[],
+  performances: Performances,
+  isRecap: boolean,
 }
 
-const SessionContent = ( { sessionDuration, training, performances }: SessionContentProps ) => {
+const SessionContent = ( { sessionDuration, note, training, performances, isRecap }: SessionContentProps ) => {
   return (
     <View>
       <View className="flex-row gap-1 items-center mb-4">
@@ -18,15 +20,26 @@ const SessionContent = ( { sessionDuration, training, performances }: SessionCon
         <Text className="text-lg-custom">{ formatSecondsDuration( sessionDuration, true, false ) }</Text>
       </View>
 
-      <CustomInput
-        label="Note personelle (facultatif)"
-        multiline
-        numberOfLines={ 4 }
-        customStyles="h-32"
-      />
+      {isRecap ? (
+        <CustomInput
+          label="Note personelle (facultatif)"
+          multiline
+          numberOfLines={ 4 }
+          customStyles="h-32 mb-4"
+        />
+      ) : (
+        note?.trim() && (
+          <View className="mb-4">
+            <Text className="text text-2xl font-calsans">
+              Note personnelle :
+            </Text>
+            <Text className="text text-xl">{note}</Text>
+          </View>
+        )
+      )}
 
-      <Text className="title mt-4">Mes performances</Text>
-      <View className="mt-2">
+      <Text className="title">Mes performances</Text>
+      <View className="mt-2 mb-5">
         {training.series?.map( ( serie ) => (
           <PerformanceRecap
             key={ serie.$id }

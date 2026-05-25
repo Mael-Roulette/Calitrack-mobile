@@ -17,6 +17,7 @@ const SessionRecap = ( { training, sessionDuration, performances }: SessionRecap
         sessionDuration={ sessionDuration }
         training={ training }
         performances={ performances }
+        isRecap
       />
     </View>
   );
