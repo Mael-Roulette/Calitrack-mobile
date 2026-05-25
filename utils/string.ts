@@ -9,7 +9,7 @@ export const formatMinutesDuration = (
   const durationInMinutes = duration / 60 ;
 
   if ( durationInMinutes < 60 ) {
-    return `${durationInMinutes}`;
+    return `${durationInMinutes} min`;
   }
 
   const hours = Math.floor( durationInMinutes / 60 );

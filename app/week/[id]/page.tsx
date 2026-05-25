@@ -6,7 +6,7 @@ import { LIMITS } from "@/constants/value";
 import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Training } from "@/types";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
@@ -74,6 +74,7 @@ export default function Page() {
           <>
             <PageHeader
               title={week.name}
+              onBackPress={ () => router.push( '/(tabs)/weeks' ) }
               onRightPress={canAddTraining ? () => setModalVisible(true) : undefined}
             />
 

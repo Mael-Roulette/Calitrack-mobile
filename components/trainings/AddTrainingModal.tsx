@@ -37,7 +37,7 @@ export default function AddTrainingModal ( {
 
     handleClose();
 
-    router.push( {
+    router.replace( {
       pathname: "/training/add-training-step-1",
       params: { weekId, trainingName: trimmed },
     } );
