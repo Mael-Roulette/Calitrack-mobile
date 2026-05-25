@@ -1,3 +1,4 @@
+import useWeeksStore from "@/store/week.store";
 import { Training } from "@/types";
 import { formatMinutesDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,6 +12,9 @@ interface TrainingDayProps {
 }
 
 export default function TrainingDay ( { training }: TrainingDayProps ) {
+  const { getWeekById } = useWeeksStore();
+  const week = getWeekById( training.week );
+
   const handleLauchTraining = () => {
     router.push( `/training/${training.$id}/session` );
   };
@@ -22,8 +26,8 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
           <Text
             numberOfLines={ 1 }
             ellipsizeMode="tail"
-            className="text text-background flex-shrink">
-            { training.name }
+            className="text-lg-custom text-background flex-shrink">
+            { week?.name } : { training.name }
           </Text>
 
           <View className="flex-row gap-2 items-center">
