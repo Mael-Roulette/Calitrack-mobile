@@ -84,18 +84,20 @@ export const saveSession = async (
  */
 export const getUserSessions = async (): Promise<Session[]> => {
   try {
-    const [ sessionsResponse, performancesResponse, trainingsResponse, seriesResponse ] =
+    const [ sessionsResponse, performancesResponse, trainingsResponse, seriesResponse, exercisesResponse ] =
       await Promise.all( [
         tablesDB.listRows( { databaseId, tableId: sessionTable } ),
         tablesDB.listRows( { databaseId, tableId: performanceTable } ),
         tablesDB.listRows( { databaseId, tableId: appwriteConfig.trainingCollectionId } ),
         tablesDB.listRows( { databaseId, tableId: appwriteConfig.seriesCollectionId } ),
+        tablesDB.listRows( { databaseId, tableId: appwriteConfig.exerciseCollectionId } )
       ] );
 
     const sessions = sessionsResponse.rows;
     const allPerformances = performancesResponse.rows;
     const allTrainings = trainingsResponse.rows;
     const allSeries = seriesResponse.rows;
+    const allExercises = exercisesResponse.rows;
 
     const enrichedSessions = sessions.map( ( session ) => {
       // Performances liées à cette session
@@ -115,7 +117,10 @@ export const getUserSessions = async (): Promise<Session[]> => {
       const trainingSeries = training
         ? allSeries
           .filter( ( s ) => s.training === training.$id )
-          .sort( ( a, b ) => ( a.order as number ) - ( b.order as number ) )
+          .map( ( s ) => ( {
+            ...s,
+            exercise: allExercises.find( ( e ) => e.$id === s.exercise ),
+          } ) )
         : [];
 
       return {

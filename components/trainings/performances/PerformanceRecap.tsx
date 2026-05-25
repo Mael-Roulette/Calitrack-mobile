@@ -12,6 +12,7 @@ export default function SeriesCard ( {
   serie: Series;
   performances?: Record<number, number>; // setNumber -> achievedValue
 } ) {
+  console.log( serie );
   const isHold = serie.exercise.format === "hold";
   const imageSource = serie.exercise.image
     ? getExerciseImage( serie.exercise.image )

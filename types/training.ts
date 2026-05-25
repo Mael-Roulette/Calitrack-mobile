@@ -15,6 +15,19 @@ export interface Training {
 	week: string;
 }
 
+export interface SeriesRaw {
+  $id: string;
+  exercise: Exercise;
+  rpe: number;
+	weight: number;
+  sets: number;
+  restTime?: number;
+  order: number;
+  training: string;
+  targetValue: number;
+}
+
+
 export interface Series {
   $id: string;
   exercise: Exercise;

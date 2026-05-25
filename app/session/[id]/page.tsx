@@ -13,9 +13,8 @@ const SessionPage = () => {
 
   if ( !id || !session ) {
     router.replace( "/planning" );
+    return null;
   }
-
-  console.log( session?.performances );
 
   const performances: Performances = ( session!.performances ?? [] ).reduce(
     ( acc, perf ) => {
