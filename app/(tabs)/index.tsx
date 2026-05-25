@@ -10,7 +10,6 @@ import { Goal } from "@/types";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomePage () {
   const { user, isLoading } = useAuthStore();
@@ -45,7 +44,7 @@ export default function HomePage () {
         <>
           <HomeHeader
             greeting={ `Salut ${user?.name}`}
-            onCalendarPress={ () => {} }
+            onCalendarPress={ () => router.push( "/planning" ) }
           />
 
           <ScrollView className="flex-1 bg-background px-5">
