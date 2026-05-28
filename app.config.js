@@ -8,6 +8,12 @@ const appName = IS_DEV
     ? 'Calitrack (Preview)'
     : 'Calitrack';
 
+const bundleId = IS_DEV
+  ? 'com.mael_rltt.calitrackts.dev'
+  : IS_PREVIEW
+    ? 'com.mael_rltt.calitrackts.preview'
+    : 'com.mael_rltt.calitrackts';
+
 export default {
   name: appName,
   slug: 'calitrack-ts',
@@ -27,7 +33,7 @@ export default {
       backgroundColor: '#FFF9F7',
     },
     edgeToEdgeEnabled: true,
-    package: 'com.mael_rltt.calitrackts',
+    package: bundleId,
     googleServicesFile: './google-services.json',
   },
   web: {
