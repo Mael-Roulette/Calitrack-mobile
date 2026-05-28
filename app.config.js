@@ -28,7 +28,7 @@ export default {
     },
     edgeToEdgeEnabled: true,
     package: 'com.mael_rltt.calitrackts',
-    googleServicesFile: IS_DEV ? './google-services-dev.json' : './google-services.json',
+    googleServicesFile: './google-services.json',
   },
   web: {
     bundler: 'metro',
