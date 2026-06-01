@@ -1,5 +1,6 @@
 import PageHeader from "@/components/headers/PageHeader";
 import { useAuthStore } from "@/store";
+import { router } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 
 const ProfilePage = () => {
@@ -10,7 +11,7 @@ const ProfilePage = () => {
   } = useAuthStore();
 
   const goToSettings = () => {
-    // router.push( "/settings" );
+    router.push( "../settings/" );
   };
 
   if ( userInformationsLoading ) {
