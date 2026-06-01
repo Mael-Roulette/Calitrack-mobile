@@ -39,7 +39,7 @@ const CustomButton = ( {
       ) : (
         <Text
           className={ cn(
-            "font-bold text-base",
+            "font-bold text-base w-full text-center",
             textVariants[ variant ],
             textStyles
           ) }
