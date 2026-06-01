@@ -30,4 +30,4 @@ export const DAY_LABELS: Record<string, string> = {
 };
 
 export const APP_VERSION = Constants.expoConfig?.version || "1.0.0";
-export const LEGAL_CONTENT_UPDATED_AT = "14 août 2025";
+export const LEGAL_CONTENT_UPDATED_AT = "01 juin 2026";

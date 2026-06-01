@@ -1,9 +1,11 @@
 import PageHeader from "@/components/headers/PageHeader";
+import { deleteAccount } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, router } from "expo-router";
 import {
+  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -12,13 +14,73 @@ import {
 
 
 const Index = () => {
-  const { logout, fetchAuthenticatedUser } = useAuthStore();
+  const { logout, fetchAuthenticatedUser, setIsAuthenticated, setUser } = useAuthStore();
 
   const handleLogout = async () => {
-    await logout();
-    await fetchAuthenticatedUser();
+    Alert.alert(
+      "Déconnnexion",
+      "Êtes-vous sûr de vouloir vous déconnecter de votre compte ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Continuer",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logout();
+              await fetchAuthenticatedUser();
 
-    router.replace( "/(auth)/sign-in" );
+              router.replace( "/(auth)" );
+            } catch ( error ) {
+              const errorMessage =
+								error instanceof Error ? error.message : String( error );
+              Alert.alert(
+                "Erreur",
+                "Une erreur est survenue lors de la déconnexion de votre compte."
+              );
+              console.error( "Logout account error:", errorMessage );
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      "Supprimer votre compte",
+      "Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Supprimer",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteAccount();
+
+              setIsAuthenticated( false );
+              setUser( null );
+
+              router.replace( "/(auth)" );
+
+              Alert.alert(
+                "Compte supprimé",
+                "Votre compte a été supprimé avec succès."
+              );
+            } catch ( error ) {
+              const errorMessage =
+								error instanceof Error ? error.message : String( error );
+              Alert.alert(
+                "Erreur",
+                "Une erreur est survenue lors de la suppression de votre compte."
+              );
+              console.error( "Delete account error:", errorMessage );
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -64,7 +126,7 @@ const Index = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={ handleLogout }
+            onPress={ handleDeleteAccount }
             className='flex-row items-center py-3 mt-5'
           >
             <Ionicons name='log-out-outline' size={ 24 } color='#9f1239' />

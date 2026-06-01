@@ -85,9 +85,6 @@ const LegalNotices = () => {
           <Text className='mt-2 text'>
             • Appwrite : authentification, base de données, stockage
           </Text>
-          <Text className='mt-2 text'>
-            • Stripe (à venir) : gestion des paiements pour l&apos;offre Premium
-          </Text>
 
           <Text className='title-3 mt-4'>Durée de conservation</Text>
           <Text className='mt-2 text'>
