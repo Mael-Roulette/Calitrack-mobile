@@ -1,5 +1,6 @@
 import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { signIn } from "@/lib/user.appwrite";
 import { useAuthStore } from "@/store";
 import { validators } from "@/utils/validation";
@@ -55,10 +56,9 @@ const SignIn = () => {
             }
           />
 
-          <CustomInput
+          <PasswordInput
             label="Mot de passe"
             placeholder="Entrer votre mot de passe"
-            secureTextEntry
             value={ form.password }
             onChangeText={ ( text: string ) =>
               setForm( ( prev ) => ( { ...prev, password: text } ) )
