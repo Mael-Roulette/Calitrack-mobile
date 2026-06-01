@@ -77,7 +77,7 @@ const ExerciseDetails = () => {
             <PageHeader
               title={ exercise!.name }
               onRightPress={ exercise!.isCustom ? ( () => setShowMenu( true ) ): undefined }
-              rightIcon="menu"
+              rightIcon="ellipsis-vertical"
             />
             <ScrollView className="px-5 bg-background">
               { !exercise!.isCustom &&

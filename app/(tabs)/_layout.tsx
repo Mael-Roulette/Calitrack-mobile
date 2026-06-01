@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -41,6 +41,14 @@ export default function TabsLayout () {
           options={{
             tabBarIcon: ({color, size}) => (
               <Feather name="calendar" size={size} color={color} />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <MaterialIcons name="account-circle" size={size} color={color} />
             )
           }}
         />

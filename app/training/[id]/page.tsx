@@ -71,7 +71,7 @@ export default function Page () {
             <PageHeader
               title={ currentTraining.name }
               onRightPress={ () => setShowMenu( true ) }
-              rightIcon="menu"
+              rightIcon="ellipsis-vertical"
             />
             <ScrollView className="px-5 bg-background">
               <ScrollView

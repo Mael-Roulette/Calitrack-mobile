@@ -59,9 +59,9 @@ export default function GoalsPage () {
             <Text className="text mt-4">Chargement de vos objectifs...</Text>
           </View>
         ) : (
-          <ScrollView className="flex-col gap-6 mt-5">
+          <ScrollView className="flex-col gap-6 pt-5">
             {inProgressGoals.length === 0 ? (
-              <View className="px-5 pt-5">
+              <View className="px-5">
                 <EmptyState
                   title="Aucun objectif en cours"
                   buttonText="Ajouter un objectif"
