@@ -18,8 +18,6 @@ export default function HomeHeader ( {
   const insets = useSafeAreaInsets();
   const { days, currentDay } = useWeekCalendar();
 
-  console.log( greeting );
-
   return (
     <HeaderContainer paddingTop={ insets.top }>
       <View className="flex-row justify-between items-center mb-6">

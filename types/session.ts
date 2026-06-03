@@ -3,7 +3,7 @@ import { Training } from ".";
 export interface Session {
     $id: string;
     training: Training;
-    duration: number;
+    duration: number; // en secondes
     note: string;
     performances: Performance[];
     $createdAt: Date;

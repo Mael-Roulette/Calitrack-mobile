@@ -4,6 +4,7 @@ import TrainingDay from "@/components/trainings/TrainingDay";
 import EmptyState from "@/components/ui/EmptyState";
 import { useTodayTraining } from "@/hooks/useTodayTraining";
 import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
+import useSessionsStore from "@/store/session.store";
 import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Goal } from "@/types";
@@ -17,6 +18,7 @@ export default function HomePage () {
   const { fetchExercises } = useExercicesStore();
   const { fetchUserWeeks } = useWeeksStore();
   const { fetchUserTrainings } = useTrainingsStore();
+  const { fetchUserSessions } = useSessionsStore();
   const todayTraining = useTodayTraining();
 
   useEffect( () => {
@@ -30,6 +32,7 @@ export default function HomePage () {
     fetchUserGoals();
     fetchUserWeeks();
     fetchUserTrainings();
+    fetchUserSessions();
   }, [ user ] );
 
   const inProgressGoals = getActiveGoals();

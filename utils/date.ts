@@ -20,6 +20,15 @@ export function getWeekDays ( startDate?: Date ) {
   } );
 }
 
+export function getFirstDayOfMonth ( date: Date = new Date() ): Date {
+  const firstDay = new Date( date );
+
+  firstDay.setDate( 1 );
+  firstDay.setHours( 0, 0, 0, 0 );
+
+  return firstDay;
+}
+
 export function formatDate ( date: Date ): string {
   const newDate = new Date( date );
   const formattedDate = `${newDate.getDate()}/0${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
