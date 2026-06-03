@@ -6,12 +6,12 @@ import { useAuthStore } from ".";
 interface SessionStoreProps {
   sessions: Session[];
   isLoading: boolean;
+  hasFetched: boolean;
   error: string | null;
-
   setIsLoading: ( isLoading: boolean ) => void;
   setError: ( error: string | null ) => void;
-
   fetchUserSessions: () => Promise<void>;
+  refreshSessions: () => Promise<void>;
   addSessionStore: ( session: Session ) => void;
   deleteSessionStore: ( sessionId: string ) => void;
   getSessionsByTraining: ( trainingId: string ) => Session[];
@@ -21,6 +21,7 @@ interface SessionStoreProps {
 const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
   sessions: [],
   isLoading: false,
+  hasFetched: false,
   error: null,
 
   setIsLoading: ( isLoading ) => set( { isLoading } ),
@@ -28,60 +29,60 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
 
   fetchUserSessions: async () => {
     const { isAuthenticated } = useAuthStore.getState();
-    const state = get();
+    const { isLoading, hasFetched } = get();
 
     if ( !isAuthenticated ) {
       set( { error: "Utilisateur non authentifié" } );
       return;
     }
 
-    if ( state.isLoading ) return;
+    if ( isLoading || hasFetched ) return;
 
     set( { isLoading: true, error: null } );
 
     try {
       const sessions = await getUserSessions();
-
-      set( { sessions: sessions || [], error: null } );
+      set( { sessions: sessions ?? [], hasFetched: true, error: null } );
     } catch ( error ) {
       const errorMessage =
         error instanceof Error
           ? error.message
           : "Erreur lors de la récupération des sessions";
-
       console.error( "Erreur fetchUserSessions:", error );
-      set( { sessions: [], error: errorMessage } );
+      set( { sessions: [], hasFetched: false, error: errorMessage } );
     } finally {
       set( { isLoading: false } );
     }
   },
 
-  // Optimistic add — appelé juste après saveSession()
+  // Force un nouveau fetch en réinitialisant hasFetched
+  refreshSessions: async () => {
+    set( { hasFetched: false } );
+    await get().fetchUserSessions();
+  },
+
   addSessionStore: ( session ) => {
     set( ( state ) => ( {
       sessions: [ session, ...state.sessions ],
-      error: null,
     } ) );
   },
 
   deleteSessionStore: ( sessionId ) => {
     set( ( state ) => ( {
       sessions: state.sessions.filter( ( s ) => s.$id !== sessionId ),
-      error: null,
     } ) );
   },
 
   getSessionsByTraining: ( trainingId ) => {
     return get().sessions.filter( ( s ) => {
-      const id =
-        typeof s.training === "string" ? s.training : s.training?.$id;
+      const id = typeof s.training === "string" ? s.training : s.training?.$id;
       return id === trainingId;
     } );
   },
 
   getSessionById: ( sessionId ) => {
-    return get().sessions.find( ( s ) => sessionId === s.$id );
-  }
+    return get().sessions.find( ( s ) => s.$id === sessionId );
+  },
 } ) );
 
 export default useSessionsStore;

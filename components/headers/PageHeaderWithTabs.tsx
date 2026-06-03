@@ -6,7 +6,7 @@ import { HeaderContainer } from "./HeaderContainer";
 
 interface PageHeaderWithTabsProps {
   title: string;
-  tabs: string[];
+  tabs: readonly string[];
   activeTab: string;
   onTabPress: ( tab: string ) => void;
   onBackPress?: () => void;

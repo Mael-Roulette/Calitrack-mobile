@@ -5,16 +5,20 @@ import useSessionsStore from "@/store/session.store";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-const PlanningTabs = [ "Historique", "Calendrier" ];
+const PlanningTabs = [ "Historique", "Calendrier" ] as const;
+type PlanningTab = ( typeof PlanningTabs )[number];
 
 const PlanningScreen = () => {
-  const [ activeTab, setActiveTab ] = useState( PlanningTabs[ 0 ] );
-  const { sessions, isLoading: isLoadingSession, error: errorLoadingSession, fetchUserSessions } = useSessionsStore();
+  const [ activeTab, setActiveTab ] = useState<PlanningTab>( PlanningTabs[ 0 ] );
+
+  const sessions = useSessionsStore( ( s ) => s.sessions );
+  const isLoadingSession = useSessionsStore( ( s ) => s.isLoading );
+  const errorLoadingSession = useSessionsStore( ( s ) => s.error );
+  const fetchUserSessions = useSessionsStore( ( s ) => s.fetchUserSessions );
 
   useEffect( () => {
     fetchUserSessions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [] );
+  }, [ fetchUserSessions ] );
 
   return (
     <View className="flex-1">
@@ -22,17 +26,17 @@ const PlanningScreen = () => {
         title="Planning"
         tabs={ PlanningTabs }
         activeTab={ activeTab }
-        onTabPress={ setActiveTab }
+        onTabPress={ ( tab ) => setActiveTab( tab as PlanningTab ) }
       />
-      { activeTab === PlanningTabs[ 0 ] ?
+      {activeTab === PlanningTabs[ 0 ] ? (
         <HistorySection
           sessions={ sessions }
           isLoading={ isLoadingSession }
           error={ errorLoadingSession ?? undefined }
         />
-        :
+      ) : (
         <CalendarSection />
-      }
+      )}
     </View>
   );
 };

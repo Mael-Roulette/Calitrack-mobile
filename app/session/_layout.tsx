@@ -5,7 +5,7 @@ export default function TrainingLayout () {
   return (
     <GestureHandlerRootView style={ { flex: 1 } }>
       <Stack screenOptions={ { headerShown: false } }>
-        <Stack.Screen name="[id]" />
+        <Stack.Screen name="[id]/page" />
       </Stack>
     </GestureHandlerRootView>
   );
