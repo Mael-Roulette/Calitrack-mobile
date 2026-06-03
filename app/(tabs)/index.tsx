@@ -36,14 +36,14 @@ export default function HomePage () {
 
   return (
     <View className="flex-1">
-      { isLoading ? (
+      { (isLoading || !user ) ? (
 				<View>
 					<Text className='title'>Chargement...</Text>
 				</View>
 			) : (
         <>
           <HomeHeader
-            greeting={ `Salut ${user?.name}`}
+            greeting={ `Salut ${user.name}`}
             onCalendarPress={ () => router.push( "/planning" ) }
           />
 

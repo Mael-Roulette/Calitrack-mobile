@@ -18,12 +18,14 @@ export default function HomeHeader ( {
   const insets = useSafeAreaInsets();
   const { days, currentDay } = useWeekCalendar();
 
+  console.log( greeting );
+
   return (
     <HeaderContainer paddingTop={ insets.top }>
       <View className="flex-row justify-between items-center mb-6">
         {/* Greeting */}
-        <View>
-          <Text className="title text-background mb-2">{greeting}</Text>
+        <View className="flex-1">
+          <Text className="title text-background mb-2 w-full line-clamp-1 text-ellipsis">{greeting}</Text>
           { weekInfo &&  (
             <Text className="text text-background font-bold text-xl">{weekInfo}</Text>
           )}
