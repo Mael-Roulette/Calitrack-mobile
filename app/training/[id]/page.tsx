@@ -1,7 +1,7 @@
 import PageHeader from "@/components/headers/PageHeader";
 import SeriesCard from "@/components/trainings/series/SeriesCard";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
-import { DAY_LABELS } from "@/constants/value";
+import { DAY_LABELS } from "@/constants/date";
 import useTrainingActions from "@/hooks/actions/useTrainingActions";
 import useTrainingsStore from "@/store/training.store";
 import { showAlert } from "@/utils/alert";

@@ -28,15 +28,17 @@ const PlanningScreen = () => {
         activeTab={ activeTab }
         onTabPress={ ( tab ) => setActiveTab( tab as PlanningTab ) }
       />
-      {activeTab === PlanningTabs[ 0 ] ? (
-        <HistorySection
-          sessions={ sessions }
-          isLoading={ isLoadingSession }
-          error={ errorLoadingSession ?? undefined }
-        />
-      ) : (
-        <CalendarSection />
-      )}
+      <View className="flex-1 bg-background">
+        {activeTab === PlanningTabs[ 0 ] ? (
+          <HistorySection
+            sessions={ sessions }
+            isLoading={ isLoadingSession }
+            error={ errorLoadingSession ?? undefined }
+          />
+        ) : (
+          <CalendarSection />
+        )}
+      </View>
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import { DAY_LABELS } from "@/constants/value";
+import { DAY_LABELS } from "@/constants/date";
 import { Training } from "@/types";
 import { formatMinutesDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";

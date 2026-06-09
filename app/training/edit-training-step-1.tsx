@@ -3,7 +3,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
 import CustomTags from "@/components/ui/CustomTags";
 import CustomTimePicker from "@/components/ui/CustomTimePicker";
-import { DAYS_TRANSLATION } from "@/constants/value";
+import { DAYS_TRANSLATION } from "@/constants/date";
 import useTrainingsStore from "@/store/training.store";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
