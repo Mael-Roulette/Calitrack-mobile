@@ -1,5 +1,6 @@
 import { saveSession } from "@/lib/session.appwrite";
 import { useAuthStore } from "@/store";
+import useSessionsStore from "@/store/session.store";
 import { Performances } from "@/types/session";
 import { showAlert } from "@/utils/alert";
 import { useCallback, useState } from "react";
@@ -7,6 +8,7 @@ import { useCallback, useState } from "react";
 export function useSessionActions () {
   const [ isSaving, setIsSaving ] = useState( false );
   const { user } = useAuthStore();
+  const { refreshSessions } = useSessionsStore();
 
   const handleSave = useCallback(
     async ( {
@@ -39,6 +41,9 @@ export function useSessionActions () {
           performances,
         } );
 
+        // On refresh les sessions du store pour l'affichage dans l'historique notamment
+        refreshSessions();
+        
         onSuccess?.();
         return { success: true, data: session };
       } catch ( error ) {
@@ -53,7 +58,7 @@ export function useSessionActions () {
         setIsSaving( false );
       }
     },
-    [ isSaving, user ]
+    [ isSaving, user, refreshSessions ]
   );
 
   return { handleSave, isSaving };
