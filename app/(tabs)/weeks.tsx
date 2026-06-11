@@ -30,7 +30,7 @@ export default function GoalsPage () {
         {isLoading ? (
           <View className="flex-1 justify-center items-center">
             <ActivityIndicator size="large" color="#FC7942" />
-            <Text className="text mt-4">Chargement de vos objectifs...</Text>
+            <Text className="text mt-4">Chargement de vos semaines...</Text>
           </View>
         ) : (
           <View className="flex-col gap-4">
