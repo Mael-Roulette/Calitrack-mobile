@@ -16,15 +16,21 @@ const SessionPage = () => {
     return null;
   }
 
-  const performances: Performances = ( session!.performances ?? [] ).reduce(
-    ( acc, perf ) => {
+  console.log( session.performances );
+
+  const performances: Performances = ( session!.performances ?? [] )
+    .filter( ( perf ) => perf.series !== null )
+    .reduce( ( acc, perf ) => {
       const serieId = perf.series;
       if ( !acc[ serieId ] ) acc[ serieId ] = {};
-      acc[ serieId ][ 1 ] = perf.achievedValue;
+
+      const nextIndex = Object.keys( acc[ serieId ] ).length + 1;
+      acc[ serieId ][ nextIndex ] = perf.achievedValue;
+
       return acc;
-    },
-  {} as Performances
-  );
+    }, {} as Performances );
+
+  console.log( performances );
 
   return(
     <View className="flex-1 bg-background">

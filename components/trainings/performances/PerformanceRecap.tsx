@@ -5,12 +5,12 @@ import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Text, View } from "react-native";
 
-export default function SeriesCard ( {
+export default function PerformanceRecap ( {
   serie,
   performances,
 }: {
   serie: Series;
-  performances?: Record<number, number>; // setNumber -> achievedValue
+  performances?: Record<string, number>; // setNumber -> achievedValue
 } ) {
   const isHold = serie.exercise.format === "hold";
   const imageSource = serie.exercise.image
@@ -85,7 +85,7 @@ export default function SeriesCard ( {
 
         {Array.from( { length: serie.sets } ).map( ( _, index ) => {
           const setNumber = index + 1;
-          const achieved = performances?.[ setNumber ];
+          const achieved = performances?.[ String( setNumber ) ];
 
           return (
             <View

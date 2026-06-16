@@ -18,5 +18,5 @@ export interface Performance {
 
 export type Performances = Record<
   string, // seriesId
-  Record<number, number> // setNumber -> value
+  Record<string, number> // setNumber -> value
 >;
