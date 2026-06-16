@@ -16,8 +16,6 @@ const SessionPage = () => {
     return null;
   }
 
-  console.log( session.performances );
-
   const performances: Performances = ( session!.performances ?? [] )
     .filter( ( perf ) => perf.series !== null )
     .reduce( ( acc, perf ) => {
@@ -29,8 +27,6 @@ const SessionPage = () => {
 
       return acc;
     }, {} as Performances );
-
-  console.log( performances );
 
   return(
     <View className="flex-1 bg-background">
