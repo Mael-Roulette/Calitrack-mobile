@@ -62,11 +62,25 @@ export default function SessionActive ( {
     }
   };
 
+  const getNextExerciseName = () => {
+    const isLastSet = currentSet >= currentSeries.sets;
+
+    if ( !isLastSet ) {
+      // Encore des sets sur la série actuelle alors même exercice
+      return currentSeries.exercise.name;
+    }
+
+    // Série terminée alors nom de la série suivante
+    const nextSeries = series[ currentIndex + 1 ];
+    return nextSeries?.exercise.name ?? "";
+  };
+
   if ( activeState === "rest" ) {
     return (
       <SessionRest
         restTime={ currentSeries.restTime ?? 60 }
         onRestComplete={ handleRestComplete }
+        nextExercise={ getNextExerciseName() }
       />
     );
   }

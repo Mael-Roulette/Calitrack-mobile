@@ -7,6 +7,7 @@ import Svg, { Circle } from "react-native-svg";
 interface SessionRestProps {
   restTime: number; // en secondes
   onRestComplete: () => void;
+  nextExercise: string;
 }
 
 const SIZE = 256;
@@ -15,7 +16,7 @@ const RADIUS = (SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
 const CENTER = SIZE / 2;
 
-const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
+const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProps) => {
   const [timeRemaining, setTimeRemaining] = useState(restTime);
   const [isRunning, setIsRunning] = useState(true);
 
@@ -102,6 +103,17 @@ const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
             </View>
           </View>
         </View>
+
+        {nextExercise && (
+          <View className="items-center mt-8">
+            <Text className="label-text">
+              Prochain exercice
+            </Text>
+            <Text className="text-lg-custom mt-1">
+              {nextExercise}
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       <View className="w-full gap-3 px-5 pb-5">
