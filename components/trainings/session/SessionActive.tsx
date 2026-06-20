@@ -8,7 +8,6 @@ interface SessionActiveProps {
   series: Series[];
   currentIndex: number;
   onSeriesComplete: () => void;
-  performances: Performances;
   setPerformances: React.Dispatch<React.SetStateAction<Performances>>;
 }
 
@@ -18,7 +17,6 @@ export default function SessionActive ( {
   series,
   currentIndex,
   onSeriesComplete,
-  performances,
   setPerformances
 }: SessionActiveProps ) {
   const [ activeState, setActiveState ] = useState<ActiveState>( "series" );
@@ -44,8 +42,9 @@ export default function SessionActive ( {
     } ) );
 
     const isLastSeries = currentSeries.$id === series[ series.length - 1 ]?.$id;
+    const isLastSet = currentSet >= currentSeries.sets;
 
-    if ( isLastSeries ) {
+    if ( isLastSeries && isLastSet ) {
       onSeriesComplete();
     } else {
       setActiveState( "rest" );

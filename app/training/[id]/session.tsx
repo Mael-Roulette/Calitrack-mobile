@@ -145,7 +145,6 @@ export default function Session () {
                   series={currentTraining.series}
                   currentIndex={currentSeriesIndex}
                   onSeriesComplete={handleSeriesComplete}
-                  performances={performances}
                   setPerformances={setPerformances}
                 />
               </View>
