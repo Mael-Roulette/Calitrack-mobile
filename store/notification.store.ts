@@ -1,8 +1,8 @@
 // store/notification.store.ts
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NotificationService, NotificationPreferences } from '../services/notification';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { NotificationPreferences, NotificationService } from "../services/notification";
 
 interface NotificationState {
   // État
@@ -21,7 +21,7 @@ interface NotificationState {
 
 const defaultPreferences: NotificationPreferences = {
   dailyReminder: false,
-  dailyTime: '09:00',
+  dailyTime: "09:00",
   workoutReminder: true,
   progressUpdates: false,
 };
@@ -42,7 +42,7 @@ export const useNotificationStore = create<NotificationState>()(
           const granted = await notificationService.requestPermissions();
           set( { permissions: granted } );
         } catch ( error ) {
-          console.error( 'Error requesting permissions:', error );
+          console.error( "Error requesting permissions:", error );
         } finally {
           set( { isLoading: false } );
         }
@@ -78,7 +78,7 @@ export const useNotificationStore = create<NotificationState>()(
           }
 
         } catch ( error ) {
-          console.error( 'Error updating preferences:', error );
+          console.error( "Error updating preferences:", error );
           // Rollback en cas d'erreur
           set( { preferences: currentPreferences } );
         } finally {
@@ -111,7 +111,7 @@ export const useNotificationStore = create<NotificationState>()(
             }
           } );
         } catch ( error ) {
-          console.error( 'Erreur lors de la mise à jour de la notification quotidienne:', error );
+          console.error( "Erreur lors de la mise à jour de la notification quotidienne:", error );
           // En cas d'erreur, ne pas changer l'état
         } finally {
           set( { isLoading: false } );
@@ -127,7 +127,7 @@ export const useNotificationStore = create<NotificationState>()(
             "Si vous voyez ceci, les notifications fonctionnent parfaitement !"
           );
         } catch ( error ) {
-          console.error( 'Error sending test notification:', error );
+          console.error( "Error sending test notification:", error );
         }
       },
 
@@ -141,16 +141,16 @@ export const useNotificationStore = create<NotificationState>()(
         try {
           const notificationService = NotificationService.getInstance();
           const scheduled = await notificationService.getScheduledNotifications();
-          console.log( 'Notifications programmées:', scheduled );
+          console.log( "Notifications programmées:", scheduled );
           return scheduled;
         } catch ( error ) {
-          console.error( 'Erreur lors de la récupération des notifications:', error );
+          console.error( "Erreur lors de la récupération des notifications:", error );
           return [];
         }
       },
     } ),
     {
-      name: 'notification-preferences',
+      name: "notification-preferences",
       storage: createJSONStorage( () => AsyncStorage ),
       // Ne persister que les préférences, pas l'état loading
       partialize: ( state ) => ( {

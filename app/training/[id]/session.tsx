@@ -3,11 +3,14 @@ import SessionActive from "@/components/trainings/session/SessionActive";
 import SessionRecap from "@/components/trainings/session/SessionRecap";
 import SessionSummary from "@/components/trainings/session/SessionSummary";
 import CustomButton from "@/components/ui/CustomButton";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { useSessionActions } from "@/hooks/actions/useSessionAction";
+import { useConditionalKeepAwake } from "@/hooks/useConditionalKeepAwake";
 import { useGoalsStore } from "@/store";
 import useTrainingsStore from "@/store/training.store";
 import { Performances } from "@/types/session";
 import { showAlert } from "@/utils/alert";
+import { getBoolean } from "@/utils/storage";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
@@ -21,6 +24,7 @@ export default function Session () {
   const { currentTraining, fetchTrainingById } = useTrainingsStore();
   const { goals } = useGoalsStore();
   const { handleSave, isSaving } = useSessionActions();
+  const [keepAwakeEnabled, setKeepAwakeEnabled] = useState<boolean>(false);
 
   // États de la session
 	const [ sessionState, setSessionState ] = useState<SessionState>( "summary" );
@@ -36,6 +40,9 @@ export default function Session () {
       router.push("/(tabs)");
       return;
     }
+
+    getBoolean(STORAGE_KEYS.KEEP_AWAKE_ENABLED, false).then(setKeepAwakeEnabled);
+
     const load = async () => {
       try {
         await fetchTrainingById(id as string);
@@ -47,6 +54,8 @@ export default function Session () {
     };
     load();
   }, [id]);
+
+    useConditionalKeepAwake(keepAwakeEnabled);
 
   /**
    * Permet de lancer la séance après le résumé de début
