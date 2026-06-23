@@ -14,6 +14,11 @@ Notifications.setNotificationHandler( {
   } ),
 } );
 
+// Identifiant fixe pour la notification de fin de repos.
+// Un seul repos actif à la fois, donc un seul identifiant suffit
+// (on annule/remplace plutôt que d'en accumuler plusieurs).
+const REST_END_NOTIFICATION_ID = "rest-end-notification";
+
 export interface NotificationPreferences {
   dailyReminder: boolean;
   dailyTime: string; // Format "HH:MM"
@@ -32,6 +37,23 @@ export class NotificationService {
   }
 
   /**
+   * Crée le canal de notification Android (obligatoire sur Android 8+
+   * pour que les notifications s'affichent correctement). Sans cet appel,
+   * les notifications peuvent être ignorées ou dégradées sur certains
+   * appareils/versions Android. Sans effet sur iOS.
+   */
+  async setupAndroidChannel () {
+    if ( Platform.OS !== "android" ) return;
+
+    await Notifications.setNotificationChannelAsync( "default", {
+      name: "Notifications",
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [ 0, 250, 250, 250 ],
+      sound: "default",
+    } );
+  }
+
+  /**
    * Demande les permissions de notifications
    * @returns true si les permissions sont acceptées, false sinon
    */
@@ -40,6 +62,9 @@ export class NotificationService {
       console.log( "Must use physical device for push notifications" );
       return false;
     }
+
+    // Le canal doit exister avant la première notification sur Android
+    await this.setupAndroidChannel();
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -232,6 +257,49 @@ export class NotificationService {
       console.log( "Renouvellement des notifications Android nécessaire" );
       // Vous pouvez récupérer l'heure depuis les préférences utilisateur
       // et relancer scheduleDailyNotification
+    }
+  }
+
+  /**
+   * Programme une notification locale ponctuelle qui se déclenche
+   * dans `seconds` secondes, pour signaler la fin du repos.
+   * Annule toute notification de repos déjà programmée avant d'en
+   * programmer une nouvelle (évite les doublons si on relance un repos).
+   * @param seconds - délai en secondes avant déclenchement
+   */
+  async scheduleRestEndNotification ( endTime: number ) {
+    // On annule d'abord une éventuelle notif de repos précédente
+    await this.cancelRestEndNotification();
+
+    try {
+      await Notifications.scheduleNotificationAsync( {
+        identifier: REST_END_NOTIFICATION_ID,
+        content: {
+          title: "Repos terminé ! 💪",
+          body: "C'est le moment de reprendre l'exercice.",
+          data: { type: "rest-end" },
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: new Date( endTime ),
+        },
+      } );
+    } catch ( error ) {
+      console.error( "Erreur lors de la programmation de la notification de repos:", error );
+    }
+  }
+
+  /**
+   * Annule la notification de fin de repos si elle est programmée.
+   * À appeler quand le repos est terminé normalement, passé manuellement,
+   * ou si la session est interrompue.
+   */
+  async cancelRestEndNotification () {
+    try {
+      await this.cancelNotification( REST_END_NOTIFICATION_ID );
+    } catch ( error ) {
+      console.error( "Erreur lors de l'annulation de la notification de repos:", error );
     }
   }
 }

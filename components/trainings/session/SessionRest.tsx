@@ -1,14 +1,15 @@
 import CustomButton from "@/components/ui/CustomButton";
+import { NotificationService } from "@/services/notification";
+import {
+  clearRestTimerState,
+  getRemainingSeconds,
+  getRestTimerState,
+  saveRestTimerState,
+} from "@/utils/restTimer";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { AppState, AppStateStatus, ScrollView, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
-
-interface SessionRestProps {
-  restTime: number; // en secondes
-  onRestComplete: () => void;
-  nextExercise: string;
-}
 
 const SIZE = 256;
 const STROKE_WIDTH = 8;
@@ -16,31 +17,103 @@ const RADIUS = (SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
 const CENTER = SIZE / 2;
 
+interface SessionRestProps {
+  restTime: number; // en secondes
+  onRestComplete: () => void;
+  nextExercise: string;
+}
+
 const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProps) => {
   const [timeRemaining, setTimeRemaining] = useState(restTime);
   const [isRunning, setIsRunning] = useState(true);
 
+  const endTimeRef = useRef(Date.now() + restTime * 1000);
+  const notificationService = NotificationService.getInstance();
+
+  /**
+   * INIT TIMER
+   * notif uniquement si app en background
+   */
   useEffect(() => {
-    if (!isRunning || timeRemaining <= 0) return;
+    const endTime = Date.now() + restTime * 1000;
+
+    endTimeRef.current = endTime;
+
+    setTimeRemaining(restTime);
+    setIsRunning(true);
+
+    saveRestTimerState(endTime);
+
+    return () => {
+      clearRestTimerState();
+      notificationService.cancelRestEndNotification();
+    };
+  }, []);
+
+  /**
+   * TIMER LOOP (UI only)
+   */
+  useEffect(() => {
+    if (!isRunning) return;
 
     const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          setIsRunning(false);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = getRemainingSeconds(endTimeRef.current);
+
+      setTimeRemaining(remaining);
+
+      if (remaining <= 0) {
+        setIsRunning(false);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, timeRemaining]);
+  }, [isRunning]);
 
-  const toggleTimer = () => setIsRunning((v) => !v);
+  /**
+   * APP STATE HANDLER
+   */
+  useEffect(() => {
+    const handleAppStateChange = async (state: AppStateStatus) => {
+      const stored = await getRestTimerState();
+      const endTime = stored?.endTime ?? endTimeRef.current;
+      const remaining = getRemainingSeconds(endTime);
+
+      if (state === "active") {
+        // retour dans l'app → resync immédiat
+        setTimeRemaining(remaining);
+        setIsRunning(remaining > 0);
+
+        // si repos terminé pendant absence → on déclenche action
+        if (remaining <= 0) {
+          clearRestTimerState();
+        }
+
+        return;
+      }
+
+      // pas en foreground → on ne programme notif que si encore du temps
+      if (remaining > 0) {
+        notificationService.scheduleRestEndNotification(endTime);
+      }
+    };
+
+    const sub = AppState.addEventListener("change", handleAppStateChange);
+    return () => sub.remove();
+  }, []);
+
+  const toggleTimer = () => setIsRunning(v => !v);
 
   const skipRest = () => {
     setTimeRemaining(0);
     setIsRunning(false);
+    clearRestTimerState();
+    notificationService.cancelRestEndNotification();
+    onRestComplete();
+  };
+
+  const handleContinue = () => {
+    clearRestTimerState();
+    notificationService.cancelRestEndNotification();
     onRestComplete();
   };
 
@@ -66,7 +139,6 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
         <View className="items-center justify-center">
           <View style={{ width: SIZE, height: SIZE }}>
             <Svg width={SIZE} height={SIZE}>
-              {/* Piste de fond */}
               <Circle
                 cx={CENTER}
                 cy={CENTER}
@@ -77,7 +149,6 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
                 fill="none"
               />
 
-              {/* Arc de progression */}
               <Circle
                 cx={CENTER}
                 cy={CENTER}
@@ -92,7 +163,6 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
               />
             </Svg>
 
-            {/* Temps au centre */}
             <View className="absolute inset-0 items-center justify-center">
               <Text className="text-6xl font-sbold text-primary">
                 {formatTime(timeRemaining)}
@@ -106,12 +176,8 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
 
         {nextExercise && (
           <View className="items-center mt-8">
-            <Text className="label-text">
-              Prochain exercice
-            </Text>
-            <Text className="text-lg-custom mt-1">
-              {nextExercise}
-            </Text>
+            <Text className="label-text">Prochain exercice</Text>
+            <Text className="text-lg-custom mt-1">{nextExercise}</Text>
           </View>
         )}
       </ScrollView>
@@ -127,7 +193,7 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
             <CustomButton title="Passer le repos" onPress={skipRest} />
           </>
         ) : (
-          <CustomButton title="Continuer" onPress={onRestComplete} />
+          <CustomButton title="Continuer" onPress={handleContinue} />
         )}
       </View>
     </View>
