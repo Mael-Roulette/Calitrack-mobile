@@ -1,4 +1,5 @@
 import CustomButton from "@/components/ui/CustomButton";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { NotificationService } from "@/services/notification";
 import {
   clearRestTimerState,
@@ -6,6 +7,7 @@ import {
   getRestTimerState,
   saveRestTimerState,
 } from "@/utils/restTimer";
+import { getBoolean } from "@/utils/storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useAudioPlayer } from 'expo-audio';
 import { useEffect, useRef, useState } from "react";
@@ -61,16 +63,17 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
   useEffect(() => {
     if (!isRunning) return;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const remaining = getRemainingSeconds(endTimeRef.current);
 
       setTimeRemaining(remaining);
 
       if (remaining <= 0) {
         setIsRunning(false);
-
-        // Lancement du son à la fin du timer
-        player.play();
+        const soundEnabled = await getBoolean(STORAGE_KEYS.REST_SOUND_ENABLED, false);
+        if (soundEnabled) {
+          player.play();
+        }
       }
     }, 1000);
 
@@ -101,7 +104,10 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
 
       // pas en foreground → on ne programme notif que si encore du temps
       if (remaining > 0) {
-        notificationService.scheduleRestEndNotification(endTime);
+        const notifEnabled = await getBoolean(STORAGE_KEYS.REST_NOTIFICATION_ENABLED, false);
+        if (notifEnabled) {
+          notificationService.scheduleRestEndNotification(endTime);
+        }
       }
     };
 

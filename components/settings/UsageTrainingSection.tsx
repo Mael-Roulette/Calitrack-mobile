@@ -33,12 +33,12 @@ export default function UsageTrainingSection ( {
         <Text className="title-2 mb-1">État de l&apos;écran : </Text>
         {!isKeepAwakeAvailable ? (
           <Text className="text-red-500 mb-2">
-            Cette fonctionnalité n&apos;est pas disponible sur cet appareil.
+            Cette fonctionnalité n&apos;est pas prise en charge sur cet appareil.
           </Text>
         ) : (
           <>
             <Text className="indicator-text mb-2">
-              Si cette fonction est activée, pendant vos entraînements votre écran restera allumé.
+              Pendant vos entraînements, l&apos;écran restera allumé afin d&apos;éviter la mise en veille automatique.
             </Text>
             <CustomButton
               title={ isKeepAwakeActive ? "Désactiver" : "Activer" }
@@ -53,12 +53,12 @@ export default function UsageTrainingSection ( {
         <Text className="title-2 mb-1">Notifications de fin de repos : </Text>
         {!isRestNotificationAvailable ? (
           <Text className="text-red-500 mb-2">
-            Cette fonctionnalité n&apos;est pas disponible sur cet appareil.
+            Cette fonctionnalité n&apos;est pas prise en charge sur cet appareil.
           </Text>
         ) : (
           <>
             <Text className="indicator-text mb-2">
-              Si cette fonction est activée, si vous changez d&apos;application ou si vous éteingez votre téléphone. Vous recevrez une notification de fin de repos.
+              Vous recevrez une notification lorsque votre temps de repos est terminé, même si l&apos;application est en arrière-plan ou si votre écran est éteint.
             </Text>
             <CustomButton
               title={ isRestNotificationActive ? "Désactiver" : "Activer" }
@@ -66,6 +66,17 @@ export default function UsageTrainingSection ( {
             />
           </>
         )}
+      </View>
+
+      <View className="mt-8">
+        <Text className="title-2 mb-1">Notifications de fin de repos : </Text>
+        <Text className="indicator-text mb-2">
+          Un signal sonore sera joué à la fin de chaque période de repos si cette option est activée.
+        </Text>
+        <CustomButton
+          title={ isRestSoundActive ? "Désactiver" : "Activer" }
+          onPress={ toggleRestSound }
+        />
       </View>
     </View>
   );
