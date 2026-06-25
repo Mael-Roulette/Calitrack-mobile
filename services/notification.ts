@@ -83,6 +83,14 @@ export class NotificationService {
   }
 
   /**
+ * Vérifie le statut actuel des permissions sans en demander de nouvelles.
+ */
+  async getPermissionStatus (): Promise<boolean> {
+    const { status } = await Notifications.getPermissionsAsync();
+    return status === "granted";
+  }
+
+  /**
    * Programme la prochaine notification et configure la récurrence
    * @param time heure de la notification
    * @param enabled permet d'activer ou de désactiver la notification
