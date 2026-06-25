@@ -1,26 +1,40 @@
-import PageHeader from "@/components/headers/PageHeader";
-import CustomButton from "@/components/ui/CustomButton";
+import PageHeaderWithTabs from "@/components/headers/PageHeaderWithTabs";
+import UsageGeneralSection from "@/components/settings/UsageGeneralSection";
+import UsageTrainingSection from "@/components/settings/UsageTrainingSection";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { getBoolean, setBoolean } from "@/utils/storage";
 import * as KeepAwake from "expo-keep-awake";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+
+const UsageTabs = [ "Générale", "Entraînement" ] as const;
+type UsageTabsType = ( typeof UsageTabs )[number];
 
 const Index = () => {
-  const [ isAvailable, setIsAvailable ] = useState( false );
-  const [ isActive, setIsActive ] = useState( false );
+  const [ activeTab, setActiveTab ] = useState<UsageTabsType>( UsageTabs[ 0 ] );
+
+  // State pour l'état de l'écran
+  const [ isKeepAwakeAvailable, setIsKeepAwakeAvailable ] = useState<boolean>( false );
+  const [ isKeepAwakeActive, setIsKeepAwakeActive ] = useState<boolean>( false );
+
+  // State pour les notifications de l'écran de repos
+  const [ isRestNotificationAvailable, setIsRestNotificationAvailable ] = useState<boolean>( false );
+  const [ isRestNotificationActive, setIsRestNotificationActive ] = useState<boolean>( false );
+
+  // State pour le son de l'écran de repos
+  const [ isRestSoundActive, setIsRestSoundActive ] = useState<boolean>( false );
 
   useEffect( () => {
     const init = async () => {
       try {
-        const available = await KeepAwake.isAvailableAsync();
-        setIsAvailable( available );
-        if ( !available ) return;
+        const keepAwakeAvailable = await KeepAwake.isAvailableAsync();
+        setIsKeepAwakeAvailable( keepAwakeAvailable );
+        if ( !keepAwakeAvailable ) return;
 
-        const saved = await getBoolean( STORAGE_KEYS.KEEP_AWAKE_ENABLED, false );
-        if ( saved ) {
+        const keppAwakeSaved = await getBoolean( STORAGE_KEYS.KEEP_AWAKE_ENABLED, false );
+        if ( keppAwakeSaved ) {
           await KeepAwake.activateKeepAwakeAsync();
-          setIsActive( true );
+          setIsKeepAwakeActive( true );
         }
       } catch ( error ) {
         console.log( "Erreur init KeepAwake:", error );
@@ -30,35 +44,48 @@ const Index = () => {
   }, [] );
 
   const toggleKeepAwake = async () => {
-    const next = !isActive;
+    const next = !isKeepAwakeActive;
     if ( next ) {
       await KeepAwake.activateKeepAwakeAsync();
     } else {
       await KeepAwake.deactivateKeepAwake();
     }
-    setIsActive( next );
+    setIsKeepAwakeActive( next );
     await setBoolean( STORAGE_KEYS.KEEP_AWAKE_ENABLED, next );
+  };
+
+  const toggleRestNotification = async () => {
+  };
+
+  const toggleRestSound = async () => {
   };
 
   return (
     <View className="bg-background flex-1">
-      <PageHeader title="Préférences d’utilisation" />
+      <PageHeaderWithTabs
+        title="Préférences d'utilisation"
+        tabs={ UsageTabs }
+        activeTab={ activeTab }
+        onTabPress={ ( tab ) => setActiveTab( tab as UsageTabsType ) }
+      />
       <ScrollView className="p-5">
-        <Text className="title-2 mb-3">Entraînement</Text>
-        <Text className="indicator-text mb-2">
-          Si cette fonction est activée, pendant vos entraînements votre écran restera allumé.
-        </Text>
-
-        {!isAvailable && (
-          <Text className="text-red-500 mb-2">
-            Cette fonctionnalité n&apos;est pas disponible sur cet appareil.
-          </Text>
-        )}
-
-        <CustomButton
-          title={ isActive ? "Désactiver" : "Activer" }
-          onPress={ toggleKeepAwake }
-        />
+        <View className="flex-1 bg-background">
+          {activeTab === UsageTabs[ 0 ] ? (
+            <UsageGeneralSection
+            />
+          ) : (
+            <UsageTrainingSection
+              isKeepAwakeActive={ isKeepAwakeActive }
+              isKeepAwakeAvailable={ isKeepAwakeAvailable }
+              toggleKeepAwake={ toggleKeepAwake }
+              isRestNotificationActive={ isRestNotificationActive }
+              isRestNotificationAvailable={ isRestNotificationAvailable }
+              toggleRestNotification={ toggleRestNotification }
+              isRestSoundActive={ isRestSoundActive }
+              toggleRestSound={ toggleRestSound }
+            />
+          )}
+        </View>
       </ScrollView>
     </View>
   );
