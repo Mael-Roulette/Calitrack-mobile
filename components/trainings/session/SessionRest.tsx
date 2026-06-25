@@ -7,6 +7,7 @@ import {
   saveRestTimerState,
 } from "@/utils/restTimer";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useAudioPlayer } from 'expo-audio';
 import { useEffect, useRef, useState } from "react";
 import { AppState, AppStateStatus, ScrollView, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
@@ -26,6 +27,10 @@ interface SessionRestProps {
 const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProps) => {
   const [timeRemaining, setTimeRemaining] = useState(restTime);
   const [isRunning, setIsRunning] = useState(true);
+
+  // Récupération et initialisation de l'audio
+  const audioSource = require( "@/assets/audios/rest-timer-1.mp3" );
+  const player = useAudioPlayer(audioSource);
 
   const endTimeRef = useRef(Date.now() + restTime * 1000);
   const notificationService = NotificationService.getInstance();
@@ -63,6 +68,9 @@ const SessionRest = ({ restTime, onRestComplete, nextExercise }: SessionRestProp
 
       if (remaining <= 0) {
         setIsRunning(false);
+
+        // Lancement du son à la fin du timer
+        player.play();
       }
     }, 1000);
 
