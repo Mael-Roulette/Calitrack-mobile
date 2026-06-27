@@ -1,42 +1,109 @@
-﻿# 🏋️ Calitrack Mobile
+# 🏋️ Calitrack Mobile
 
 <div align="center">
 
-<br /><br /><img src="assets/images/logo.png" alt="Calitrack" width="200"/><br /><br />
+<br />
 
-**Calitrack Mobile - Tes objectifs, ta discipline, ton app**
+<img src="assets/images/logo.png" alt="Calitrack Logo" width="200"/>
+
+<br /><br />
+
+## **Tes objectifs, ta discipline, ton app**
+
+Application mobile de suivi d'entraînement calisthenics disponible sur iOS et Android.
 
 </div>
 
+---
+
 ## 📖 Présentation
 
-Application mobile de Calitrack pour iOS et Android. Simple, claire et motivante, elle t'accompagne dans tes entraînements de calisthenics et te permet de suivre tes progrès pas à pas.
+**Calitrack Mobile** est l'application mobile officielle de Calitrack.
 
-## ✨ Fonctionnalités
+Elle accompagne les pratiquants de **calisthenics / street workout** dans leur progression en leur permettant de :
 
--   **Entraînements personnalisés**: Choisis tes exercices, créer tes séries et planifie ta semaine
--   **Objectifs personnalisés**: Fixe toi des objectifs personnalisés selon tes envies
--   **Visualisation des progrès**: Statistiques simples mais claires pour visualiser la progression de tes objectifs
--   **Bibliothèque d'exercices**: Accède à une bibliothèque complète d'exercices de Street Workout avec description et photo
+- Créer et suivre leurs entraînements
+- Définir des objectifs personnalisés
+- Suivre leur évolution
+- Organiser leur progression au fil du temps
 
-## 🔗 Autres dépôts
+L'objectif est de proposer une expérience simple, motivante et accessible pour aider chacun à rester discipliné et atteindre ses objectifs.
 
-- [Calitrack Web](https://github.com/Mael-Roulette/Calitrack-web)
-- [Monorepo original](https://github.com/Mael-Roulette/Calitrack) (archivé)
-
-## 📄 License
-
-Ce projet est sous licence [Apache License 2.0](LICENCE)
-
-## 📞 Support & Contact
-
--   📧 Pour toutes questions générales, contactez-moi sur [contact@calitrack.fr](mailto:contact@calitrack.fr)
--   🐛 Pour signaler un bug, veuillez ouvrir un ticket sur [GitHub Issues](https://github.com/Mael-Roulette/Calitrack-mobile/issues)
+🌐 Site officiel : https://calitrack.fr
 
 ---
 
+## ✨ Fonctionnalités
+
+### 🏋️ Gestion des entraînements
+
+- Création d'entraînements personnalisés
+- Ajout d'exercices aux séances
+- Organisation des séries et répétitions
+- Planification des entraînements
+
+### 🎯 Objectifs personnalisés
+
+- Création d'objectifs adaptés à son niveau
+- Suivi de l'avancement
+- Visualisation de la progression
+
+### 📊 Suivi des performances
+
+- Historique des entraînements
+- Suivi des objectifs réalisés
+
+### 📚 Bibliothèque d'exercices
+
+- Catalogue d'exercices de street workout
+- Description détaillée
+- Informations utiles pour progresser correctement
+- Catalogue d'exercices personnalisés
+
+---
+
+## 🛠️ Stack technique
+
+Application développée avec :
+
+- ⚛️ React Native
+- 📱 Expo
+- 🟦 TypeScript
+- 🎨 Figma pour le design UX/UI
+
+
+---
+
+### 🗺️ Roadmap
+Suivre l'avancement du projet :
+
+🔗 https://kan.bn/3oyl7c3glvz3/calitrack
+
+--- 
+
+### 📄 Licence
+
+Ce projet est sous licence Apache License 2.0.
+
+Voir le fichier LICENCE.
+
+---
+
+### 📞 Support & Contact
+
+#### Une question ? Un problème ?
+
+📧 Email : contact@calitrack.fr
+
+#### 🐛 Bug ou suggestion :
+
+Ouvrir une issue GitHub
+
+--- 
+
 <div align="center">
 
-Made with ❤️ by [Mael Roulette](https://github.com/Mael-Roulette)
+Made with ❤️ by
+Mael Roulette
 
 </div>
