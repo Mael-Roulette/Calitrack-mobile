@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from "@/constants/storageKeys";
-import { getBoolean, setBoolean } from "@/utils/storage";
+import { getBoolean, setBoolean } from "@/utils/local-storage";
 import { useCallback, useEffect, useState } from "react";
 
 export const useRestSoundPreference = () => {

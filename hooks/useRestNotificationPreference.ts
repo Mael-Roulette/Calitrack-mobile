@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { NotificationService } from "@/services/notification";
-import { getBoolean, setBoolean } from "@/utils/storage";
+import { getBoolean, setBoolean } from "@/utils/local-storage";
 import { useCallback, useEffect, useState } from "react";
 
 export const useRestNotificationPreference = () => {

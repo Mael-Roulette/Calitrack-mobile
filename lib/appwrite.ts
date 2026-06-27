@@ -3,6 +3,7 @@ import {
   Avatars,
   Client,
   Functions,
+  Storage,
   TablesDB
 } from "react-native-appwrite";
 
@@ -11,6 +12,7 @@ export const appwriteConfig = {
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
   platform: "com.mael_rltt.calitrackts",
   databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+  bucketId: process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID!,
   userCollectionId: process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
   goalCollectionId: process.env.EXPO_PUBLIC_APPWRITE_GOAL_COLLECTION_ID!,
   weekCollectionId:
@@ -35,4 +37,5 @@ client
 export const account = new Account( client );
 export const tablesDB = new TablesDB( client );
 export const avatars = new Avatars( client );
+export const storage = new Storage( client );
 export const functions = new Functions( client );

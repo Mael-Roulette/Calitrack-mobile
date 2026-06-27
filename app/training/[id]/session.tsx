@@ -10,7 +10,7 @@ import { useGoalsStore } from "@/store";
 import useTrainingsStore from "@/store/training.store";
 import { Performances } from "@/types/session";
 import { showAlert } from "@/utils/alert";
-import { getBoolean } from "@/utils/storage";
+import { getBoolean } from "@/utils/local-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";

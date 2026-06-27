@@ -7,6 +7,7 @@ import {
   functions,
   tablesDB
 } from "./appwrite";
+import { deleteFile, getFileIdFromUrl } from "./bucket.appwrite";
 
 /**
  * Permet de créer un nouvel utilisateur
@@ -74,33 +75,26 @@ export const getCurrentUser = async (): Promise<User> => {
   }
 };
 
-/**
- * Permet de mettre à jour les données d'un utilisateur
- * @param data - Les données à mettre à jour
- * @returns {Promise<Models.Row>} - L'utilisateur mis à jour
- * @throws {Error} - Si la mise à jour a échoué ou si l'email est déjà utilisé
- */
-export const updateUser = async ( data: Partial<User>, password?: string ): Promise<Models.Row> => {
+export const updateUser = async (
+  data: Partial<User>,
+  password?: string
+): Promise<Models.Row> => {
   try {
     const currentUser = await getCurrentUser();
 
-    // Vérifie si l'email est déjà utilisé par un autre utilisateur
     if ( data.email ) {
       const usersWithEmail = await tablesDB.listRows( {
         databaseId: appwriteConfig.databaseId,
         tableId: appwriteConfig.userCollectionId,
-        queries: [ Query.equal( "email", data.email ) ]
+        queries: [ Query.equal( "email", data.email ) ],
       } );
-
       const emailUsedByOther = usersWithEmail.rows.some(
         ( user: any ) => user.$id !== currentUser.$id
       );
-
       if ( emailUsedByOther ) {
         throw new Error( "Cet email est déjà utilisé par un autre utilisateur." );
       }
     }
-
 
     if ( data.name ) {
       await account.updateName( { name: data.name } );
@@ -110,11 +104,19 @@ export const updateUser = async ( data: Partial<User>, password?: string ): Prom
       await account.updateEmail( { email: data.email, password } );
     }
 
+    // Si on change l'avatar, on supprime l'ancien fichier du bucket
+    if ( data.avatar && currentUser.avatar ) {
+      const oldFileId = getFileIdFromUrl( currentUser.avatar );
+      if ( oldFileId ) {
+        await deleteFile( oldFileId );
+      }
+    }
+
     const updatedUser = await tablesDB.updateRow( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.userCollectionId,
       rowId: currentUser.$id,
-      data
+      data,
     } );
 
     return updatedUser;

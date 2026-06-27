@@ -4,7 +4,8 @@ import { showAlert } from "@/utils/alert";
 import { useCallback, useState } from "react";
 
 export function useUserActions () {
-  const [ isUpdatingName, setIsUpdatingName ] = useState( false );
+  const [ isUpdatingName, setIsUpdatingName ] = useState<boolean>( false );
+  const [ isUpdatingAvatar, setIsUpdatingAvatar ] = useState<boolean>( false );
   const { refreshUser } = useAuthStore();
 
   const handleUpdateName = useCallback(
@@ -36,5 +37,33 @@ export function useUserActions () {
     [ isUpdatingName, refreshUser ]
   );
 
-  return { handleUpdateName, isUpdatingName };
+  const handleUpdateAvatar = useCallback(
+    async ( uri: string ) => {
+
+      if ( isUpdatingAvatar ) return { success: false };
+
+      setIsUpdatingAvatar( true );
+
+      try {
+        await updateUser( { avatar: uri } );
+        await refreshUser();
+        return { success: true };
+      } catch ( error ) {
+        showAlert.error(
+          error instanceof Error ? error.message : "Une erreur est survenue."
+        );
+        return { success: false };
+      } finally {
+        setIsUpdatingAvatar( false );
+      }
+    },
+    [ isUpdatingAvatar, refreshUser ]
+  );
+
+  return {
+    handleUpdateName,
+    isUpdatingName,
+    handleUpdateAvatar,
+    isUpdatingAvatar
+  };
 }

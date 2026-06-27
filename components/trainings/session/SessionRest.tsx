@@ -1,13 +1,13 @@
 import CustomButton from "@/components/ui/CustomButton";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { NotificationService } from "@/services/notification";
+import { getBoolean } from "@/utils/local-storage";
 import {
   clearRestTimerState,
   getRemainingSeconds,
   getRestTimerState,
   saveRestTimerState,
 } from "@/utils/restTimer";
-import { getBoolean } from "@/utils/storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useAudioPlayer } from 'expo-audio';
 import { useEffect, useRef, useState } from "react";
