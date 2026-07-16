@@ -9,7 +9,6 @@ import { formatMinutesDuration } from "@/utils/string";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page () {
   const { id } = useLocalSearchParams();
@@ -22,10 +21,11 @@ export default function Page () {
       try {
         await fetchTrainingById( id as string );
       } catch {
-        showAlert.error( "Impossible de charger l'entrainement", () => router.push( "/weeks" ) );
+        showAlert.error( "Impossible de charger l'entraînement", () => router.push( "/weeks" ) );
       }
     };
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ id ] );
 
   const items: ActionMenuItem[] = [
@@ -43,20 +43,20 @@ export default function Page () {
     },
   ];
 
-  const handleEditTraining = useCallback(() => {
-    if (currentTraining) {
-      router.push({
+  const handleEditTraining = useCallback( () => {
+    if ( currentTraining ) {
+      router.push( {
         pathname: "/training/edit-training-step-1",
         params: { trainingId: currentTraining.$id },
-      });
+      } );
     }
-  }, [currentTraining]);
+  }, [ currentTraining ] );
 
   const handleDeleteTraining = useCallback( async () => {
     if ( currentTraining ) {
       await handleDelete( { trainingId: currentTraining.$id, weekId: currentTraining.week } );
     }
-  }, [ handleDelete, currentTraining?.$id ] );
+  }, [ handleDelete, currentTraining ] );
 
   return (
     <View className="flex-1">
@@ -107,8 +107,8 @@ export default function Page () {
                 </Text>
 
                 <View className="flex-col gap-2 mt-3">
-                  { currentTraining.series?.map( ( serie, index ) => (
-                    <SeriesCard serie={ serie } key={ index } />
+                  { currentTraining.series?.map( ( series, index ) => (
+                    <SeriesCard series={ series } key={ index } />
                   ) ) }
                 </View>
               </View>

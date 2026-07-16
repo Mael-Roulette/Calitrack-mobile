@@ -1,4 +1,4 @@
-import { Performances, Session } from "@/types/session";
+import { Performances, Session, SessionInput } from "@/types/session";
 
 import { User } from "@/types";
 import { ID, Permission, Role } from "react-native-appwrite";
@@ -8,10 +8,54 @@ const databaseId = appwriteConfig.databaseId;
 const sessionTable = appwriteConfig.sessionCollectionId;
 const performanceTable = appwriteConfig.performanceCollectionId;
 
+export const saveSession = async (
+  user: User,
+  session: SessionInput,
+  performances: Performances
+) => {
+  // Créer la session
+  const newSession = await tablesDB.createRow( {
+    databaseId,
+    tableId: sessionTable,
+    rowId: ID.unique(),
+    data: session,
+    permissions: [
+      Permission.read( Role.user( user.accountId ) ),
+      Permission.update( Role.user( user.accountId ) ),
+      Permission.delete( Role.user( user.accountId ) ),
+    ],
+  } );
+
+  const performanceEntries = Object.values( performances ).flatMap( ( sets ) =>
+    Object.values( sets )
+  );
+
+  await Promise.all(
+    performanceEntries.map( ( perf ) =>
+      tablesDB.createRow( {
+        databaseId,
+        tableId: performanceTable,
+        rowId: ID.unique(),
+        data: {
+          ...perf,
+          session: newSession.$id,
+        },
+        permissions: [
+          Permission.read( Role.user( user.accountId ) ),
+          Permission.update( Role.user( user.accountId ) ),
+          Permission.delete( Role.user( user.accountId ) ),
+        ],
+      } )
+    )
+  );
+
+  return newSession;
+};
+
 /**
  * Sauvegarde une session et toutes les performances associées
  */
-export const saveSession = async (
+export const saveSessionOld = async (
   user: User,
   {
     trainingId,

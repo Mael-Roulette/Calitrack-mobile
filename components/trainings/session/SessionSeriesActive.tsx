@@ -11,7 +11,7 @@ import {
   View
 } from "react-native";
 
-interface SessionSerieActiveProps {
+interface SessionSeriesActiveProps {
   series: Series;
   currentSet: number;
   totalSets: number;
@@ -20,14 +20,14 @@ interface SessionSerieActiveProps {
   onSetComplete: ( achievedValue: number ) => void;
 }
 
-export default function SessionSerieActive ( {
+export default function SessionSeriesActive ( {
   series,
   currentSet,
   totalSets,
   seriesNumber,
   totalSeries,
   onSetComplete,
-}: SessionSerieActiveProps ) {
+}: SessionSeriesActiveProps ) {
   const exercise = typeof series.exercise === "string" ? null : series.exercise;
   const target = series.targetValue;
 

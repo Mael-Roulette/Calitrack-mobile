@@ -6,15 +6,15 @@ import { Image } from "expo-image";
 import { Text, View } from "react-native";
 
 export default function PerformanceRecap ( {
-  serie,
+  series,
   performances,
 }: {
-  serie: Series;
+  series: Series;
   performances?: Record<string, number>; // setNumber -> achievedValue
 } ) {
-  const isHold = serie.exercise.format === "hold";
-  const imageSource = serie.exercise.image
-    ? getExerciseImage( serie.exercise.image )
+  const isHold = series.exercise.format === "hold";
+  const imageSource = series.exercise.image
+    ? getExerciseImage( series.exercise.image )
     : null;
 
   return (
@@ -37,13 +37,13 @@ export default function PerformanceRecap ( {
             className="font-sregular text-primary text-base"
             numberOfLines={ 1 }
           >
-            { serie.exercise.name }
+            { series.exercise.name }
           </Text>
           <Text className="label-text text-sm">
-            { serie.sets }x{ " " }
+            { series.sets }x{ " " }
             { isHold
-              ? `${ serie.targetValue } seconde(s)`
-              : `${ serie.targetValue } répétition(s)` }
+              ? `${ series.targetValue } seconde(s)`
+              : `${ series.targetValue } répétition(s)` }
           </Text>
         </View>
       </View>
@@ -55,7 +55,7 @@ export default function PerformanceRecap ( {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{ serie.rpe }</Text>
+            <Text className="text">{ series.rpe }</Text>
           </View>
         </View>
 
@@ -65,7 +65,7 @@ export default function PerformanceRecap ( {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{ serie.weight }</Text>
+            <Text className="text">{ series.weight }</Text>
           </View>
         </View>
 
@@ -75,7 +75,7 @@ export default function PerformanceRecap ( {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{ formatSecondsDuration( serie.restTime ?? 0, false ) }</Text>
+            <Text className="text">{ formatSecondsDuration( series.restTime ?? 0, false ) }</Text>
           </View>
         </View>
       </View>
@@ -83,7 +83,7 @@ export default function PerformanceRecap ( {
       <View className="flex-row gap-2 mt-4 flex-wrap">
         <Text className="title-2 w-full">Performances</Text>
 
-        {Array.from( { length: serie.sets } ).map( ( _, index ) => {
+        {Array.from( { length: series.sets } ).map( ( _, index ) => {
           const setNumber = index + 1;
           const achieved = performances?.[ String( setNumber ) ];
 
@@ -102,7 +102,7 @@ export default function PerformanceRecap ( {
               >
                 <Text className="text">
                   {achieved !== undefined
-                    ? `${achieved} / ${serie.targetValue} ${ isHold ? "s" : "rep" }`
+                    ? `${achieved} / ${series.targetValue} ${ isHold ? "s" : "rep" }`
                     : "-"}
                 </Text>
               </View>

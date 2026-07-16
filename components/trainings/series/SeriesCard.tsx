@@ -5,10 +5,10 @@ import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Text, View } from "react-native";
 
-export default function SeriesCard ( { serie }: { serie: Series } ) {
-  const isHold = serie.exercise.format === "hold";
-  const imageSource = serie.exercise.image
-    ? getExerciseImage( serie.exercise.image )
+export default function seriesCard ( { series }: { series: Series } ) {
+  const isHold = series.exercise.format === "hold";
+  const imageSource = series.exercise.image
+    ? getExerciseImage( series.exercise.image )
     : null;
 
   return (
@@ -31,13 +31,13 @@ export default function SeriesCard ( { serie }: { serie: Series } ) {
             className="font-sregular text-primary text-base"
             numberOfLines={ 1 }
           >
-            { serie.exercise.name }
+            { series.exercise.name }
           </Text>
           <Text className="label-text text-sm">
-            { serie.sets }x{ " " }
+            { series.sets }x{ " " }
             { isHold
-              ? `${ serie.targetValue } seconde(s)`
-              : `${ serie.targetValue } répétition(s)` }
+              ? `${ series.targetValue } seconde(s)`
+              : `${ series.targetValue } répétition(s)` }
           </Text>
         </View>
       </View>
@@ -49,7 +49,7 @@ export default function SeriesCard ( { serie }: { serie: Series } ) {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{ serie.rpe }</Text>
+            <Text className="text">{ series.rpe }</Text>
           </View>
         </View>
 
@@ -59,7 +59,7 @@ export default function SeriesCard ( { serie }: { serie: Series } ) {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{ serie.weight }</Text>
+            <Text className="text">{ series.weight }</Text>
           </View>
         </View>
 
@@ -69,7 +69,7 @@ export default function SeriesCard ( { serie }: { serie: Series } ) {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{ formatSecondsDuration( serie.restTime ?? 0, false ) }</Text>
+            <Text className="text">{ formatSecondsDuration( series.restTime ?? 0, false ) }</Text>
           </View>
         </View>
       </View>

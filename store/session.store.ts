@@ -14,7 +14,6 @@ interface SessionStoreProps {
   refreshSessions: () => Promise<void>;
   addSessionStore: ( session: Session ) => void;
   deleteSessionStore: ( sessionId: string ) => void;
-  getSessionsByTraining: ( trainingId: string ) => Session[];
   getSessionById: ( sessionId: string ) => Session | undefined;
 }
 
@@ -71,13 +70,6 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
     set( ( state ) => ( {
       sessions: state.sessions.filter( ( s ) => s.$id !== sessionId ),
     } ) );
-  },
-
-  getSessionsByTraining: ( trainingId ) => {
-    return get().sessions.filter( ( s ) => {
-      const id = typeof s.training === "string" ? s.training : s.training?.$id;
-      return id === trainingId;
-    } );
   },
 
   getSessionById: ( sessionId ) => {

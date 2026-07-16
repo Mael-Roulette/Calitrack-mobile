@@ -1,7 +1,7 @@
 import { Training } from "@/types";
 import { Performances } from "@/types/session";
 import { Text, View } from "react-native";
-import SessionContent from "./SessionContent";
+import SessionContent from "./SessionRecapContent";
 
 interface SessionRecapProps {
   training: Training;
@@ -17,7 +17,6 @@ const SessionRecap = ( { training, sessionDuration, performances }: SessionRecap
         sessionDuration={ sessionDuration }
         training={ training }
         performances={ performances }
-        isRecap
       />
     </View>
   );

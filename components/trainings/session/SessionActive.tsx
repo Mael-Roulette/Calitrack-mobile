@@ -2,7 +2,7 @@ import { Series } from "@/types";
 import { Performances } from "@/types/session";
 import { useEffect, useState } from "react";
 import SessionRest from "./SessionRest";
-import SessionSerieActive from "./SessionSerieActive";
+import SessionSeriesActive from "./SessionSeriesActive";
 
 interface SessionActiveProps {
   series: Series[];
@@ -37,7 +37,16 @@ export default function SessionActive ( {
       ...prev,
       [ seriesId ]: {
         ...( prev[ seriesId ] ?? {} ),
-        [ currentSet ]: achievedValue,
+        [ currentSet ]: {
+          exerciseName: currentSeries.exercise.name,
+          exerciseImage: currentSeries.exercise.image,
+          rpe: currentSeries.rpe,
+          weight: currentSeries.weight,
+          restTime: currentSeries.restTime,
+          order: currentSeries.order,
+          targetValue: currentSeries.targetValue,
+          achievedValue,
+        },
       },
     } ) );
 
@@ -86,7 +95,7 @@ export default function SessionActive ( {
   }
 
   return (
-    <SessionSerieActive
+    <SessionSeriesActive
       series={ currentSeries }
       currentSet={ currentSet }
       totalSets={ currentSeries.sets }
