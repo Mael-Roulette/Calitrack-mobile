@@ -15,7 +15,6 @@ interface TimePickerProps {
 
 const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true, minutesInterval = 1, onChange, customStyles }: TimePickerProps ) => {
   const [ visible, setVisible ] = useState( false );
-
   return (
     <View>
       { !!label && (
@@ -26,8 +25,8 @@ const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true,
         onPress={ () => setVisible( true ) }
         className={ `custom-input py-3 ${customStyles}` }
       >
-        <Text className="text-lg text-primary">
-          { formatSecondsDuration( value ) }
+        <Text className="text-lg text-primary w-fit">
+          { formatSecondsDuration( value, showHours ) }
         </Text>
       </Pressable>
 
@@ -49,6 +48,16 @@ const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true,
           theme: "light",
           text: {
             fontSize: 20
+          },
+          container: {
+            width: "90%",
+            marginHorizontal: "auto"
+          },
+          contentContainer: {
+            width: "100%"
+          },
+          buttonContainer: {
+            paddingHorizontal: 40,
           }
         } }
         hideSeconds={ !showSeconds }

@@ -127,7 +127,7 @@ export default function SeriesInputCard ( {
                 onUpdate( index, "restMinutes", Math.floor( totalSeconds / 60 ) );
                 onUpdate( index, "restSeconds", totalSeconds % 60 );
               } }
-              customStyles="border-secondary py-0 h-full justify-center"
+              customStyles="border-secondary px-0 py-0 h-full justify-center items-center"
             />
           </View>
         </FieldWrapper>

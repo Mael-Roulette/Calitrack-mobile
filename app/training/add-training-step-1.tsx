@@ -49,6 +49,10 @@ export default function AddTrainingStep1 () {
       newErrors.duration = "Veuillez définir une durée supérieure à 0.";
     }
 
+    if ( days.length === 0 ) {
+      newErrors.days = "Veuillez définir les jours de cet entraînements.";
+    }
+
     setErrors( newErrors );
     return Object.keys( newErrors ).length === 0;
   };
@@ -109,7 +113,7 @@ export default function AddTrainingStep1 () {
 
           <View className="mb-6">
             <CustomTags
-              label="Jours de disponibilité (facultatif)"
+              label="Jours d'entraînement"
               placeholder="Sélectionnez vos jours..."
               suggestions={ [ ...DAYS_TRANSLATION ] }
               value={ days }
@@ -118,6 +122,12 @@ export default function AddTrainingStep1 () {
               allowCustomTags={ false }
             />
           </View>
+          {errors.days && (
+            <Text className="text-red-500 font-sregular text-sm mb-4">
+              {errors.days}
+            </Text>
+          )}
+          {!errors.days && <View className="mb-6" />}
 
           <View className="mb-8">
             <CustomInput
