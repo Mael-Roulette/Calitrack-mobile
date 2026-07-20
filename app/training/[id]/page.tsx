@@ -1,4 +1,5 @@
 import PageHeader from "@/components/headers/PageHeader";
+import RenameTrainingModal from "@/components/trainings/RenameTrainingModal";
 import SeriesCard from "@/components/trainings/series/SeriesCard";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { DAY_LABELS } from "@/constants/date";
@@ -14,6 +15,7 @@ export default function Page () {
   const { id } = useLocalSearchParams();
   const { currentTraining, fetchTrainingById } = useTrainingsStore();
   const [ showMenu, setShowMenu ] = useState( false );
+  const [ showRenameModal, setShowRenameModal ] = useState( false );
   const { handleDelete } = useTrainingActions();
 
   useEffect( () => {
@@ -30,6 +32,11 @@ export default function Page () {
 
   const items: ActionMenuItem[] = [
     {
+      icon: "type",
+      text: "Renommer",
+      onPress: () => handleRenameTraining(),
+    },
+    {
       icon: "edit-2",
       text: "Modifier",
       onPress: () => handleEditTraining(),
@@ -42,6 +49,10 @@ export default function Page () {
       textColor: "#ef4444",
     },
   ];
+
+  const handleRenameTraining = () => {
+    setShowRenameModal( true );
+  };
 
   const handleEditTraining = useCallback( () => {
     if ( currentTraining ) {
@@ -57,6 +68,14 @@ export default function Page () {
       await handleDelete( { trainingId: currentTraining.$id, weekId: currentTraining.week } );
     }
   }, [ handleDelete, currentTraining ] );
+
+  if ( !currentTraining ) {
+    return (
+      <View className="h-full flex items-center justify-center">
+        <Text>L&apos;entraînement que vous essayez d&apos;atteindre n&apos;existe pas.</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">
@@ -121,6 +140,13 @@ export default function Page () {
         visible={ showMenu }
         onClose={ () => setShowMenu( false ) }
         items={ items }
+      />
+
+      <RenameTrainingModal
+        modalVisible={ showRenameModal }
+        setModalVisible={ setShowRenameModal }
+        trainingId={ currentTraining.$id }
+        actualTrainingName={ currentTraining.name }
       />
     </View>
   );

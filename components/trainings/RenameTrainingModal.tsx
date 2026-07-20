@@ -1,47 +1,50 @@
-import CustomButton from "@/components/ui/CustomButton";
-import CustomInput from "@/components/ui/CustomInput";
-import useWeekActions from "@/hooks/actions/useWeekActions";
+import useTrainingActions from "@/hooks/actions/useTrainingActions";
 import { useState } from "react";
 import { Modal, Text, View } from "react-native";
+import CustomButton from "../ui/CustomButton";
+import CustomInput from "../ui/CustomInput";
 
-interface WeekModalProps {
+interface RenameTrainingModalProps {
   modalVisible: boolean;
   setModalVisible: ( value: boolean ) => void;
-  nextOrder: number;
+  trainingId: string,
+  actualTrainingName: string,
 }
 
-export default function WeekModal ( {
+export default function RenameTrainingModal ( {
   modalVisible,
   setModalVisible,
-  nextOrder
-}: WeekModalProps ) {
-  const [ weekName, setWeekName ] = useState( "" );
-  const { handleCreate, isSubmitting } = useWeekActions();
+  trainingId,
+  actualTrainingName
+}: RenameTrainingModalProps ) {
+  const [ trainingName, setTrainingName ] = useState( "" );
+  const { handleRename, isSubmitting } = useTrainingActions();
 
   const handleClose = () => {
     if ( !isSubmitting ) {
-      setWeekName( "" );
+      setTrainingName( "" );
       setModalVisible( false );
     }
   };
 
   const handleSubmit = async () => {
-    if ( !weekName.trim() ) {
+    if ( !trainingName.trim() ) {
       return;
     }
 
     try {
-      await handleCreate( {
-        name: weekName.trim(),
-        order: nextOrder
+      await handleRename( {
+        trainingId,
+        newName: trainingName.trim()
       } );
     } catch ( error ) {
       console.log( error );
     } finally {
-      setWeekName( "" );
+      setTrainingName( "" );
       setModalVisible( false );
     }
   };
+
 
   return (
     <View>
@@ -58,14 +61,14 @@ export default function WeekModal ( {
 
             <CustomInput
               label="Nom de la semaine"
-              value={ weekName }
-              placeholder={ `Ex: Semaine ${nextOrder}` }
-              onChangeText={ setWeekName }
+              value={ trainingName }
+              placeholder={ actualTrainingName }
+              onChangeText={ setTrainingName }
             />
 
             <View className="flex-col gap-3 mt-6">
               <CustomButton
-                title="Créer"
+                title="Renommer"
                 onPress={ handleSubmit }
                 isLoading={ isSubmitting }
                 variant="secondary"
