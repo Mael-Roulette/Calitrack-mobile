@@ -15,8 +15,8 @@ const SessionCard = ( { session }: SessionCardProps ) => {
 
   return (
     <View className='w-full px-5 py-4 mb-5 gap-3 border-[1px] rounded-xl border-secondary'>
-      <View className='flex-row justify-between items-center gap-12'>
-        <Text className="text-lg-custom">{ session.weekName } : { session.trainingName }</Text>
+      <View className='flex-row justify-between items-center gap-5 max-w-full'>
+        <Text className="text-lg-custom flex-shrink" numberOfLines={ 1 } ellipsizeMode="tail">{ session.weekName } : { session.trainingName }</Text>
         <Text className="text-lg-custom">{ formatDate( session.$createdAt )}</Text>
       </View>
       <CustomButton title="Voir la session" variant="secondary"onPress={ handleSeePreviousSession } />

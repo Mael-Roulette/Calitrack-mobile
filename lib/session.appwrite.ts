@@ -27,7 +27,10 @@ export const saveSession = async (
   } );
 
   const performanceEntries = Object.values( performances ).flatMap( ( sets ) =>
-    Object.values( sets )
+    Object.entries( sets ).map( ( [ setNumber, perf ] ) => ( {
+      ...perf,
+      setNumber: Number( setNumber ),
+    } ) )
   );
 
   await Promise.all(

@@ -20,6 +20,7 @@ export interface Performance {
 
   // Infos de la performance
   achievedValue: number;
+  setNumber: number; // L'ordre des différentes performances dans la série
 
   // Infos de l'exercice
   exerciseName: string;
@@ -29,7 +30,7 @@ export interface Performance {
   rpe: number;
 	weight: number;
   restTime?: number;
-  order: number;
+  order: number; // Ordre de la série dans l'entraînement
   targetValue: number;
 }
 
@@ -40,6 +41,7 @@ export interface PerformanceInput {
   weight: number;
   restTime?: number;
   order: number;
+  setNumber: number;
   targetValue: number;
   achievedValue: number;
 }

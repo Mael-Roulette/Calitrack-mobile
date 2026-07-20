@@ -1,20 +1,21 @@
 import { getExerciseImage } from "@/constants/exercises";
-import { PerformanceInput, Series } from "@/types";
+import { Performance } from "@/types";
 import { formatSecondsDuration } from "@/utils/string";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Text, View } from "react-native";
 
-export default function PerformanceRecap ( {
-  series,
+export default function PerformanceHistory ( {
   performances,
 }: {
-  series: Series;
-  performances?: Record<string, PerformanceInput>; // setNumber -> performance saisie
+  performances: Performance[]; // tous les sets d'un même exercice, dans l'ordre
 } ) {
-  const isHold = series.exercise.format === "hold";
-  const imageSource = series.exercise.image
-    ? getExerciseImage( series.exercise.image )
+  if ( !performances || performances.length === 0 ) return null;
+
+  // On prend les infos "communes" (exercice / série) sur la première performance
+  const first = performances[ 0 ];
+  const imageSource = first.exerciseImage
+    ? getExerciseImage( first.exerciseImage )
     : null;
 
   return (
@@ -37,13 +38,10 @@ export default function PerformanceRecap ( {
             className="font-sregular text-primary text-base"
             numberOfLines={ 1 }
           >
-            {series.exercise.name}
+            {first.exerciseName}
           </Text>
           <Text className="label-text text-sm">
-            {series.sets}x{" "}
-            {isHold
-              ? `${series.targetValue} seconde(s)`
-              : `${series.targetValue} répétition(s)`}
+            {performances.length}x {first.targetValue} répétition(s)
           </Text>
         </View>
       </View>
@@ -57,7 +55,7 @@ export default function PerformanceRecap ( {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{series.rpe}</Text>
+            <Text className="text">{first.rpe}</Text>
           </View>
         </View>
 
@@ -69,7 +67,7 @@ export default function PerformanceRecap ( {
             className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
             style={ { height: 44 } }
           >
-            <Text className="text">{series.weight}</Text>
+            <Text className="text">{first.weight}</Text>
           </View>
         </View>
 
@@ -82,7 +80,7 @@ export default function PerformanceRecap ( {
             style={ { height: 44 } }
           >
             <Text className="text">
-              {formatSecondsDuration( series.restTime ?? 0, false )}
+              {formatSecondsDuration( first.restTime ?? 0, false )}
             </Text>
           </View>
         </View>
@@ -91,34 +89,25 @@ export default function PerformanceRecap ( {
       <View className="flex-row gap-2 mt-4 flex-wrap">
         <Text className="title-2 w-full">Performances</Text>
 
-        {Array.from( { length: series.sets } ).map( ( _, index ) => {
-          const setNumber = index + 1;
-          const achieved = performances?.[ String( setNumber ) ];
-
-          return (
+        {performances.map( ( performance, index ) => (
+          <View
+            key={ performance.$id }
+            className="items-center gap-1"
+            style={ { width: "30%", marginBottom: index >= 3 ? 8 : 0 } }
+          >
+            <Text className="text text-xl" numberOfLines={ 1 }>
+              Set {index + 1}
+            </Text>
             <View
-              key={ setNumber }
-              className="items-center gap-1"
-              style={ { width: "30%", marginBottom: index >= 3 ? 8 : 0 } }
+              className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
+              style={ { height: 44 } }
             >
-              <Text className="text text-xl" numberOfLines={ 1 }>
-                Set {setNumber}
+              <Text className="text">
+                {performance.achievedValue} / {performance.targetValue} rep(s)
               </Text>
-              <View
-                className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
-                style={ { height: 44 } }
-              >
-                <Text className="text">
-                  {achieved !== undefined
-                    ? `${achieved.achievedValue} / ${series.targetValue} ${
-                      isHold ? "s" : "rep"
-                    }`
-                    : "-"}
-                </Text>
-              </View>
             </View>
-          );
-        } )}
+          </View>
+        ) )}
       </View>
     </View>
   );
