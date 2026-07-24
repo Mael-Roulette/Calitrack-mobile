@@ -31,12 +31,14 @@ const SessionHistoryContent = ( { session }: { session: Session } ) => {
         </Text>
       </View>
 
-      <View className="mb-4">
-        <Text className="text text-2xl font-calsans">
-          Note personnelle :
-        </Text>
-        <Text className="text text-xl">{session.note}</Text>
-      </View>
+      { session.note && (
+        <View className="mb-4">
+          <Text className="text text-2xl font-calsans">
+            Note personnelle :
+          </Text>
+          <Text className="text text-xl">{session.note}</Text>
+        </View>
+      )}
 
       <Text className="title">Mes performances</Text>
       <View className="mt-2 mb-5">
