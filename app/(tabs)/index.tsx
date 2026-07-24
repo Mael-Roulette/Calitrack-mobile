@@ -39,14 +39,14 @@ export default function HomePage () {
 
   return (
     <View className="flex-1">
-      { (isLoading || !user ) ? (
-				<View>
-					<Text className='title'>Chargement...</Text>
-				</View>
-			) : (
+      { ( isLoading || !user ) ? (
+        <View>
+          <Text className='title'>Chargement...</Text>
+        </View>
+      ) : (
         <>
           <HomeHeader
-            greeting={ `Salut ${user.name}`}
+            greeting={ `Salut ${user.name}` }
             onCalendarPress={ () => router.push( "/planning" ) }
           />
 
@@ -55,12 +55,12 @@ export default function HomePage () {
               <Text className="text text-xl">Ma séance du jour</Text>
 
               {todayTraining ? (
-                <TrainingDay training={todayTraining} />
+                <TrainingDay training={ todayTraining } />
               ) : (
                 <EmptyState
                   title="Aucun entraînement prévu aujourd'hui"
                   buttonText="Modifier mes séances"
-                  handlePress={() => router.push("/weeks")}
+                  handlePress={ () => router.push( "/weeks" ) }
                 />
               )}
             </View>
@@ -77,12 +77,12 @@ export default function HomePage () {
                     <EmptyState
                       title="Aucun objectif en cours"
                       buttonText="Ajouter un objectif"
-                      handlePress={ () => router.push( "/goal/add-goal" )}
+                      handlePress={ () => router.push( "/goal/add-goal" ) }
                     />
                     :
                     inProgressGoals.map( ( goal: Goal ) => (
                       <GoalItem key={ goal.$id } goal={ goal }  canDelete={ false } />
-                    ))
+                    ) )
                   }
                 </View>
               )}
