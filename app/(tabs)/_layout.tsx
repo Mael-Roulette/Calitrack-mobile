@@ -1,18 +1,18 @@
-import { Feather, MaterialIcons } from '@expo/vector-icons';
-import Octicons from '@expo/vector-icons/Octicons';
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import Octicons from "@expo/vector-icons/Octicons";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 export default function TabsLayout () {
   return (
     <>
-      <StatusBar style="light"/>
+      <StatusBar style="light" />
       <Tabs
         screenOptions={ {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: {
-            backgroundColor: '#FFF9F7',
+            backgroundColor: "#FFF9F7",
             paddingTop: 10,
             height: 60,
           },
@@ -22,35 +22,35 @@ export default function TabsLayout () {
       >
         <Tabs.Screen
           name="index"
-          options={{
-            tabBarIcon: ({color, size}) => (
-              <Octicons name="home-fill" size={size} color={color} />
+          options={ {
+            tabBarIcon: ( { color, size } ) => (
+              <Octicons name="home-fill" size={ size } color={ color } />
             )
-          }}
+          } }
         />
         <Tabs.Screen
           name="goals"
-          options={{
-            tabBarIcon: ({color, size}) => (
-              <Octicons name="goal" size={size} color={color} />
+          options={ {
+            tabBarIcon: ( { color, size } ) => (
+              <Octicons name="goal" size={ size } color={ color } />
             )
-          }}
+          } }
         />
         <Tabs.Screen
           name="weeks"
-          options={{
-            tabBarIcon: ({color, size}) => (
-              <Feather name="calendar" size={size} color={color} />
+          options={ {
+            tabBarIcon: ( { color, size } ) => (
+              <Feather name="calendar" size={ size } color={ color } />
             )
-          }}
+          } }
         />
         <Tabs.Screen
           name="profile"
-          options={{
-            tabBarIcon: ({color, size}) => (
-              <MaterialIcons name="account-circle" size={size} color={color} />
+          options={ {
+            tabBarIcon: ( { color, size } ) => (
+              <MaterialIcons name="account-circle" size={ size } color={ color } />
             )
-          }}
+          } }
         />
       </Tabs>
 

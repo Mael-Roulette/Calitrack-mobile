@@ -1,8 +1,10 @@
 import { DAY_INDEX_MAP } from "@/constants/date";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Training } from "@/types";
-import { useMemo } from "react";
+import { getValue } from "@/utils/local-storage";
+import { useEffect, useMemo, useState } from "react";
 
 function getCurrentWeekIndexInMonth (): number {
   const today = new Date();
@@ -36,3 +38,23 @@ export function useTodayTraining (): Training | null {
     );
   }, [ trainings, weeks ] );
 }
+
+export const useTrainingDoneToday = () => {
+  const [ isTrainingDone, setIsTrainingDone ] = useState( false );
+
+  useEffect( () => {
+    const checkTrainingDone = async () => {
+      const trainingDoneDate = await getValue(
+        STORAGE_KEYS.TRAINING_DONE
+      );
+
+      const today = new Date().toISOString().split( "T" )[ 0 ];
+
+      setIsTrainingDone( trainingDoneDate === today );
+    };
+
+    checkTrainingDone();
+  }, [] );
+
+  return isTrainingDone;
+};

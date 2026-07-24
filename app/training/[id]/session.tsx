@@ -11,7 +11,7 @@ import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Performances } from "@/types/session";
 import { showAlert } from "@/utils/alert";
-import { getBoolean } from "@/utils/local-storage";
+import { getBoolean, setValue } from "@/utils/local-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
@@ -87,6 +87,10 @@ export default function Session () {
 
   const handleSessionEnd = async () => {
     if ( !currentTraining || !sessionDuration ) return;
+
+    // Ajout de la date du jour dans la clé TRAINING_DONE
+    const today = new Date().toISOString().split( "T" )[ 0 ];
+    setValue( STORAGE_KEYS.TRAINING_DONE, today );
 
     const trainingWeek = getWeekById( currentTraining.week );
 
