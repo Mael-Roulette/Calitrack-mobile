@@ -6,7 +6,7 @@ import CustomButton from "../../ui/CustomButton";
 import WeekEditModal from "./WeekEditModal";
 import { Week } from "@/types";
 import { router } from "expo-router";
-import useWeekActions from "@/hooks/actions/useWeekActions";
+import useWeekActions from "@/hooks/actions/training/useWeekActions";
 
 interface WeekItemProps {
   week: Week;

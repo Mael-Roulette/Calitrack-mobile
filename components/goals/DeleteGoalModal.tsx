@@ -42,7 +42,7 @@ function DeleteGoalModal ( {
           <View className="w-80 flex-col justify-center items-center gap-4 py-6 px-6 bg-background rounded-xl">
             <View>
               <Text className="text-center font-calsans text-xl text-primary mb-2">
-                Supprimer l'objectif
+                Supprimer l&apos;objectif
               </Text>
               <Text className="text-center font-sregular text-primary-100">
                 Êtes-vous sûr de vouloir supprimer cet objectif ? Cette action est irréversible.

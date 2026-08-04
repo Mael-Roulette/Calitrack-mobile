@@ -3,7 +3,7 @@ import HomeHeader from "@/components/headers/HomeHeader";
 import TrainingDay from "@/components/trainings/TrainingDay";
 import EmptyState from "@/components/ui/EmptyState";
 import PrimaryGradient from "@/components/ui/PrimaryGradient";
-import { useTodayTraining, useTrainingDoneToday } from "@/hooks/useTodayTraining";
+import { useTodayTraining, useTrainingDoneToday } from "@/hooks/time/useTodayTraining";
 import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
 import useSessionsStore from "@/store/session.store";
 import useTrainingsStore from "@/store/training.store";

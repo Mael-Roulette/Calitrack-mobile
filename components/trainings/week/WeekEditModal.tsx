@@ -1,6 +1,6 @@
 import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
-import useWeekActions from "@/hooks/actions/useWeekActions";
+import useWeekActions from "@/hooks/actions/training/useWeekActions";
 import useWeeksStore from "@/store/week.store";
 import { Week } from "@/types";
 import { useEffect, useState } from "react";

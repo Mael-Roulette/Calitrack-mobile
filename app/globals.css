@@ -45,7 +45,7 @@
         @apply flex-row items-center justify-center rounded-lg py-3 px-5 bg-primary min-h-[48px];
     }
 
-    .btn-quartenary {
+    .btn-quaternary {
         @apply flex-row items-center justify-center w-full rounded-lg py-6 px-5 bg-primary/10 border border-primary border-dashed min-h-[48px];
     }
 

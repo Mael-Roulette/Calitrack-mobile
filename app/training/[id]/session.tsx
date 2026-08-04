@@ -4,7 +4,7 @@ import SessionRecap from "@/components/trainings/session/SessionRecap";
 import SessionSummary from "@/components/trainings/session/SessionSummary";
 import CustomButton from "@/components/ui/CustomButton";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
-import { useSessionActions } from "@/hooks/actions/useSessionAction";
+import { useSessionActions } from "@/hooks/actions/session/useSessionAction";
 import { useConditionalKeepAwake } from "@/hooks/useConditionalKeepAwake";
 import { useGoalsStore } from "@/store";
 import useTrainingsStore from "@/store/training.store";

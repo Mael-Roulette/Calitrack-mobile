@@ -1,4 +1,4 @@
-import useTrainingActions from "@/hooks/actions/useTrainingActions";
+import useTrainingActions from "@/hooks/actions/training/useTrainingActions";
 import { useState } from "react";
 import { Modal, Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";

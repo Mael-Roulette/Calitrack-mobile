@@ -18,7 +18,7 @@ const Index = () => {
 
   const handleLogout = async () => {
     Alert.alert(
-      "Déconnnexion",
+      "Déconnexion",
       "Êtes-vous sûr de vouloir vous déconnecter de votre compte ?",
       [
         { text: "Annuler", style: "cancel" },

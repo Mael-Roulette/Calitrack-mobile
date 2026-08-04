@@ -1,7 +1,7 @@
 import ExerciseForm from "@/components/exercises/ExerciseForm";
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
-import { useExerciseActions } from "@/hooks/actions/useExerciseActions";
+import { useExerciseActions } from "@/hooks/actions/training/useExerciseActions";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";

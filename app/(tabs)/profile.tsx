@@ -1,7 +1,7 @@
 import PageHeader from "@/components/headers/PageHeader";
 import PrimaryGradient from "@/components/ui/PrimaryGradient";
 import { useUserActions } from "@/hooks/actions/useUserActions";
-import { useMonthlySessionStats } from "@/hooks/useMonthSessions";
+import { useMonthlySessionStats } from "@/hooks/time/useMonthSessions";
 import { createFile } from "@/lib/bucket.appwrite";
 import { useAuthStore } from "@/store";
 import { formatSecondsDuration } from "@/utils/string";

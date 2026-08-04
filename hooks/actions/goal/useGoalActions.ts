@@ -100,7 +100,7 @@ export function useGoalActions () {
       if ( isUpdating ) return { success: false, error: "Mise à jour en cours" };
 
       if ( isNaN( progress ) || progress <= 0 ) {
-        showAlert.error( "Veuillez entrer une valeur valide." );
+        showAlert.error( "Veuillez entrer une progression valide." );
         return { success: false, error: "Valeur invalide" };
       }
 

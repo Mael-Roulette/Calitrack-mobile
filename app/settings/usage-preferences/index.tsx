@@ -1,9 +1,9 @@
 import PageHeaderWithTabs from "@/components/headers/PageHeaderWithTabs";
 import UsageGeneralSection from "@/components/settings/UsageGeneralSection";
 import UsageTrainingSection from "@/components/settings/UsageTrainingSection";
-import { useKeepAwakePreference } from "@/hooks/useKeepAwakePreference";
-import { useRestNotificationPreference } from "@/hooks/useRestNotificationPreference";
-import { useRestSoundPreference } from "@/hooks/useRestSoundPreference";
+import { useKeepAwakePreference } from "@/hooks/preferences/useKeepAwakePreference";
+import { useRestNotificationPreference } from "@/hooks/preferences/useRestNotificationPreference";
+import { useRestSoundPreference } from "@/hooks/preferences/useRestSoundPreference";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 

@@ -1,7 +1,7 @@
 import ExerciseItem from "@/components/exercises/ExerciseItem";
 import PageHeader from "@/components/headers/PageHeader";
 import { LIMITS } from "@/constants/value";
-import { useExerciseFilters } from "@/hooks/useExerciseFilters";
+import { useExerciseFilters } from "@/hooks/exercise/useExerciseFilters";
 import { useExercicesStore } from "@/store";
 import { router } from "expo-router";
 import React from "react";

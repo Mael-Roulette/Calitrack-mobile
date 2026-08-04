@@ -4,7 +4,7 @@ interface ModalHeaderProps {
   selectedCount: number;
 }
 
-export function ModalHeader({ selectedCount }: ModalHeaderProps) {
+export function ModalHeader ( { selectedCount }: ModalHeaderProps ) {
   return (
     <>
       <Text className='text-center text-primary font-calsans text-2xl'>

@@ -1,13 +1,12 @@
 import SimpleHeader from "@/components/headers/SimpleHeader";
-import WeekModal from "@/components/trainings/week/WeekModal";
 import WeekItem from "@/components/trainings/week/WeekItem";
+import WeekModal from "@/components/trainings/week/WeekModal";
 import CustomButton from "@/components/ui/CustomButton";
 import EmptyState from "@/components/ui/EmptyState";
 import useWeeksStore from "@/store/week.store";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoalsPage () {
   const [ modalVisible, setModalVisible ] = useState( false );
@@ -40,15 +39,15 @@ export default function GoalsPage () {
                 buttonText="Ajouter une semaine"
                 handlePress={ handleAddPress }
               />
-              ) : (
-                  <>
-                    {weeks.map( ( week ) => (
-                      <WeekItem key={ week.$id } week={ week } />
-                    ))}
-                    <TouchableOpacity className="btn-quartenary" onPress={ handleAddPress }>
-                      <Text className="text-lg-custom font-bold">Ajouter une semaine</Text>
-                    </TouchableOpacity>
-                </>
+            ) : (
+              <>
+                {weeks.map( ( week ) => (
+                  <WeekItem key={ week.$id } week={ week } />
+                ) )}
+                <TouchableOpacity className="btn-quaternary" onPress={ handleAddPress }>
+                  <Text className="text-lg-custom font-bold">Ajouter une semaine</Text>
+                </TouchableOpacity>
+              </>
             )}
           </View>
         ) }

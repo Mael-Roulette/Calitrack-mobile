@@ -1,4 +1,3 @@
-// components/headers/PageHeader.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
