@@ -1,11 +1,13 @@
 import PageHeader from "@/components/headers/PageHeader";
 import PrimaryGradient from "@/components/ui/PrimaryGradient";
 import { useUserActions } from "@/hooks/actions/useUserActions";
-import { useMonthlySessionStats } from "@/hooks/useMonthSessions";
+import { useMonthlySessionStats } from "@/hooks/time/useMonthSessions";
+import { createFile } from "@/lib/bucket.appwrite";
 import { useAuthStore } from "@/store";
 import { formatSecondsDuration } from "@/utils/string";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -17,7 +19,7 @@ const ProfilePage = () => {
     isAuthenticated,
   } = useAuthStore();
   const { count: monthlySessionCount, totalSeconds } = useMonthlySessionStats();
-  const { handleUpdateName, isUpdatingName } = useUserActions();
+  const { handleUpdateName, isUpdatingName, handleUpdateAvatar } = useUserActions();
 
   const [ isEditing, setIsEditing ] = useState( false );
   const [ editName, setEditName ] = useState( user?.name ?? "" );
@@ -33,6 +35,23 @@ const ProfilePage = () => {
     const result = await handleUpdateName( editName );
     if ( result?.success ) {
       setIsEditing( false );
+    }
+  };
+
+  const handlePickAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync( {
+      mediaTypes: [ "images" ],
+      allowsEditing: true,
+      quality: 0.7,
+      aspect: [ 1, 1 ],
+    } );
+    if ( result.canceled ) return;
+
+    try {
+      const createdFile = await createFile( { image: result.assets[ 0 ], user: user! } );
+      await handleUpdateAvatar( createdFile.fileUrl );
+    } catch ( err ) {
+      console.error( "Upload failed:", err );
     }
   };
 
@@ -67,21 +86,28 @@ const ProfilePage = () => {
             onPress={ isEditing ? handleCancelEdit : () => setIsEditing( true ) }
           >
             {!isEditing && <Feather name="edit-3" size={ 20 } color="#FFF9F7" />}
-            <Text className="text-background">{isEditing ? "Annuler" : "Éditer"}</Text>
+            <Text className="text-background">{isEditing ? "Retour" : "Éditer"}</Text>
           </TouchableOpacity>
 
-          <Image
-            style={ { width: 80, height: 80, borderRadius: 50 } }
-            source={ user.avatar }
-          />
-
           {!isEditing ? (
-            <View className="flex-col items-center gap-3">
-              <Text className="title-2">{user.name}</Text>
-              <Text className="text-lg-custom">{user.email}</Text>
-            </View>
+            <>
+              <Image
+                style={ { width: 80, height: 80, borderRadius: 50 } }
+                source={ user.avatar }
+              />
+              <View className="flex-col items-center gap-3">
+                <Text className="title-2">{user.name}</Text>
+              </View>
+            </>
           ) : (
             <View className="flex-col items-center gap-3">
+              <TouchableOpacity onPress={ handlePickAvatar } className="relative">
+                <Image
+                  style={ { width: 80, height: 80, borderRadius: 50 } }
+                  source={ user.avatar }
+                />
+                <Feather name="edit-3" size={ 20 } color="#FFF9F7" className="absolute -top-1 -right-1 bg-secondary rounded-full p-2" />
+              </TouchableOpacity>
               <View className="w-full flex-row gap-2">
                 <TextInput
                   className="custom-input flex-1"
@@ -89,7 +115,6 @@ const ProfilePage = () => {
                   onChangeText={ setEditName }
                   placeholder={ user.name }
                   placeholderTextColor="#617188"
-                  autoFocus
                 />
                 <TouchableOpacity
                   className="bg-secondary px-5 py-3 flex items-center justify-center rounded-lg"
@@ -102,8 +127,6 @@ const ProfilePage = () => {
                   }
                 </TouchableOpacity>
               </View>
-
-              <Text className="text-lg-custom self-start px-1 opacity-50">{user.email}</Text>
             </View>
           )}
         </View>

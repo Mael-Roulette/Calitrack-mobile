@@ -2,7 +2,7 @@ import ExercisesSelectionModal from "@/components/exercises/ExercisesSelectionMo
 import PageHeader from "@/components/headers/PageHeader";
 import SeriesInputCard, { SeriesForm } from "@/components/trainings/series/SeriesInputCard";
 import CustomButton from "@/components/ui/CustomButton";
-import useTrainingActions from "@/hooks/actions/useTrainingActions";
+import useTrainingActions from "@/hooks/actions/training/useTrainingActions";
 import { Exercise } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -197,7 +197,7 @@ export default function AddTrainingStep2 () {
               ) )}
 
               <TouchableOpacity
-                className="btn-quartenary mt-2 flex-row items-center justify-center gap-2"
+                className="btn-quaternary mt-2 flex-row items-center justify-center gap-2"
                 onPress={ () => {
                   setShowEmptyError( false );
                   setIsModalVisible( true );

@@ -7,12 +7,14 @@ interface TrainingStoreProps {
   trainings: Training[];
   currentTraining: Training | null;
   isLoading: boolean;
+  hasFetched: boolean;
   error: string | null;
 
   setTrainings: ( trainings: Training[] ) => void;
   setIsLoading: ( isLoading: boolean ) => void;
   setError: ( error: string | null ) => void;
 
+  refreshTrainings: () => Promise<void>;
   fetchUserTrainings: () => Promise<void>;
   fetchTrainingById: ( trainingId: string ) => void;
   getTrainingsByWeekCached: ( weekId: string ) => Training[];
@@ -25,22 +27,29 @@ const useTrainingsStore = create<TrainingStoreProps>( ( set, get ) => ( {
   trainings: [],
   currentTraining: null,
   isLoading: false,
+  hasFetched: false,
   error: null,
 
   setTrainings: ( trainings ) => set( { trainings, error: null } ),
   setIsLoading: ( isLoading ) => set( { isLoading } ),
   setError: ( error ) => set( { error } ),
 
+  // Force un nouveau fetch en réinitialisant hasFetched
+  refreshTrainings: async () => {
+    set( { hasFetched: false } );
+    await get().fetchUserTrainings();
+  },
+
   fetchUserTrainings: async () => {
     const { isAuthenticated } = useAuthStore.getState();
-    const state = get();
+    const { isLoading, hasFetched } = get();
 
     if ( !isAuthenticated ) {
       set( { error: "Utilisateur non authentifié" } );
       return;
     }
 
-    if ( state.isLoading ) return;
+    if ( isLoading || hasFetched ) return;
 
     set( { isLoading: true, error: null } );
 

@@ -18,7 +18,7 @@ const Index = () => {
 
   const handleLogout = async () => {
     Alert.alert(
-      "Déconnnexion",
+      "Déconnexion",
       "Êtes-vous sûr de vouloir vous déconnecter de votre compte ?",
       [
         { text: "Annuler", style: "cancel" },
@@ -84,14 +84,13 @@ const Index = () => {
   };
 
   return (
-    <View className='flex-1'>
+    <View className='flex-1 bg-background'>
       <PageHeader title="Paramètres" />
       <ScrollView>
         <View className='flex-col gap-6 mb-4 pt-5 first:border-t-[1px] first:border-gray-200'>
           { [
-            // { title: "Compte", screen: "account" },
-            // { title: "Notifications", screen: "notifications" },
             { title: "À propos", screen: "about" },
+            { title: "Préférences d’utilisation", screen: "usage-preferences" },
           ].map( ( item, index ) => (
             <View
               key={ index }

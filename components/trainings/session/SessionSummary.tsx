@@ -55,7 +55,7 @@ const SessionSummary = ( { training, goals }: SummaryProps ) => {
             renderItem={ ( { item }: { item: Series } ) => {
               return (
                 <SeriesCard
-                  serie={ item }
+                  series={ item }
                 />
               );
             } }

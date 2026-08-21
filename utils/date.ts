@@ -35,3 +35,26 @@ export function formatDate ( date: Date ): string {
 
   return formattedDate;
 }
+
+export function getWeekIndexInMonth ( dateString: string ): number {
+  const [ y, m, d ] = dateString.split( "-" ).map( Number );
+  const selected = new Date( y, m - 1, d );
+  const firstOfMonth = new Date( y, m - 1, 1 );
+
+  // Quel lundi précède ou est le 1er du mois
+  const firstDay = firstOfMonth.getDay(); // 0=dim, 1=lun...
+  const offset = firstDay === 0 ? -6 : 1 - firstDay;
+  const firstMonday = new Date( firstOfMonth );
+  firstMonday.setDate( 1 + offset );
+
+  const diffMs = selected.getTime() - firstMonday.getTime();
+  return Math.floor( diffMs / ( 7 * 24 * 60 * 60 * 1000 ) );
+}
+
+export function getTodayDate (): string {
+  const today = new Date;
+  today.setHours( 0 );
+  today.setSeconds( 0 );
+
+  return today.toDateString();
+}

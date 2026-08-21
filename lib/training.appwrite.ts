@@ -40,7 +40,7 @@ export const getUserTrainings = async () => {
       series: enrichedSeries
         .filter( ( s ) => s.training === training.$id )
         .sort( ( a, b ) => a.order - b.order ),
-    } ) );
+    } ) ) as unknown as Training[];
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des entraînements:", error );
     throw new Error(

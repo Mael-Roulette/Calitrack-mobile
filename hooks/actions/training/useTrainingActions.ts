@@ -26,6 +26,11 @@ type UpdateTrainingInput = {
   series: CreateSeriesInput[];
 };
 
+type RenameTrainingInput = {
+  trainingId: string;
+  newName: string;
+}
+
 export default function useTrainingActions () {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
   const [ isDeleting, setIsDeleting ] = useState( false );
@@ -171,6 +176,44 @@ export default function useTrainingActions () {
     [ isSubmitting, user, updateTrainingStore ]
   );
 
+  const handleRename = useCallback( async ( { trainingId, newName }: RenameTrainingInput ) => {
+    if ( !user ) {
+      showAlert.error( "Utilisateur non connecté" );
+      return { success: false };
+    }
+
+    if ( isSubmitting ) return { success: false };
+
+    setIsSubmitting( true );
+
+    try {
+      const response = await updateTraining( trainingId, { name: newName } );
+
+      if ( !response?.updatedTraining ) {
+        showAlert.error(
+          response?.message?.body ?? "Erreur lors de la création de l'entraînement."
+        );
+        return { success: false };
+      }
+
+      const allTrainings = await getUserTrainings() as unknown as Training[];
+      const updatedTraining = allTrainings.find( ( t ) => t.$id === trainingId );
+
+      if ( updatedTraining ) {
+        updateTrainingStore( trainingId, updatedTraining );
+      }
+
+      return { success: true };
+    } catch ( error ) {
+      showAlert.error(
+        error instanceof Error ? error.message : "Une erreur est survenue."
+      );
+      return { success: false };
+    } finally {
+      setIsSubmitting( false );
+    }
+  }, [ user, isSubmitting, updateTrainingStore ] );
+
   const handleDelete = useCallback(
     async ( { trainingId, weekId }: { trainingId: string; weekId: string } ) => {
       if ( !user ) {
@@ -204,5 +247,5 @@ export default function useTrainingActions () {
     [ user, isDeleting, deleteTrainingStore ]
   );
 
-  return { handleCreate, handleUpdate, handleDelete, isSubmitting, isDeleting };
+  return { handleCreate, handleUpdate, handleRename, handleDelete, isSubmitting, isDeleting };
 }

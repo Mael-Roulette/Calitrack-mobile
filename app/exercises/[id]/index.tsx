@@ -1,7 +1,7 @@
 import PageHeader from "@/components/headers/PageHeader";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { getExerciseImage } from "@/constants/exercises";
-import { useExerciseActions } from "@/hooks/actions/useExerciseActions";
+import { useExerciseActions } from "@/hooks/actions/training/useExerciseActions";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -15,31 +15,30 @@ import {
   Text,
   View
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExerciseDetails = () => {
   const { id } = useLocalSearchParams();
   const [ exercise, setExercise ] = useState<Exercise>();
   const [ loading, setLoading ] = useState( true );
   const [ showMenu, setShowMenu ] = useState( false );
-  const { handleDelete, isDeleting } = useExerciseActions();
+  const { handleDelete } = useExerciseActions();
 
-  useEffect(() => {
+  useEffect( () => {
     const fetchExercise = async () => {
-      setLoading(true);
+      setLoading( true );
       try {
-        const response = await getExerciseById(id as string);
-        setExercise(response as unknown as Exercise);
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'exercice", error);
+        const response = await getExerciseById( id as string );
+        setExercise( response as unknown as Exercise );
+      } catch ( error ) {
+        console.error( "Erreur lors de la récupération de l'exercice", error );
 
-        showAlert.error("Impossible de charger l'exercice",() => router.push("/exercises") );
+        showAlert.error( "Impossible de charger l'exercice",() => router.push( "/exercises" ) );
       } finally {
-        setLoading(false);
+        setLoading( false );
       }
     };
     fetchExercise();
-  }, [ id ]);
+  }, [ id ] );
 
   let difficultyInfo;
   if ( !loading ) {
@@ -76,7 +75,7 @@ const ExerciseDetails = () => {
           <>
             <PageHeader
               title={ exercise!.name }
-              onRightPress={ exercise!.isCustom ? ( () => setShowMenu( true ) ): undefined }
+              onRightPress={ exercise!.isCustom ? ( () => setShowMenu( true ) ) : undefined }
               rightIcon="ellipsis-vertical"
             />
             <ScrollView className="px-5 bg-background">
@@ -113,9 +112,9 @@ const ExerciseDetails = () => {
             </ScrollView>
 
             <ActionsMenu
-              visible={showMenu}
-              onClose={() => setShowMenu(false)}
-              items={items}
+              visible={ showMenu }
+              onClose={ () => setShowMenu( false ) }
+              items={ items }
             />
           </>
         ) }

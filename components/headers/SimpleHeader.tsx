@@ -1,4 +1,3 @@
-// components/headers/SimpleHeader.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

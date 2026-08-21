@@ -15,7 +15,7 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
   const { getWeekById } = useWeeksStore();
   const week = getWeekById( training.week );
 
-  const handleLauchTraining = () => {
+  const handleLaunchTraining = () => {
     router.push( `/training/${training.$id}/session` );
   };
 
@@ -38,7 +38,7 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
 
         <CustomButton
           title="Lancer ma séance"
-          onPress={ handleLauchTraining }
+          onPress={ handleLaunchTraining }
           customStyles="border-0"
         />
       </View>

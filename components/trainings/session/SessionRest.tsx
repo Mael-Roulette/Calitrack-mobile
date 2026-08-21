@@ -1,55 +1,146 @@
 import CustomButton from "@/components/ui/CustomButton";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { NotificationService } from "@/services/notification";
+import { getBoolean } from "@/utils/local-storage";
+import {
+  clearRestTimerState,
+  getRemainingSeconds,
+  getRestTimerState,
+  saveRestTimerState,
+} from "@/utils/restTimer";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { useAudioPlayer } from "expo-audio";
+import { useEffect, useRef, useState } from "react";
+import { AppState, AppStateStatus, ScrollView, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+
+const SIZE = 256;
+const STROKE_WIDTH = 8;
+const RADIUS = ( SIZE - STROKE_WIDTH ) / 2;
+const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
+const CENTER = SIZE / 2;
 
 interface SessionRestProps {
   restTime: number; // en secondes
   onRestComplete: () => void;
+  nextExercise: string;
 }
 
-const SIZE = 256;
-const STROKE_WIDTH = 8;
-const RADIUS = (SIZE - STROKE_WIDTH) / 2;
-const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
-const CENTER = SIZE / 2;
+const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestProps ) => {
+  const [ timeRemaining, setTimeRemaining ] = useState( restTime );
+  const [ isRunning, setIsRunning ] = useState( true );
 
-const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
-  const [timeRemaining, setTimeRemaining] = useState(restTime);
-  const [isRunning, setIsRunning] = useState(true);
+  // Récupération et initialisation de l'audio
+  const audioSource = require( "@/assets/audios/rest-timer-1.mp3" );
+  const player = useAudioPlayer( audioSource );
 
-  useEffect(() => {
-    if (!isRunning || timeRemaining <= 0) return;
+  const endTimeRef = useRef( Date.now() + restTime * 1000 );
+  const notificationService = NotificationService.getInstance();
 
-    const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          setIsRunning(false);
-          return 0;
+  /**
+   * INIT TIMER
+   * notif uniquement si app en background
+   */
+  useEffect( () => {
+    const endTime = Date.now() + restTime * 1000;
+
+    endTimeRef.current = endTime;
+
+    setTimeRemaining( restTime );
+    setIsRunning( true );
+
+    saveRestTimerState( endTime );
+
+    return () => {
+      clearRestTimerState();
+      notificationService.cancelRestEndNotification();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [] );
+
+  /**
+   * TIMER LOOP (UI only)
+   */
+  useEffect( () => {
+    if ( !isRunning ) return;
+
+    const interval = setInterval( async () => {
+      const remaining = getRemainingSeconds( endTimeRef.current );
+
+      setTimeRemaining( remaining );
+
+      if ( remaining <= 0 ) {
+        setIsRunning( false );
+        const soundEnabled = await getBoolean( STORAGE_KEYS.REST_SOUND_ENABLED, false );
+        if ( soundEnabled ) {
+          player.play();
         }
-        return prev - 1;
-      });
-    }, 1000);
+      }
+    }, 1000 );
 
-    return () => clearInterval(interval);
-  }, [isRunning, timeRemaining]);
+    return () => clearInterval( interval );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ isRunning ] );
 
-  const toggleTimer = () => setIsRunning((v) => !v);
+  /**
+   * APP STATE HANDLER
+   */
+  useEffect( () => {
+    const handleAppStateChange = async ( state: AppStateStatus ) => {
+      const stored = await getRestTimerState();
+      const endTime = stored?.endTime ?? endTimeRef.current;
+      const remaining = getRemainingSeconds( endTime );
+
+      if ( state === "active" ) {
+        // retour dans l'app → resync immédiat
+        setTimeRemaining( remaining );
+        setIsRunning( remaining > 0 );
+
+        // si repos terminé pendant absence → on déclenche action
+        if ( remaining <= 0 ) {
+          clearRestTimerState();
+        }
+
+        return;
+      }
+
+      // pas en foreground → on ne programme notif que si encore du temps
+      if ( remaining > 0 ) {
+        const notifEnabled = await getBoolean( STORAGE_KEYS.REST_NOTIFICATION_ENABLED, false );
+        if ( notifEnabled ) {
+          notificationService.scheduleRestEndNotification( endTime );
+        }
+      }
+    };
+
+    const sub = AppState.addEventListener( "change", handleAppStateChange );
+    return () => sub.remove();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [] );
+
+  const toggleTimer = () => setIsRunning( v => !v );
 
   const skipRest = () => {
-    setTimeRemaining(0);
-    setIsRunning(false);
+    setTimeRemaining( 0 );
+    setIsRunning( false );
+    clearRestTimerState();
+    notificationService.cancelRestEndNotification();
     onRestComplete();
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  const handleContinue = () => {
+    clearRestTimerState();
+    notificationService.cancelRestEndNotification();
+    onRestComplete();
   };
 
-  const progress = (restTime - timeRemaining) / restTime;
+  const formatTime = ( seconds: number ) => {
+    const mins = Math.floor( seconds / 60 );
+    const secs = seconds % 60;
+    return `${String( mins ).padStart( 2, "0" )}:${String( secs ).padStart( 2, "0" )}`;
+  };
+
+  const progress = ( restTime - timeRemaining ) / restTime;
   const strokeDashoffset = CIRCUMFERENCE - progress * CIRCUMFERENCE;
 
   const rotateTransform = `rotate(-90, ${CENTER}, ${CENTER})`;
@@ -58,43 +149,40 @@ const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
     <View className="flex-1 bg-background">
       <ScrollView className="flex-1 px-5">
         <View className="flex-row justify-center items-center gap-3 mt-2 mb-8">
-          <Ionicons name="time-outline" size={40} color="#FC7942" />
+          <Ionicons name="time-outline" size={ 40 } color="#FC7942" />
           <Text className="title text-center">Temps de repos</Text>
         </View>
 
         <View className="items-center justify-center">
-          <View style={{ width: SIZE, height: SIZE }}>
-            <Svg width={SIZE} height={SIZE}>
-              {/* Piste de fond */}
+          <View style={ { width: SIZE, height: SIZE } }>
+            <Svg width={ SIZE } height={ SIZE }>
               <Circle
-                cx={CENTER}
-                cy={CENTER}
-                r={RADIUS}
+                cx={ CENTER }
+                cy={ CENTER }
+                r={ RADIUS }
                 stroke="#132541"
-                strokeWidth={STROKE_WIDTH}
-                strokeOpacity={0.1}
+                strokeWidth={ STROKE_WIDTH }
+                strokeOpacity={ 0.1 }
                 fill="none"
               />
 
-              {/* Arc de progression */}
               <Circle
-                cx={CENTER}
-                cy={CENTER}
-                r={RADIUS}
+                cx={ CENTER }
+                cy={ CENTER }
+                r={ RADIUS }
                 stroke="#FC7942"
-                strokeWidth={STROKE_WIDTH}
-                strokeDasharray={CIRCUMFERENCE}
-                strokeDashoffset={strokeDashoffset}
+                strokeWidth={ STROKE_WIDTH }
+                strokeDasharray={ CIRCUMFERENCE }
+                strokeDashoffset={ strokeDashoffset }
                 strokeLinecap="round"
                 fill="none"
-                transform={rotateTransform}
+                transform={ rotateTransform }
               />
             </Svg>
 
-            {/* Temps au centre */}
             <View className="absolute inset-0 items-center justify-center">
               <Text className="text-6xl font-sbold text-primary">
-                {formatTime(timeRemaining)}
+                {formatTime( timeRemaining )}
               </Text>
               <Text className="text-primary-100 font-sregular text-base mt-2">
                 {timeRemaining === 0 ? "Repos terminé !" : "restantes"}
@@ -102,20 +190,27 @@ const SessionRest = ({ restTime, onRestComplete }: SessionRestProps) => {
             </View>
           </View>
         </View>
+
+        {nextExercise && (
+          <View className="items-center mt-8">
+            <Text className="label-text">Prochain exercice</Text>
+            <Text className="text-lg-custom mt-1">{nextExercise}</Text>
+          </View>
+        )}
       </ScrollView>
 
       <View className="w-full gap-3 px-5 pb-5">
         {timeRemaining > 0 ? (
           <>
             <CustomButton
-              title={isRunning ? "Pause" : "Reprendre"}
+              title={ isRunning ? "Pause" : "Reprendre" }
               variant="secondary"
-              onPress={toggleTimer}
+              onPress={ toggleTimer }
             />
-            <CustomButton title="Passer le repos" onPress={skipRest} />
+            <CustomButton title="Passer le repos" onPress={ skipRest } />
           </>
         ) : (
-          <CustomButton title="Continuer" onPress={onRestComplete} />
+          <CustomButton title="Continuer" onPress={ handleContinue } />
         )}
       </View>
     </View>

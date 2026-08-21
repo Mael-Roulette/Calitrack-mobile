@@ -15,8 +15,8 @@ import ExerciseSelectionItem from "../ExerciseSelectionItem";
 import { ModalActions } from "./ModalActions";
 import { ModalDragHandle } from "./ModalDragHandle";
 import { ModalHeader } from "./ModalHeader";
-import { useExerciseSearch } from "./useExerciseSearch";
-import { useModalAnimation } from "./useModalAnimation";
+import { useExerciseSearch } from "../../../hooks/exercise/useExerciseSearch";
+import { useModalAnimation } from "../../../hooks/exercise/useModalAnimation";
 
 interface ExerciseSelectionModalProps {
   isVisible: boolean;

@@ -1,4 +1,4 @@
-import { useWeekCalendar } from "@/hooks/useWeekCalendar";
+import { useWeekCalendar } from "@/hooks/time/useWeekCalendar";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

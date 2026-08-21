@@ -1,6 +1,6 @@
 import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
-import useWeekActions from "@/hooks/actions/useWeekActions";
+import useWeekActions from "@/hooks/actions/training/useWeekActions";
 import { useState } from "react";
 import { Modal, Text, View } from "react-native";
 
@@ -41,7 +41,6 @@ export default function WeekModal ( {
       setWeekName( "" );
       setModalVisible( false );
     }
-
   };
 
   return (

@@ -1,20 +1,21 @@
 import PageHeader from "@/components/headers/PageHeader";
+import RenameTrainingModal from "@/components/trainings/RenameTrainingModal";
 import SeriesCard from "@/components/trainings/series/SeriesCard";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { DAY_LABELS } from "@/constants/date";
-import useTrainingActions from "@/hooks/actions/useTrainingActions";
+import useTrainingActions from "@/hooks/actions/training/useTrainingActions";
 import useTrainingsStore from "@/store/training.store";
 import { showAlert } from "@/utils/alert";
 import { formatMinutesDuration } from "@/utils/string";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page () {
   const { id } = useLocalSearchParams();
   const { currentTraining, fetchTrainingById } = useTrainingsStore();
   const [ showMenu, setShowMenu ] = useState( false );
+  const [ showRenameModal, setShowRenameModal ] = useState( false );
   const { handleDelete } = useTrainingActions();
 
   useEffect( () => {
@@ -22,13 +23,19 @@ export default function Page () {
       try {
         await fetchTrainingById( id as string );
       } catch {
-        showAlert.error( "Impossible de charger l'entrainement", () => router.push( "/weeks" ) );
+        showAlert.error( "Impossible de charger l'entraînement", () => router.push( "/weeks" ) );
       }
     };
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ id ] );
 
   const items: ActionMenuItem[] = [
+    {
+      icon: "type",
+      text: "Renommer",
+      onPress: () => handleRenameTraining(),
+    },
     {
       icon: "edit-2",
       text: "Modifier",
@@ -43,20 +50,32 @@ export default function Page () {
     },
   ];
 
-  const handleEditTraining = useCallback(() => {
-    if (currentTraining) {
-      router.push({
+  const handleRenameTraining = () => {
+    setShowRenameModal( true );
+  };
+
+  const handleEditTraining = useCallback( () => {
+    if ( currentTraining ) {
+      router.push( {
         pathname: "/training/edit-training-step-1",
         params: { trainingId: currentTraining.$id },
-      });
+      } );
     }
-  }, [currentTraining]);
+  }, [ currentTraining ] );
 
   const handleDeleteTraining = useCallback( async () => {
     if ( currentTraining ) {
       await handleDelete( { trainingId: currentTraining.$id, weekId: currentTraining.week } );
     }
-  }, [ handleDelete, currentTraining?.$id ] );
+  }, [ handleDelete, currentTraining ] );
+
+  if ( !currentTraining ) {
+    return (
+      <View className="h-full flex items-center justify-center">
+        <Text>L&apos;entraînement que vous essayez d&apos;atteindre n&apos;existe pas.</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">
@@ -107,8 +126,8 @@ export default function Page () {
                 </Text>
 
                 <View className="flex-col gap-2 mt-3">
-                  { currentTraining.series?.map( ( serie, index ) => (
-                    <SeriesCard serie={ serie } key={ index } />
+                  { currentTraining.series?.map( ( series, index ) => (
+                    <SeriesCard series={ series } key={ index } />
                   ) ) }
                 </View>
               </View>
@@ -121,6 +140,13 @@ export default function Page () {
         visible={ showMenu }
         onClose={ () => setShowMenu( false ) }
         items={ items }
+      />
+
+      <RenameTrainingModal
+        modalVisible={ showRenameModal }
+        setModalVisible={ setShowRenameModal }
+        trainingId={ currentTraining.$id }
+        actualTrainingName={ currentTraining.name }
       />
     </View>
   );

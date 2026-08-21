@@ -58,18 +58,20 @@ function UpdateGoalModal ( {
             onChangeText={ setNewProgress }
           />
 
-          <View className='flex-col gap-3 mt-6'>
-            <CustomButton
-              title='Mettre à jour'
-              onPress={ handleUpdateProgress }
-              variant='secondary'
-            />
-
+          <View className='flex-row gap-3 mt-6'>
             <CustomButton
               title='Annuler'
               onPress={ handleClose }
               isLoading={ isUpdating }
               variant='primary'
+              customStyles="flex-1 w-full"
+            />
+
+            <CustomButton
+              title='Mettre à jour'
+              onPress={ handleUpdateProgress }
+              variant='secondary'
+              customStyles="flex-1 w-full"
             />
           </View>
         </View>

@@ -3,8 +3,8 @@ import ExercisesSelectionModal from "@/components/exercises/ExercisesSelectionMo
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
-import { useGoalActions } from "@/hooks/actions/useGoalActions";
-import { useGoalLabels } from "@/hooks/useGoalLabels";
+import { useGoalActions } from "@/hooks/actions/goal/useGoalActions";
+import { useGoalLabels } from "@/hooks/goal/useGoalLabels";
 import { Exercise } from "@/types";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";

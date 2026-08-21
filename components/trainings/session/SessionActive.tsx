@@ -2,13 +2,12 @@ import { Series } from "@/types";
 import { Performances } from "@/types/session";
 import { useEffect, useState } from "react";
 import SessionRest from "./SessionRest";
-import SessionSerieActive from "./SessionSerieActive";
+import SessionSeriesActive from "./SessionSeriesActive";
 
 interface SessionActiveProps {
   series: Series[];
   currentIndex: number;
   onSeriesComplete: () => void;
-  performances: Performances;
   setPerformances: React.Dispatch<React.SetStateAction<Performances>>;
 }
 
@@ -18,7 +17,6 @@ export default function SessionActive ( {
   series,
   currentIndex,
   onSeriesComplete,
-  performances,
   setPerformances
 }: SessionActiveProps ) {
   const [ activeState, setActiveState ] = useState<ActiveState>( "series" );
@@ -39,13 +37,23 @@ export default function SessionActive ( {
       ...prev,
       [ seriesId ]: {
         ...( prev[ seriesId ] ?? {} ),
-        [ currentSet ]: achievedValue,
+        [ currentSet ]: {
+          exerciseName: currentSeries.exercise.name,
+          exerciseImage: currentSeries.exercise.image,
+          rpe: currentSeries.rpe,
+          weight: currentSeries.weight,
+          restTime: currentSeries.restTime,
+          order: currentSeries.order,
+          targetValue: currentSeries.targetValue,
+          achievedValue,
+        },
       },
     } ) );
 
     const isLastSeries = currentSeries.$id === series[ series.length - 1 ]?.$id;
+    const isLastSet = currentSet >= currentSeries.sets;
 
-    if ( isLastSeries ) {
+    if ( isLastSeries && isLastSet ) {
       onSeriesComplete();
     } else {
       setActiveState( "rest" );
@@ -63,17 +71,31 @@ export default function SessionActive ( {
     }
   };
 
+  const getNextExerciseName = () => {
+    const isLastSet = currentSet >= currentSeries.sets;
+
+    if ( !isLastSet ) {
+      // Encore des sets sur la série actuelle alors même exercice
+      return currentSeries.exercise.name;
+    }
+
+    // Série terminée alors nom de la série suivante
+    const nextSeries = series[ currentIndex + 1 ];
+    return nextSeries?.exercise.name ?? "";
+  };
+
   if ( activeState === "rest" ) {
     return (
       <SessionRest
         restTime={ currentSeries.restTime ?? 60 }
         onRestComplete={ handleRestComplete }
+        nextExercise={ getNextExerciseName() }
       />
     );
   }
 
   return (
-    <SessionSerieActive
+    <SessionSeriesActive
       series={ currentSeries }
       currentSet={ currentSet }
       totalSets={ currentSeries.sets }

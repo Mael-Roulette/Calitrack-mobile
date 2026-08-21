@@ -15,6 +15,9 @@ export default function SettingsLayout () {
         <Stack.Screen
           name='about'
         />
+        <Stack.Screen
+          name='usage-preferences/index'
+        />
       </Stack>
     </SafeAreaView>
   );

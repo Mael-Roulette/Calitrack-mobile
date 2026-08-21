@@ -66,6 +66,7 @@ export default {
     '@react-native-firebase/app',
     'expo-asset',
     'expo-web-browser',
+    'expo-audio',
   ],
   experiments: {
     typedRoutes: true,

@@ -1,6 +1,6 @@
 import { Session } from "@/types/session";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import PreviousSessionCard from "../trainings/session/PreviousSessionCard";
+import SessionCard from "../trainings/session/SessionCard";
 
 interface HistorySectionProps {
   sessions: Session[],
@@ -38,7 +38,7 @@ const HistorySection = ( { sessions, isLoading, error }: HistorySectionProps ) =
         <FlatList
           data={ sessions }
           keyExtractor={ ( item ) => item.$id }
-          renderItem={ ( { item } ) => <PreviousSessionCard session={ item } /> }
+          renderItem={ ( { item } ) => <SessionCard session={ item } /> }
           showsVerticalScrollIndicator={ false }
         />
       ) }

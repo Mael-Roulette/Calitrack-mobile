@@ -1,7 +1,7 @@
 import ExerciseForm from "@/components/exercises/ExerciseForm";
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
-import { useExerciseActions } from "@/hooks/actions/useExerciseActions";
+import { useExerciseActions } from "@/hooks/actions/training/useExerciseActions";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -9,7 +9,6 @@ import { validators } from "@/utils/validation";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditExercise () {
   const { id } = useLocalSearchParams();
@@ -26,14 +25,14 @@ export default function EditExercise () {
   } );
 
 
-  useEffect(() => {
+  useEffect( () => {
     const fetchExercise = async () => {
-      setLoading(true);
+      setLoading( true );
       try {
-        const response = await getExerciseById(id as string);
+        const response = await getExerciseById( id as string );
         const exerciseData = response as unknown as Exercise;
 
-        setExercise(exerciseData);
+        setExercise( exerciseData );
 
         setFormData( {
           name: exerciseData.name,
@@ -43,16 +42,16 @@ export default function EditExercise () {
           format: exerciseData.format,
           isCustom: exerciseData.isCustom,
         } );
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'exercice", error);
+      } catch ( error ) {
+        console.error( "Erreur lors de la récupération de l'exercice", error );
 
-        showAlert.error("Impossible de charger l'exercice",() => router.push("/exercises") );
+        showAlert.error( "Impossible de charger l'exercice",() => router.push( "/exercises" ) );
       } finally {
-        setLoading(false);
+        setLoading( false );
       }
     };
     fetchExercise();
-  }, [ id ]);
+  }, [ id ] );
 
   const submit = () => {
     if ( !exercise || !formData ) return;

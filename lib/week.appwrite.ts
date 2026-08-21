@@ -1,7 +1,8 @@
 import { LIMITS } from "@/constants/value";
-import { User } from "@/types";
+import { Training, User } from "@/types";
 import { ID, Permission, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
+import { getUserTrainings } from "./training.appwrite";
 
 /**
  * Permet de récupérer les semaines d'un utilisateur donné
@@ -104,11 +105,62 @@ export const duplicateWeek = async ( user: User, weekId: string ) => {
       ],
     } );
 
+    const trainings: Training[] = await getUserTrainings();
+    const sourceTrainings = trainings.filter( t => t.week === weekId );
+
+    for ( const training of sourceTrainings ) {
+      const newTraining = await tablesDB.createRow( {
+        databaseId: appwriteConfig.databaseId,
+        tableId: appwriteConfig.trainingCollectionId,
+        rowId: ID.unique(),
+        data: {
+          name: training.name,
+          duration: training.duration,
+          days: training.days ?? [],
+          note: training.note ?? null,
+          week: newWeek.$id,
+        },
+        permissions: [
+          Permission.read( Role.user( user.accountId ) ),
+          Permission.update( Role.user( user.accountId ) ),
+          Permission.delete( Role.user( user.accountId ) ),
+        ],
+      } );
+
+      // dupliquer les séries
+      const trainingSeries = training.series ?? [];
+
+      await Promise.all(
+        trainingSeries.map( ( s ) =>
+          tablesDB.createRow( {
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.seriesCollectionId,
+            rowId: ID.unique(),
+            data: {
+              exercise: typeof s.exercise === "string" ? s.exercise : s.exercise.$id,
+              sets: s.sets,
+              targetValue: s.targetValue,
+              rpe: s.rpe,
+              weight: s.weight,
+              restTime: s.restTime,
+              order: s.order,
+              training: newTraining.$id,
+            },
+            permissions: [
+              Permission.read( Role.user( user.accountId ) ),
+              Permission.update( Role.user( user.accountId ) ),
+              Permission.delete( Role.user( user.accountId ) ),
+            ],
+          } )
+        )
+      );
+    }
+
     return {
       newWeek,
       message: {
         title: "Semaine dupliquée",
-        body: "Ta semaine a été dupliquée avec succès.",
+        body: "Semaine + entraînements copiés avec succès.",
       },
     };
   } catch ( error ) {

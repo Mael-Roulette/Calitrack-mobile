@@ -1,5 +1,6 @@
 import { createWeek, deleteWeek, duplicateWeek, updateWeek } from "@/lib/week.appwrite";
 import { useAuthStore } from "@/store";
+import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Week } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -12,6 +13,7 @@ export default function useWeekActions () {
   const [ isDeleting, setIsDeleting ] = useState( false );
   const [ isDuplicating, setIsDuplicating ] = useState( false );
   const { addWeekStore, updateWeekStore, deleteWeekStore, weeks } = useWeeksStore();
+  const { refreshTrainings } = useTrainingsStore();
   const { user } = useAuthStore();
 
   /**
@@ -105,13 +107,15 @@ export default function useWeekActions () {
       if ( !response.newWeek ) { showAlert.error( response.message.body ); return; }
 
       await addWeekStore( response.newWeek as unknown as Week );
+      await refreshTrainings();
+
       return { success: true };
     } catch ( error ) {
       showAlert.error( error instanceof Error ? error.message : "Une erreur est survenue." );
     } finally {
       setIsDuplicating( false );
     }
-  }, [ addWeekStore, isDuplicating, user ] );
+  }, [ addWeekStore, isDuplicating, user, refreshTrainings ] );
 
   /**
    * Action pour supprimer une semaine

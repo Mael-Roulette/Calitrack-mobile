@@ -6,6 +6,7 @@ import useAuthStore from "./auth.store";
 interface WeekStoreProps {
   weeks: Week[];
   isLoading: boolean;
+  hasFetched: boolean,
   error: string | null;
 
   setWeeks: ( weeks: Week[] ) => void;
@@ -13,6 +14,7 @@ interface WeekStoreProps {
   setError: ( error: string | null ) => void;
 
   fetchUserWeeks: () => Promise<void>;
+  refreshWeeks: () => Promise<void>;
   addWeekStore: ( week: Week ) => Promise<void>;
   updateWeekStore: ( params: {
     weekId: string;
@@ -29,6 +31,7 @@ interface WeekStoreProps {
 const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
   weeks: [],
   isLoading: false,
+  hasFetched: false,
   error: null,
 
   setWeeks: ( weeks ) => set( { weeks, error: null } ),
@@ -37,14 +40,14 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
 
   fetchUserWeeks: async () => {
     const { isAuthenticated } = useAuthStore.getState();
-    const state = get();
+    const { isLoading, hasFetched } = get();
 
     if ( !isAuthenticated ) {
       set( { error: "Utilisateur non authentifié" } );
       return;
     }
 
-    if ( state.isLoading ) return;
+    if ( isLoading || hasFetched ) return;
 
     set( { isLoading: true, error: null } );
 
@@ -61,6 +64,12 @@ const useWeeksStore = create<WeekStoreProps>( ( set, get ) => ( {
     } finally {
       set( { isLoading: false } );
     }
+  },
+
+  // Force un nouveau fetch en réinitialisant hasFetched
+  refreshWeeks: async () => {
+    set( { hasFetched: false } );
+    await get().fetchUserWeeks();
   },
 
   addWeekStore: async ( week ) => {

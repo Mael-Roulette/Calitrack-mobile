@@ -1,3 +1,4 @@
+import { NotificationService } from "@/services/notification";
 import { useAuthStore } from "@/store";
 import { useFonts } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
@@ -20,7 +21,6 @@ Notifications.setNotificationHandler( {
 
 export default function RootLayout () {
   const { isAuthenticated, fetchAuthenticatedUser, isLoading } = useAuthStore();
-
   const [ fontsLoaded, error ] = useFonts( {
     "CalSans-Regular": require( "../assets/fonts/CalSans-Regular.ttf" ),
     "Sora-Regular": require( "../assets/fonts/Sora-Regular.ttf" ),
@@ -41,9 +41,10 @@ export default function RootLayout () {
       } )();
     }
 
+    // Demande la permission d'envoyer des notifications
+    NotificationService.getInstance().requestPermissions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [] );
-
 
   if ( !fontsLoaded || isLoading ) {
     return null;
@@ -55,7 +56,6 @@ export default function RootLayout () {
         <Stack.Protected guard={ !isAuthenticated }>
           <Stack.Screen name="(auth)" />
         </Stack.Protected>
-
         <Stack.Protected guard={ isAuthenticated }>
           <Stack.Screen name="(tabs)" />
         </Stack.Protected>

@@ -32,7 +32,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
 
       <CustomInput
         label="Description"
-        placeholder="Equilibre sur les mains"
+        placeholder="Équilibre sur les mains"
         value={ formData.description }
         multiline={ true }
         numberOfLines={ 5 }
