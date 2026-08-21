@@ -160,8 +160,7 @@ export default function useTrainingActions () {
           updateTrainingStore( trainingId, updatedTraining );
         }
 
-        const weekId = updatedTraining?.week;
-        router.replace( `/week/${weekId}/page` );
+        router.dismissTo( `/training/${trainingId}/page` );
 
         return { success: true };
       } catch ( error ) {
