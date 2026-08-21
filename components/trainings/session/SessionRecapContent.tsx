@@ -1,17 +1,19 @@
 import CustomInput from "@/components/ui/CustomInput";
 import { Performances, Training } from "@/types";
 import { formatSecondsDuration } from "@/utils/string";
+import { Dispatch, SetStateAction } from "react";
 import { Text, View } from "react-native";
 import PerformanceRecap from "../performances/PerformanceRecap";
 
 interface SessionContentProps {
   sessionDuration: number,
+  handleSetSessionNote: Dispatch<SetStateAction<string>>;
   training: Training,
   performances: Performances
 }
 
 
-const SessionContent = ( { sessionDuration, training, performances }: SessionContentProps ) => {
+const SessionContent = ( { sessionDuration, handleSetSessionNote, training, performances }: SessionContentProps ) => {
   return (
     <View>
       <View className="flex-row gap-1 items-center mb-4">
@@ -24,8 +26,8 @@ const SessionContent = ( { sessionDuration, training, performances }: SessionCon
         multiline
         numberOfLines={ 4 }
         customStyles="h-32 mb-4"
+        onChangeText={ handleSetSessionNote }
       />
-
 
       <Text className="title">Mes performances</Text>
       <View className="mt-2 mb-5">

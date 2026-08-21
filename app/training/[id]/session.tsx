@@ -33,6 +33,7 @@ export default function Session () {
   const [ currentSeriesIndex, setCurrentSeriesIndex ] = useState( 0 );
   const [ sessionStartTime, setSessionStartTime ] = useState<Date>();
   const [ sessionDuration, setSessionDuration ] = useState<number>();
+  const [ sessionNote, setSessionNote ] = useState<string>( "" );
   const [ performances, setPerformances ] = useState<Performances>( {} );
 
   // Récupération de l’entraînement
@@ -95,8 +96,8 @@ export default function Session () {
     const trainingWeek = getWeekById( currentTraining.week );
 
     const tempSession = {
-      duration: 0,
-      note: "",
+      duration: sessionDuration,
+      note: sessionNote,
       trainingId: currentTraining.$id,
       trainingName: currentTraining.name,
       weekName: trainingWeek?.name ?? ""
@@ -133,6 +134,7 @@ export default function Session () {
           <SessionRecap
             training={ currentTraining }
             sessionDuration={ sessionDuration }
+            handleSetSessionNote={ setSessionNote }
             performances={ performances }
           />
         </ScrollView>

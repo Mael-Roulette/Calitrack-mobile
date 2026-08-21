@@ -10,7 +10,7 @@ interface SessionStoreProps {
   error: string | null;
   setIsLoading: ( isLoading: boolean ) => void;
   setError: ( error: string | null ) => void;
-  fetchUserSessions: () => Promise<void>;
+  fetchUserSessions: ( skipCache?: boolean ) => Promise<void>;
   refreshSessions: () => Promise<void>;
   addSessionStore: ( session: Session ) => void;
   deleteSessionStore: ( sessionId: string ) => void;
@@ -26,7 +26,7 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
   setIsLoading: ( isLoading ) => set( { isLoading } ),
   setError: ( error ) => set( { error } ),
 
-  fetchUserSessions: async () => {
+  fetchUserSessions: async ( skipCache = false ) => {
     const { isAuthenticated } = useAuthStore.getState();
     const { isLoading, hasFetched } = get();
 
@@ -35,12 +35,12 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
       return;
     }
 
-    if ( isLoading || hasFetched ) return;
+    if ( isLoading || ( hasFetched && !skipCache ) ) return;
 
     set( { isLoading: true, error: null } );
 
     try {
-      const sessions = await getUserSessions();
+      const sessions = await getUserSessions( skipCache );
       set( { sessions: sessions ?? [], hasFetched: true, error: null } );
     } catch ( error ) {
       const errorMessage =
@@ -54,10 +54,10 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
     }
   },
 
-  // Force un nouveau fetch en réinitialisant hasFetched
+  // Force un nouveau fetch en bypassant le cache Appwrite (post-écriture)
   refreshSessions: async () => {
     set( { hasFetched: false } );
-    await get().fetchUserSessions();
+    await get().fetchUserSessions( true );
   },
 
   addSessionStore: ( session ) => {
