@@ -49,3 +49,11 @@ export const setValue = async (
     console.log( `Erreur écriture AsyncStorage (${key}):`, error );
   }
 };
+
+export const removeValue = async ( key: string ): Promise<void> => {
+  try {
+    await AsyncStorage.removeItem( key );
+  } catch ( error ) {
+    console.log( `Erreur suppression AsyncStorage (${key}):`, error );
+  }
+};
