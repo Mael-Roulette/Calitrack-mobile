@@ -1,34 +1,32 @@
 import { Series } from "@/types";
 import { Performances } from "@/types/session";
-import { useEffect, useState } from "react";
 import SessionRest from "./SessionRest";
 import SessionSeriesActive from "./SessionSeriesActive";
+
+export type ActiveState = "series" | "rest";
 
 interface SessionActiveProps {
   series: Series[];
   currentIndex: number;
+  currentSet: number;
+  activeState: ActiveState;
   onSeriesComplete: () => void;
   setPerformances: React.Dispatch<React.SetStateAction<Performances>>;
+  setCurrentSet: React.Dispatch<React.SetStateAction<number>>;
+  setActiveState: React.Dispatch<React.SetStateAction<ActiveState>>;
 }
-
-type ActiveState = "series" | "rest";
 
 export default function SessionActive ( {
   series,
   currentIndex,
+  currentSet,
+  activeState,
   onSeriesComplete,
-  setPerformances
+  setPerformances,
+  setCurrentSet,
+  setActiveState
 }: SessionActiveProps ) {
-  const [ activeState, setActiveState ] = useState<ActiveState>( "series" );
-  const [ currentSet, setCurrentSet ] = useState( 1 );
-
   const currentSeries = series[ currentIndex ];
-
-  // Reset quand on change de série
-  useEffect( () => {
-    setCurrentSet( 1 );
-    setActiveState( "series" );
-  }, [ currentIndex ] );
 
   const handleSetComplete = ( achievedValue: number ) => {
     const seriesId = currentSeries.$id;
@@ -75,11 +73,9 @@ export default function SessionActive ( {
     const isLastSet = currentSet >= currentSeries.sets;
 
     if ( !isLastSet ) {
-      // Encore des sets sur la série actuelle alors même exercice
       return currentSeries.exercise.name;
     }
 
-    // Série terminée alors nom de la série suivante
     const nextSeries = series[ currentIndex + 1 ];
     return nextSeries?.exercise.name ?? "";
   };

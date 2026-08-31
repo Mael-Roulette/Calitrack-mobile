@@ -5,5 +5,6 @@ export const STORAGE_KEYS = {
   THEME: "@app:theme",
   ONBOARDING_SEEN: "@app:onboardingSeen",
   REST_TIMER_STATE: "@app:restTimerState",
-  TRAINING_DONE: "@app:trainingDone"
+  TRAINING_DONE: "@app:trainingDone",
+  TRAINING_IN_PROGRESS: "@app:trainingInProgress"
 };

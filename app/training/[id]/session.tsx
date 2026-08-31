@@ -1,5 +1,5 @@
 import PageHeader from "@/components/headers/PageHeader";
-import SessionActive from "@/components/trainings/session/SessionActive";
+import SessionActive, { ActiveState } from "@/components/trainings/session/SessionActive";
 import SessionRecap from "@/components/trainings/session/SessionRecap";
 import SessionSummary from "@/components/trainings/session/SessionSummary";
 import CustomButton from "@/components/ui/CustomButton";
@@ -11,33 +11,47 @@ import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
 import { Performances } from "@/types/session";
 import { showAlert } from "@/utils/alert";
-import { getBoolean, setValue } from "@/utils/local-storage";
+import { getBoolean, getValue, removeValue, setValue } from "@/utils/local-storage";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-// Les différents états de la session
 type SessionState = "summary" | "active" | "completed";
 
+interface SessionProgress {
+  trainingId: string;
+  sessionState: SessionState;
+  currentSeriesIndex: number;
+  currentSet: number;
+  activeState: ActiveState;
+  sessionStartTime: string; // ISO
+  sessionDuration?: number;
+  sessionNote: string;
+  performances: Performances;
+}
+
 export default function Session () {
-  const { id } = useLocalSearchParams();
+  const { id, resume } = useLocalSearchParams();
   const { currentTraining, fetchTrainingById } = useTrainingsStore();
   const { getWeekById } = useWeeksStore();
   const { goals } = useGoalsStore();
   const { handleSave, isSaving } = useSessionActions();
   const [ keepAwakeEnabled, setKeepAwakeEnabled ] = useState<boolean>( false );
 
-  // États de la session
   const [ sessionState, setSessionState ] = useState<SessionState>( "summary" );
   const [ currentSeriesIndex, setCurrentSeriesIndex ] = useState( 0 );
+  const [ currentSet, setCurrentSet ] = useState( 1 );
+  const [ activeState, setActiveState ] = useState<ActiveState>( "series" );
   const [ sessionStartTime, setSessionStartTime ] = useState<Date>();
   const [ sessionDuration, setSessionDuration ] = useState<number>();
   const [ sessionNote, setSessionNote ] = useState<string>( "" );
   const [ performances, setPerformances ] = useState<Performances>( {} );
 
-  // Récupération de l’entraînement
-  // Si l'id n'est pas fourni on retourne directement à l'accueil
+  // Évite que l'effet de reset de série n'écrase une séance qu'on vient de restaurer
+  const justRestored = useRef( false );
+  const hasCheckedResume = useRef( false );
+
   useEffect( () => {
     if ( !id ) {
       router.push( "/(tabs)" );
@@ -49,6 +63,7 @@ export default function Session () {
     const load = async () => {
       try {
         await fetchTrainingById( id as string );
+        await checkForSavedProgress();
       } catch {
         showAlert.error( "Impossible de charger l'entraînement", () =>
           router.push( "/weeks" )
@@ -62,8 +77,74 @@ export default function Session () {
   useConditionalKeepAwake( keepAwakeEnabled );
 
   /**
-   * Permet de lancer la séance après le résumé de début
+   * Vérifie si une séance interrompue existe pour cet entraînement,
+   * et propose à l'utilisateur de la reprendre.
    */
+  const checkForSavedProgress = async () => {
+    if ( hasCheckedResume.current ) return;
+    hasCheckedResume.current = true;
+
+    if ( resume !== "true" ) return;
+
+    const raw = await getValue( STORAGE_KEYS.TRAINING_IN_PROGRESS );
+    if ( !raw ) return;
+
+    let saved: SessionProgress;
+    try {
+      saved = JSON.parse( raw );
+    } catch {
+      await removeValue( STORAGE_KEYS.TRAINING_IN_PROGRESS );
+      return;
+    }
+
+    if ( saved.trainingId !== id ) return;
+
+    justRestored.current = true;
+    setSessionState( saved.sessionState );
+    setCurrentSeriesIndex( saved.currentSeriesIndex );
+    setCurrentSet( saved.currentSet );
+    setActiveState( saved.activeState );
+    setSessionStartTime( new Date( saved.sessionStartTime ) );
+    setSessionDuration( saved.sessionDuration );
+    setSessionNote( saved.sessionNote );
+    setPerformances( saved.performances );
+  };
+
+  /**
+   * Sauvegarde continue de la progression tant que la séance
+   * est active ou en attente de validation finale.
+   */
+  useEffect( () => {
+    if ( !id || sessionState === "summary" ) return;
+
+    const progress: SessionProgress = {
+      trainingId: id as string,
+      sessionState,
+      currentSeriesIndex,
+      currentSet,
+      activeState,
+      sessionStartTime: ( sessionStartTime ?? new Date() ).toISOString(),
+      sessionDuration,
+      sessionNote,
+      performances,
+    };
+
+    setValue( STORAGE_KEYS.TRAINING_IN_PROGRESS, JSON.stringify( progress ) );
+  }, [ sessionState, currentSeriesIndex, currentSet, activeState, sessionStartTime, sessionDuration, sessionNote, performances, id ] );
+
+  /**
+   * Reset du set/état actif à chaque changement de série,
+   * sauf juste après une restauration.
+   */
+  useEffect( () => {
+    if ( justRestored.current ) {
+      justRestored.current = false;
+      return;
+    }
+    setCurrentSet( 1 );
+    setActiveState( "series" );
+  }, [ currentSeriesIndex ] );
+
   const handleSessionStart = () => {
     setSessionState( "active" );
     setSessionStartTime( new Date() );
@@ -73,15 +154,12 @@ export default function Session () {
   const handleSeriesComplete = () => {
     if ( !currentTraining?.series ) return;
 
-    // Passer à la série suivante
     if ( currentSeriesIndex < currentTraining.series.length - 1 ) {
       setCurrentSeriesIndex( prev => prev + 1 );
     } else {
-      // Toutes les séries sont terminées
       const endTime = new Date();
       const durationMs = endTime.getTime() - sessionStartTime!.getTime();
       setSessionDuration( Math.floor( durationMs / 1000 ) );
-
       setSessionState( "completed" );
     }
   };
@@ -89,7 +167,6 @@ export default function Session () {
   const handleSessionEnd = async () => {
     if ( !currentTraining || !sessionDuration ) return;
 
-    // Ajout de la date du jour dans la clé TRAINING_DONE
     const today = new Date().toISOString().split( "T" )[ 0 ];
     setValue( STORAGE_KEYS.TRAINING_DONE, today );
 
@@ -110,6 +187,9 @@ export default function Session () {
     } );
 
     if ( !result?.success ) return;
+
+    // Séance enregistrée : on supprime la sauvegarde locale
+    await removeValue( STORAGE_KEYS.TRAINING_IN_PROGRESS );
   };
 
   const renderCompleted = () => {
@@ -171,8 +251,12 @@ export default function Session () {
               <SessionActive
                 series={ currentTraining.series }
                 currentIndex={ currentSeriesIndex }
+                currentSet={ currentSet }
+                activeState={ activeState }
                 onSeriesComplete={ handleSeriesComplete }
                 setPerformances={ setPerformances }
+                setCurrentSet={ setCurrentSet }
+                setActiveState={ setActiveState }
               />
             </View>
           ) }
