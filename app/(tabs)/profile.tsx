@@ -4,6 +4,7 @@ import { useUserActions } from "@/hooks/actions/useUserActions";
 import { useMonthlySessionStats } from "@/hooks/time/useMonthSessions";
 import { createFile } from "@/lib/bucket.appwrite";
 import { useAuthStore } from "@/store";
+import { showAlert } from "@/utils/alert";
 import { formatSecondsDuration } from "@/utils/string";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -52,6 +53,7 @@ const ProfilePage = () => {
       await handleUpdateAvatar( createdFile.fileUrl );
     } catch ( err ) {
       console.error( "Upload failed:", err );
+      showAlert.error( "Impossible de mettre à jour l'avatar" );
     }
   };
 
