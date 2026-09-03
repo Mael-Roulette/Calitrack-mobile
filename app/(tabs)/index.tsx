@@ -69,6 +69,7 @@ export default function HomePage () {
                     <Text className="text-lg-custom text-background">L&apos;entraînement du jour a déjà été fait.</Text>
                   </View>
                 </PrimaryGradient>
+
               ) : (
                 <TrainingDay training={ todayTraining } />
               ) )}

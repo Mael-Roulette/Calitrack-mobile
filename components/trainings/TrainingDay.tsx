@@ -1,12 +1,12 @@
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import useWeeksStore from "@/store/week.store";
 import { Training } from "@/types";
-import { getValue } from "@/utils/local-storage";
+import { getValue, removeValue } from "@/utils/local-storage";
 import { formatMinutesDuration } from "@/utils/string";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import CustomButton from "../ui/CustomButton";
 import PrimaryGradient from "../ui/PrimaryGradient";
 
@@ -52,10 +52,42 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
   );
 
   const handleLaunchTraining = () => {
-    router.push( {
-      pathname: "/training/[id]/session",
-      params: { id: training.$id, resume: hasSavedProgress ? "true" : "false" },
-    } );
+    if ( !hasSavedProgress ) {
+      router.push( {
+        pathname: "/training/[id]/session",
+        params: { id: training.$id, resume: "false" },
+      } );
+      return;
+    }
+
+    Alert.alert(
+      "Séance en cours",
+      "Vous avez une séance en cours pour cet entraînement. Voulez-vous la reprendre ou recommencer à zéro ?",
+      [
+        {
+          text: "Recommencer",
+          style: "destructive",
+          onPress: async () => {
+            await removeValue( STORAGE_KEYS.TRAINING_IN_PROGRESS );
+            setHasSavedProgress( false );
+            router.push( {
+              pathname: "/training/[id]/session",
+              params: { id: training.$id, resume: "false" },
+            } );
+          },
+        },
+        {
+          text: "Reprendre",
+          onPress: () => {
+            router.push( {
+              pathname: "/training/[id]/session",
+              params: { id: training.$id, resume: "true" },
+            } );
+          },
+        },
+        { text: "Annuler", style: "cancel" },
+      ]
+    );
   };
 
   return (
