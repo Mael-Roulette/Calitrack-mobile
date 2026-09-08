@@ -3,7 +3,7 @@ import { getExerciseImage } from "@/constants/exercises";
 import { Series } from "@/types";
 import WheelPicker from "@quidone/react-native-wheel-picker";
 import WheelPickerFeedback from "@quidone/react-native-wheel-picker-feedback";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -32,6 +32,13 @@ export default function SessionSeriesActive ( {
   const target = series.targetValue;
 
   const [ selectedValue, setSelectedValue ] = useState( target );
+  const [ loadingSeries, setLoadingSeries ] = useState<boolean>( true );
+
+  useEffect( () => {
+    setTimeout( () => {
+      setLoadingSeries( false );
+    }, 1500 );
+  }, [] );
 
   const formatValue = ( v: number ) => {
     if ( !exercise ) return `${v}`;
@@ -155,6 +162,7 @@ export default function SessionSeriesActive ( {
           title={ currentSet === totalSets ? "Terminer la série" : "Set terminé" }
           onPress={ () => onSetComplete( selectedValue ) }
           variant="secondary"
+          isLoading={ loadingSeries }
         />
       </View>
     </View>
