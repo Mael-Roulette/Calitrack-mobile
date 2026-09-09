@@ -29,6 +29,7 @@ interface SessionRestProps {
 const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestProps ) => {
   const [ timeRemaining, setTimeRemaining ] = useState( restTime );
   const [ isRunning, setIsRunning ] = useState( true );
+  const [ tempTime, setTempTime ] = useState<number>( restTime );
 
   // Récupération et initialisation de l'audio
   const audioSource = require( "@/assets/audios/rest-timer-1.mp3" );
@@ -118,7 +119,18 @@ const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestPro
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [] );
 
-  const toggleTimer = () => setIsRunning( v => !v );
+  const toggleTimer = () => {
+    if ( !isRunning ) {
+      // Ref prend en valeur le temps mis en mémoire lors de la pause
+      endTimeRef.current = Date.now() + tempTime * 1000;
+    } else {
+      // Garder en mémoire le temps lorsqu'on met en pause
+      setTempTime( getRemainingSeconds( endTimeRef.current ) );
+    }
+
+    // Mettre en pause ou reprendre le timer
+    setIsRunning( !isRunning );
+  };
 
   const skipRest = () => {
     setTimeRemaining( 0 );
