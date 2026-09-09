@@ -65,6 +65,15 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
       "Vous avez une séance en cours pour cet entraînement. Voulez-vous la reprendre ou recommencer à zéro ?",
       [
         {
+          text: "Reprendre",
+          onPress: () => {
+            router.push( {
+              pathname: "/training/[id]/session",
+              params: { id: training.$id, resume: "true" },
+            } );
+          },
+        },
+        {
           text: "Recommencer",
           style: "destructive",
           onPress: async () => {
@@ -73,15 +82,6 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
             router.push( {
               pathname: "/training/[id]/session",
               params: { id: training.$id, resume: "false" },
-            } );
-          },
-        },
-        {
-          text: "Reprendre",
-          onPress: () => {
-            router.push( {
-              pathname: "/training/[id]/session",
-              params: { id: training.$id, resume: "true" },
             } );
           },
         },
