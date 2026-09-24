@@ -2,6 +2,7 @@ import ExerciseForm from "@/components/exercises/ExerciseForm";
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
 import { useExerciseActions } from "@/hooks/exercise/useExerciseActions";
+import { deleteFile, getFileIdFromUrl } from "@/lib/bucket.appwrite";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -18,6 +19,7 @@ export default function EditExercise () {
   const [ formData, setFormData ] = useState<Omit<Exercise, "$id">>( {
     name: "",
     description: "",
+    image: "",
     difficulty: "beginner",
     type: "pull",
     format: "hold",
@@ -37,6 +39,7 @@ export default function EditExercise () {
         setFormData( {
           name: exerciseData.name,
           description: exerciseData.description,
+          image: exerciseData.image,
           difficulty: exerciseData.difficulty,
           type: exerciseData.type,
           format: exerciseData.format,
@@ -53,7 +56,7 @@ export default function EditExercise () {
     fetchExercise();
   }, [ id ] );
 
-  const submit = () => {
+  const submit = async () => {
     if ( !exercise || !formData ) return;
 
     if ( !validators.exerciseName( formData.name ) ) {
@@ -68,10 +71,18 @@ export default function EditExercise () {
       return showAlert.error( "Veuillez remplir tous les champs requis" );
     }
 
+    if ( exercise.image &&  ( exercise.image !== formData.image ) ) {
+      const oldFileId = getFileIdFromUrl( exercise.image );
+      if ( oldFileId ) {
+        await deleteFile( oldFileId );
+      }
+    }
+
     handleUpdate( {
       $id: exercise.$id,
       name: formData.name.trim(),
       description: formData.description.trim(),
+      image: formData.image,
       difficulty: formData.difficulty,
       type: formData.type,
       format: formData.format,
