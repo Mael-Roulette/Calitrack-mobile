@@ -1,7 +1,8 @@
 import { LIMITS } from "@/constants/value";
-import { Exercise, User } from "@/types";
+import { Exercise, UpdateExerciseImage, User } from "@/types";
 import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
+import { deleteFile, getFileIdFromUrl } from "./bucket.appwrite";
 
 /**
  * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
@@ -78,14 +79,14 @@ export const getCustomExercises = async ( ): Promise<Models.Row[]> => {
  * @returns {Promise<Models.Row>} - L'exercice correspondant à l'ID
  * @throws {Error} - Si l'exercice n'a pas pu être récupéré
  */
-export const getExerciseById = async ( id: string ): Promise<Models.Row> => {
+export const getExerciseById = async ( id: string ): Promise<Exercise> => {
   try {
     const exercise = await tablesDB.getRow( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
       rowId: id
     } );
-    return exercise;
+    return exercise as unknown as Exercise;
   } catch ( error ) {
     console.error( "Erreur lors de la récupération de l'exercice:", error );
     throw new Error(
@@ -173,13 +174,40 @@ export const updateCustomExercise = async ( {
   }
 };
 
+export const updateCustomExerciseImage = async ( {
+  $id,
+  imageUri
+}: UpdateExerciseImage ) => {
+  try {
+    tablesDB.updateRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.exerciseCollectionId,
+      rowId: $id,
+      data: {
+        image: imageUri
+      }
+    } );
+  } catch ( e ) {
+    throw new Error( e as string );
+  }
+};
+
 /**
  * Permet de supprimer un exercice personnalisé
  * @param id id de l'exercice à supprimer
  */
 export const deleteCustomExercise = async ( id: string ) => {
-  // TODO: Régler problème de suppression
   try {
+    const exercise = await getExerciseById( id );
+
+    if ( exercise.image ) {
+      const imageId = getFileIdFromUrl( exercise.image );
+
+      if ( imageId ) {
+        await deleteFile( imageId );
+      }
+    }
+
     await tablesDB.deleteRow( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,

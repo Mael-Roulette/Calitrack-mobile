@@ -1,7 +1,7 @@
 import PageHeader from "@/components/headers/PageHeader";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { getExerciseImage } from "@/constants/exercises";
-import { useExerciseActions } from "@/hooks/actions/training/useExerciseActions";
+import { useExerciseActions } from "@/hooks/exercise/useExerciseActions";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -79,17 +79,35 @@ const ExerciseDetails = () => {
               rightIcon="ellipsis-vertical"
             />
             <ScrollView className="px-5 bg-background">
-              { !exercise!.isCustom &&
-                <View className='relative bg-secondary px-4 py-8 mt-5 rounded-md h-60 w-full items-center justify-center'>
+              { !exercise!.isCustom ?
+                <View className='relative bg-secondary mt-5 rounded-md h-60 w-full items-center justify-center overflow-hidden'>
                   { exercise!.image ? (
                     <Image
                       source={ getExerciseImage( exercise!.image ) }
-                      style={ { width: 250, height: 250 } }
+                      style={ {
+                        width: "100%",
+                        height: "100%",
+                      } }
                       contentFit="cover"
+                      contentPosition="center"
                     />
                   ) : (
                     <Text className="title-3 text-background text-center">Illustration en cours de création…</Text>
                   ) }
+                </View>
+                :
+                <View className='relative bg-secondary mt-5 rounded-md h-60 w-full items-center justify-center overflow-hidden'>
+                  { exercise!.image && (
+                    <Image
+                      source={ exercise!.image }
+                      style={ {
+                        width: "100%",
+                        height: "100%",
+                      } }
+                      contentFit="cover"
+                      contentPosition="center"
+                    />
+                  )}
                 </View>
               }
 

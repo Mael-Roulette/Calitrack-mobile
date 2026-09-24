@@ -11,12 +11,12 @@ import {
   View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useExerciseSearch } from "../../../hooks/exercise/useExerciseSearch";
+import { useModalAnimation } from "../../../hooks/exercise/useModalAnimation";
 import ExerciseSelectionItem from "../ExerciseSelectionItem";
 import { ModalActions } from "./ModalActions";
 import { ModalDragHandle } from "./ModalDragHandle";
 import { ModalHeader } from "./ModalHeader";
-import { useExerciseSearch } from "../../../hooks/exercise/useExerciseSearch";
-import { useModalAnimation } from "../../../hooks/exercise/useModalAnimation";
 
 interface ExerciseSelectionModalProps {
   isVisible: boolean;
@@ -111,6 +111,7 @@ export default function ExercisesSelectionModal ( {
                       image={ item.image }
                       name={ item.name }
                       difficulty={ item.difficulty }
+                      isCustom={ item.isCustom || false }
                       selectable
                       isSelected={ isExerciseSelected( item.$id ) }
                       onPress={ () => handleExerciseToggle( item ) }

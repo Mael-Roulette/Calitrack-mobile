@@ -51,6 +51,11 @@ export interface Exercise {
 	isCustom?: boolean;
 }
 
+export interface UpdateExerciseImage {
+  $id: string,
+  imageUri: string
+}
+
 export interface CreateSeriesInput {
   exerciseId: string;
   sets: number;
