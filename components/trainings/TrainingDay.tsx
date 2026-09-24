@@ -16,6 +16,7 @@ interface TrainingDayProps {
 
 interface SavedProgress {
   trainingId: string;
+  sessionStartTime: string; // ISO
 }
 
 export default function TrainingDay ( { training }: TrainingDayProps ) {
@@ -37,6 +38,8 @@ export default function TrainingDay ( { training }: TrainingDayProps ) {
 
         try {
           const saved: SavedProgress = JSON.parse( raw );
+          if ( new Date( saved.sessionStartTime ).getDay() !== new Date().getDay() ) return;
+
           if ( isActive ) setHasSavedProgress( saved.trainingId === training.$id );
         } catch {
           if ( isActive ) setHasSavedProgress( false );

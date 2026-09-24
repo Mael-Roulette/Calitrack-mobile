@@ -98,6 +98,7 @@ export default function Session () {
     }
 
     if ( saved.trainingId !== id ) return;
+    if ( new Date( saved.sessionStartTime ).getDay() !== new Date().getDay() ) return;
 
     justRestored.current = true;
     setSessionState( saved.sessionState );
