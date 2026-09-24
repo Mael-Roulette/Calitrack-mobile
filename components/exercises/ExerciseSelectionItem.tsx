@@ -9,6 +9,7 @@ const ExerciseSelectionItem = ( {
   image,
   name,
   difficulty,
+  isCustom,
   selectable = false,
   isSelected = false,
   onPress,
@@ -16,6 +17,7 @@ const ExerciseSelectionItem = ( {
 	image?: string,
 	name: string;
 	difficulty: string;
+  isCustom: boolean;
 	selectable?: boolean;
 	isSelected?: boolean;
 	onPress?: () => void;
@@ -33,12 +35,26 @@ const ExerciseSelectionItem = ( {
       disabled={ !onPress }
     >
       { image && (
-        <View className="h-16 aspect-square bg-secondary rounded-md p-1">
-          <Image
-            source={ getExerciseImage( image ) }
-            style={ { width: "100%", height: "100%" } }
-            contentFit="contain"
-          />
+        <View className="h-16 aspect-square bg-secondary rounded-md relative overflow-hidden">
+          { isCustom ?
+            <Image
+              source={ image }
+              style={ {
+                width: "100%",
+                height: "100%"
+              } }
+              contentFit="cover"
+            />
+            :
+            <Image
+              source={ getExerciseImage( image ) }
+              style={ {
+                width: "100%",
+                height: "100%"
+              } }
+              contentFit="cover"
+            />
+          }
         </View>
       ) }
       <View className='flex-1'>
