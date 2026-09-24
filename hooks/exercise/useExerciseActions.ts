@@ -1,4 +1,4 @@
-import { createCustomExercise, deleteCustomExercise, updateCustomExercise } from "@/lib/exercise.appwrite";
+import { createCustomExercise, deleteCustomExercise, updateCustomExercise, updateCustomExerciseImage } from "@/lib/exercise.appwrite";
 import { useAuthStore, useExercicesStore } from "@/store";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -8,6 +8,7 @@ import { useCallback, useState } from "react";
 export function useExerciseActions () {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
   const [ isUpdating, setIsUpdating ] = useState<boolean>( false );
+  const [ isUpdatingImage, setIsUpdatingImage ] = useState<boolean> ( false );
   const [ isDeleting, setIsDeleting ] = useState<boolean>( false );
   const { addExercise, updateExercise, removeExercise } = useExercicesStore();
   const { user } = useAuthStore();
@@ -164,12 +165,37 @@ export function useExerciseActions () {
     } );
   }, [ isDeleting, removeExercise, user ] );
 
+  const handleUpdateImage = useCallback(
+    async ( $id: string, imageUri: string ) => {
+      if ( isUpdatingImage ) return { success: false };
+
+      setIsUpdatingImage( true );
+
+      try {
+        await updateCustomExerciseImage( { $id, imageUri } );
+        await updateExercise( $id, { image: imageUri } );
+        return { success: true };
+      } catch ( error ) {
+        showAlert.error(
+          error instanceof Error ? error.message : "Une erreur est survenue."
+        );
+        return { success: false };
+      } finally {
+        setIsUpdatingImage( false );
+      }
+    },
+    [ isUpdatingImage, updateExercise ]
+  );
+
+
   return {
     handleCreate,
     handleUpdate,
+    handleUpdateImage,
     handleDelete,
     isSubmitting,
     isUpdating,
+    isUpdatingImage,
     isDeleting
   };
 }

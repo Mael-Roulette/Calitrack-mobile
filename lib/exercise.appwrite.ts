@@ -1,5 +1,5 @@
 import { LIMITS } from "@/constants/value";
-import { Exercise, User } from "@/types";
+import { Exercise, UpdateExerciseImage, User } from "@/types";
 import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 
@@ -168,6 +168,24 @@ export const updateCustomExercise = async ( {
     } );
 
     return customExercise;
+  } catch ( e ) {
+    throw new Error( e as string );
+  }
+};
+
+export const updateCustomExerciseImage = async ( {
+  $id,
+  imageUri
+}: UpdateExerciseImage ) => {
+  try {
+    tablesDB.updateRow( {
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.exerciseCollectionId,
+      rowId: $id,
+      data: {
+        image: imageUri
+      }
+    } );
   } catch ( e ) {
     throw new Error( e as string );
   }
