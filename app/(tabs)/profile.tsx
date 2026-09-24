@@ -49,7 +49,7 @@ const ProfilePage = () => {
     if ( result.canceled ) return;
 
     try {
-      const createdFile = await createFile( { image: result.assets[ 0 ], user: user! } );
+      const createdFile = await createFile( { image: result.assets[ 0 ], type: "profile", user: user! } );
       await handleUpdateAvatar( createdFile.fileUrl );
     } catch ( err ) {
       console.error( "Upload failed:", err );

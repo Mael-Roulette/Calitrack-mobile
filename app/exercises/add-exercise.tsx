@@ -1,7 +1,7 @@
 import ExerciseForm from "@/components/exercises/ExerciseForm";
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
-import { useExerciseActions } from "@/hooks/actions/training/useExerciseActions";
+import { useExerciseActions } from "@/hooks/exercise/useExerciseActions";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { validators } from "@/utils/validation";
@@ -13,6 +13,7 @@ export default function AddExercise () {
   const [ formData, setFormData ] = useState<Omit<Exercise, "$id">>( {
     name: "",
     description: "",
+    image: "",
     difficulty: "beginner",
     type: "pull",
     format: "hold",
@@ -39,6 +40,7 @@ export default function AddExercise () {
     handleCreate( {
       name: formData.name.trim(),
       description: formData.description.trim(),
+      image: formData.image,
       difficulty: formData.difficulty,
       type: formData.type,
       format: formData.format,

@@ -2,7 +2,6 @@ import PageHeader from "@/components/headers/PageHeader";
 import ActionsMenu, { ActionMenuItem } from "@/components/ui/ActionsMenu";
 import { getExerciseImage } from "@/constants/exercises";
 import { useExerciseActions } from "@/hooks/exercise/useExerciseActions";
-import { getFileUri } from "@/lib/bucket.appwrite";
 import { getExerciseById } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
 import { showAlert } from "@/utils/alert";
@@ -81,7 +80,7 @@ const ExerciseDetails = () => {
             />
             <ScrollView className="px-5 bg-background">
               { !exercise!.isCustom ?
-                <View className='relative bg-secondary px-4 py-8 mt-5 rounded-md h-60 w-full items-center justify-center'>
+                <View className='relative bg-secondary mt-5 rounded-md h-60 w-full items-center justify-center overflow-hidden'>
                   { exercise!.image ? (
                     <Image
                       source={ getExerciseImage( exercise!.image ) }
@@ -97,10 +96,10 @@ const ExerciseDetails = () => {
                   ) }
                 </View>
                 :
-                <View className='relative bg-secondary px-4 py-8 mt-5 rounded-md h-60 w-full items-center justify-center'>
+                <View className='relative bg-secondary mt-5 rounded-md h-60 w-full items-center justify-center overflow-hidden'>
                   { exercise!.image && (
                     <Image
-                      source={ { uri: getFileUri( exercise!.image ) } }
+                      source={ exercise!.image }
                       style={ {
                         width: "100%",
                         height: "100%",

@@ -5,6 +5,7 @@ import { ID, Permission, Role } from "react-native-appwrite";
 
 interface createFileProps {
   image: ImagePickerAsset,
+  type: "exercise" | "profile",
   user: User
 }
 
@@ -13,7 +14,7 @@ interface createFileProps {
  * @param - La fonction attend l'image au complet et l'utilisateur
  * @returns - La fonction retourne la response et l'url de visualisation de l'image
  */
-export const createFile = async ( { image, user }: createFileProps ) => {
+export const createFile = async ( { image, type, user }: createFileProps ) => {
   try {
     const response = await storage.createFile( {
       bucketId: appwriteConfig.bucketId,
@@ -24,6 +25,7 @@ export const createFile = async ( { image, user }: createFileProps ) => {
         size: image.fileSize ?? 0,
         uri: image.uri,
       },
+      folder: type === "exercise" ? "exos" : "profile",
       permissions: [
         Permission.read( Role.user( user.accountId ) ),
         Permission.read( Role.any() ),
@@ -64,3 +66,4 @@ export const getFileIdFromUrl = ( url: string ): string | null => {
   const match = url.match( /\/files\/([^/]+)\/(?:view|preview)/ );
   return match ? match[ 1 ] : null;
 };
+
