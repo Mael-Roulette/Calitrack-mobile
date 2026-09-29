@@ -30,7 +30,7 @@ const PrivacyPolicy = () => {
             Statut : Développeur indépendant (sans SIRET à ce jour)
           </Text>
           <Text className='text mb-2'>
-            Adresse e-mail de contact : calitrack@mael-roulette.fr
+            Adresse e-mail de contact : contact@calitrack.fr
           </Text>
           <Text className='text mb-4'>
             Adresse postale : Non communiquée (contact par email uniquement)
@@ -139,7 +139,7 @@ const PrivacyPolicy = () => {
           <Text className='text mb-2'>• Portabilité</Text>
           <Text className='text mb-2'>• Retrait de consentement</Text>
           <Text className='text mb-4'>
-            Pour exercer vos droits : calitrack@mael-roulette.fr
+            Pour exercer vos droits : contact@calitrack.fr
           </Text>
         </View>
 

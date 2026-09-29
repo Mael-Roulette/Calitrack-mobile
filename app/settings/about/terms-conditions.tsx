@@ -17,7 +17,7 @@ const TermsCondition = () => {
             Éditeur : Calitrack, développé par Maël Roulette
           </Text>
           <Text className='text mb-2'>
-            Contact : calitrack@mael-roulette.fr
+            Contact : contact@calitrack.fr
           </Text>
           <Text className='text mb-4'>Version : Bêta - 2026</Text>
         </View>
