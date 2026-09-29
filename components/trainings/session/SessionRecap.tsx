@@ -1,13 +1,12 @@
 import { Training } from "@/types";
 import { Performances } from "@/types/session";
-import { Dispatch, SetStateAction } from "react";
 import { Text, View } from "react-native";
 import SessionContent from "./SessionRecapContent";
 
 interface SessionRecapProps {
   training: Training;
   sessionDuration: number;
-  handleSetSessionNote: Dispatch<SetStateAction<string>>;
+  handleSetSessionNote: ( note: string ) => void;
   performances: Performances;
 }
 
