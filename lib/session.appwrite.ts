@@ -1,6 +1,6 @@
 import { Performances, Session, SessionInput } from "@/types/session";
 
-import { MAX_PAGE_SIZE, SESSIONS_TTL } from "@/constants/value";
+import { SESSIONS_TTL } from "@/constants/value";
 import { User } from "@/types";
 import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
@@ -57,41 +57,6 @@ export const saveSession = async (
 };
 
 /**
- * Récupère toutes les rows d'une table en paginant automatiquement
- * au-delà de la limite de 100 rows par requête Appwrite.
- */
-const fetchAllRows = async (
-  tableId: string,
-  baseQueries: string[],
-  ttl: number
-) => {
-  let allRows: any[] = [];
-  let lastId: string | undefined;
-
-  while ( true ) {
-    const queries = [ ...baseQueries, Query.limit( MAX_PAGE_SIZE ) ];
-    if ( lastId ) {
-      queries.push( Query.cursorAfter( lastId ), Query.orderDesc( "$createdAt" ) );
-    }
-
-    const response = await tablesDB.listRows( {
-      databaseId,
-      tableId,
-      queries,
-      ttl,
-    } );
-
-    allRows = [ ...allRows, ...response.rows ];
-
-    if ( response.rows.length < MAX_PAGE_SIZE ) break;
-
-    lastId = response.rows[ response.rows.length - 1 ].$id;
-  }
-
-  return allRows;
-};
-
-/**
  * Récupère toutes les sessions de l'utilisateur, enrichies avec
  * les performances liées à chaque session.
  *
@@ -107,32 +72,14 @@ export const getUserSessions = async (
   try {
     const ttl = skipCache ? 0 : SESSIONS_TTL;
 
-    const sessions = await fetchAllRows( sessionTable, [], ttl );
-
-    if ( sessions.length === 0 ) {
-      return [];
-    }
-
-    const sessionIds = sessions.map( ( s ) => s.$id );
-
-    const allPerformances = await fetchAllRows(
-      performanceTable,
-      [ Query.equal( "session", sessionIds ) ],
+    const sessionsResult = await tablesDB.listRows<Session>( {
+      databaseId,
+      tableId: sessionTable,
+      total: false,
       ttl
-    );
+    } );
 
-    const enrichedSessions = sessions.map( ( session ) => ( {
-      ...session,
-      $createdAt: new Date( session.$createdAt ),
-      performances: allPerformances
-        .filter( ( p ) => p.session === session.$id )
-        .sort( ( a, b ) => a.order - b.order || a.setNumber - b.setNumber ),
-    } ) );
-
-    // Du plus récent au plus ancien
-    return enrichedSessions.sort(
-      ( a, b ) => b.$createdAt.getTime() - a.$createdAt.getTime()
-    ) as unknown as Session[];
+    return sessionsResult.rows;
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des sessions:", error );
     throw new Error(
@@ -141,4 +88,15 @@ export const getUserSessions = async (
         : "Impossible de récupérer les sessions"
     );
   }
+};
+
+export const getSessionById = async ( sessionId: string ): Promise<Session> => {
+  const session = await tablesDB.getRow<Session>( {
+    databaseId,
+    tableId: sessionTable,
+    rowId: sessionId,
+    queries: [ Query.select( [ "*", "performance.*" ] ) ]
+  } );
+
+  return session;
 };
