@@ -84,14 +84,14 @@ export default function SeriesInputCard ( {
         <FieldWrapper label="Séries">
           <FieldInput
             value={ series.sets }
-            onChangeText={ ( v ) => onUpdate( index, "sets", Math.max( 1, parseInt( v ) || 1 ) ) }
+            onChangeValue={ ( v ) => onUpdate( index, "sets", v ) }
           />
         </FieldWrapper>
 
         <FieldWrapper label={ isHold ? "Durée (s)" : "Répétitions" }>
           <FieldInput
             value={ series.targetValue }
-            onChangeText={ ( v ) => onUpdate( index, "targetValue", Math.max( 1, parseInt( v ) || 1 ) ) }
+            onChangeValue={ ( v ) => onUpdate( index, "targetValue", v ) }
             suffix={ isHold ? "s" : undefined }
           />
         </FieldWrapper>
@@ -101,8 +101,8 @@ export default function SeriesInputCard ( {
         <FieldWrapper label="RPE">
           <FieldInput
             value={ series.rpe }
-            onChangeText={ ( v ) => {
-              const num = parseInt( v ) || 0;
+            onChangeValue={ ( v ) => {
+              const num = v;
               onUpdate( index, "rpe", Math.min( 10, Math.max( 0, num ) ) );
             } }
           />

@@ -1,7 +1,7 @@
 import { getUserWeeks } from "@/lib/week.appwrite";
 import { Week } from "@/types";
-import { create } from "zustand";
 import useAuthStore from "./auth.store";
+import { createGlobal as create } from "./index.store";
 
 interface WeekStoreProps {
   weeks: Week[];

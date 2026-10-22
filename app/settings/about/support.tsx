@@ -19,10 +19,10 @@ const Support = () => {
             <Text
               className='text-primary font-sregular underline'
               onPress={ () => {
-                Linking.openURL( "mailto:calitrack@mael-roulette.fr" );
+                Linking.openURL( "mailto:contact@calitrack.fr" );
               } }
             >
-              calitrack@mael-roulette.fr
+              contact@calitrack.fr
             </Text>
           </Text>
         </View>

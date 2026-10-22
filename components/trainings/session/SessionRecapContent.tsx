@@ -1,17 +1,15 @@
 import CustomInput from "@/components/ui/CustomInput";
 import { Performances, Training } from "@/types";
 import { formatSecondsDuration } from "@/utils/string";
-import { Dispatch, SetStateAction } from "react";
 import { Text, View } from "react-native";
 import PerformanceRecap from "../performances/PerformanceRecap";
 
 interface SessionContentProps {
-  sessionDuration: number,
-  handleSetSessionNote: Dispatch<SetStateAction<string>>;
-  training: Training,
-  performances: Performances
+  sessionDuration: number;
+  handleSetSessionNote: ( note: string ) => void;
+  training: Training;
+  performances: Performances;
 }
-
 
 const SessionContent = ( { sessionDuration, handleSetSessionNote, training, performances }: SessionContentProps ) => {
   return (

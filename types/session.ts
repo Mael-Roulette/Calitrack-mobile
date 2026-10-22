@@ -1,11 +1,10 @@
-export interface Session {
-    $id: string;
+import { Models } from "react-native-appwrite";
 
+export interface Session extends Models.Row {
     // Infos de la session
     duration: number; // en secondes
     note: string;
-    performances: Performance[];
-    $createdAt: Date;
+    performance: Performance[] | [];
 
     // Infos liées
     trainingId: string;
@@ -13,7 +12,16 @@ export interface Session {
     weekName: string;
 }
 
-export type SessionInput = Omit<Session, "$id" | "$createdAt" | "performances">;
+export interface SessionInput {
+  // Infos de la session
+  duration: number; // en secondes
+  note: string;
+
+  // Infos liées
+  trainingId: string;
+  trainingName: string;
+  weekName: string;
+}
 
 export interface Performance {
   $id: string;

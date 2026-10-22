@@ -1,6 +1,6 @@
 import { logout as appwriteLogout, getCurrentUser } from "@/lib/user.appwrite";
 import { User } from "@/types";
-import { create } from "zustand";
+import { createGlobal as create } from "./index.store";
 
 type AuthState = {
 	isAuthenticated: boolean;

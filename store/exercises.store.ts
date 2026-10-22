@@ -1,6 +1,6 @@
 import { getAllExercises } from "@/lib/exercise.appwrite";
 import { Exercise } from "@/types";
-import { create } from "zustand";
+import { createGlobal as create } from "./index.store";
 
 interface ExercisesStoreProps {
 	exercices: Exercise[];

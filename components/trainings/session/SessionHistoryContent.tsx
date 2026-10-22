@@ -5,7 +5,7 @@ import PerformanceHistory from "../performances/PerformanceHistory";
 
 const SessionHistoryContent = ( { session }: { session: Session } ) => {
   // Regroupe les performances par exercice (via `order`) pour reconstituer les séries
-  const grouped = session.performances.reduce<Record<number, Performance[]>>(
+  const grouped = session.performance.reduce<Record<number, Performance[]>>(
     ( acc, performance ) => {
       if ( !acc[ performance.order ] ) {
         acc[ performance.order ] = [];

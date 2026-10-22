@@ -22,7 +22,7 @@ const LegalNotices = () => {
           </Text>
           <Text className='mt-2 text'>• Éditeur : Maël Roulette</Text>
           <Text className='mt-2 text'>
-            • Contact : calitrack@mael-roulette.fr
+            • Contact : contact@calitrack.fr
           </Text>
           <Text className='mt-2 text'>• Statut : Développeur individuel</Text>
           <Text className='mt-2 text'>
@@ -98,7 +98,7 @@ const LegalNotices = () => {
             Vous disposez d&apos;un droit d&apos;accès, de rectification, de
             suppression, de portabilité, ainsi que du droit de retirer votre
             consentement. Pour exercer vos droits, contactez&nbsp;
-            <Text className='text underline'>calitrack@mael-roulette.fr</Text>.
+            <Text className='text underline'>contact@calitrack.fr</Text>.
           </Text>
 
           <Text className='title-3 mt-4'>Version bêta</Text>
@@ -113,7 +113,7 @@ const LegalNotices = () => {
           <Text className='title-2'>Contact</Text>
           <Text className='text mt-2'>
             Pour toute question relative à l&apos;application ou à vos données :{ " " }
-            <Text className='underline'>calitrack@mael-roulette.fr</Text>
+            <Text className='underline'>contact@calitrack.fr</Text>
           </Text>
         </View>
       </ScrollView>

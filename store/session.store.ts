@@ -1,7 +1,7 @@
 import { getUserSessions } from "@/lib/session.appwrite";
 import { Session } from "@/types/session";
-import { create } from "zustand";
 import { useAuthStore } from ".";
+import { createGlobal as create } from "./index.store";
 
 interface SessionStoreProps {
   sessions: Session[];
@@ -14,7 +14,6 @@ interface SessionStoreProps {
   refreshSessions: () => Promise<void>;
   addSessionStore: ( session: Session ) => void;
   deleteSessionStore: ( sessionId: string ) => void;
-  getSessionById: ( sessionId: string ) => Session | undefined;
 }
 
 const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
@@ -70,11 +69,7 @@ const useSessionsStore = create<SessionStoreProps>( ( set, get ) => ( {
     set( ( state ) => ( {
       sessions: state.sessions.filter( ( s ) => s.$id !== sessionId ),
     } ) );
-  },
-
-  getSessionById: ( sessionId ) => {
-    return get().sessions.find( ( s ) => s.$id === sessionId );
-  },
+  }
 } ) );
 
 export default useSessionsStore;

@@ -1,6 +1,6 @@
 import { getUserTrainings } from "@/lib/training.appwrite";
 import { Training } from "@/types";
-import { create } from "zustand";
+import { createGlobal as create } from "./index.store";
 import { useAuthStore } from ".";
 
 interface TrainingStoreProps {

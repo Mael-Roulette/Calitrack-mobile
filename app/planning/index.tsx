@@ -5,7 +5,7 @@ import useSessionsStore from "@/store/session.store";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-const PlanningTabs = [ "Historique", "Calendrier" ] as const;
+const PlanningTabs = [ "Calendrier", "Historique" ] as const;
 type PlanningTab = ( typeof PlanningTabs )[number];
 
 const PlanningScreen = () => {
@@ -30,13 +30,13 @@ const PlanningScreen = () => {
       />
       <View className="flex-1 bg-background">
         {activeTab === PlanningTabs[ 0 ] ? (
+          <CalendarSection />
+        ) : (
           <HistorySection
             sessions={ sessions }
             isLoading={ isLoadingSession }
             error={ errorLoadingSession ?? undefined }
           />
-        ) : (
-          <CalendarSection />
         )}
       </View>
     </View>
