@@ -32,6 +32,11 @@ export default function Page () {
 
   const items: ActionMenuItem[] = [
     {
+      icon: "play",
+      text: "Lancer",
+      onPress: () => handleLaunchTraining(),
+    },
+    {
       icon: "type",
       text: "Renommer",
       onPress: () => handleRenameTraining(),
@@ -49,6 +54,13 @@ export default function Page () {
       textColor: "#ef4444",
     },
   ];
+
+  const handleLaunchTraining = () => {
+    router.push( {
+      pathname: "/training/[id]/session",
+      params: { id: id.toString(), resume: "false" },
+    } );
+  };
 
   const handleRenameTraining = () => {
     setShowRenameModal( true );
