@@ -1,6 +1,6 @@
 // store/notification.store.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { create } from "zustand";
+import { createGlobal as create } from "./index.store";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { NotificationPreferences, NotificationService } from "../services/notification";
 

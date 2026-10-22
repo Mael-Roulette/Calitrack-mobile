@@ -1,9 +1,9 @@
 import { getGoalsFromUser } from "@/lib/goal.appwrite";
 import { Goal } from "@/types";
-import { create } from "zustand";
 import useAuthStore from "./auth.store";
+import { createGlobal as create } from "./index.store";
 
-interface GoalStoreeProps {
+interface GoalStoreProps {
 	goals: Goal[];
 	isLoading: boolean;
 	error: string | null;
@@ -28,7 +28,7 @@ interface GoalStoreeProps {
 	clearGoals: () => void;
 }
 
-const useGoalsStore = create<GoalStoreeProps>( ( set, get ) => ( {
+const useGoalsStore = create<GoalStoreProps>( ( set, get ) => ( {
   goals: [],
   isLoading: false,
   error: null,

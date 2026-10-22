@@ -1,6 +1,6 @@
 import { getUserSessions } from "@/lib/session.appwrite";
 import { Session } from "@/types/session";
-import { create } from "zustand";
+import { createGlobal as create } from "./index.store";
 import { useAuthStore } from ".";
 
 interface SessionStoreProps {

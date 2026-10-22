@@ -8,6 +8,7 @@ import {
   tablesDB
 } from "./appwrite";
 import { deleteFile, getFileIdFromUrl } from "./bucket.appwrite";
+import { resetAllStores } from "@/store/index.store";
 
 /**
  * Permet de créer un nouvel utilisateur
@@ -165,6 +166,7 @@ export const deleteAccount = async () => {
 export const logout = async (): Promise<void> => {
   try {
     await account.deleteSession( { sessionId: "current" } );
+    resetAllStores();
   } catch ( e ) {
     throw new Error( ( e as string ) || "Failed to logout" );
   }
