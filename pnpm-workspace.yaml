@@ -2,3 +2,5 @@ allowBuilds:
   '@firebase/util': false
   protobufjs: false
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  - expo-asset@12.0.14

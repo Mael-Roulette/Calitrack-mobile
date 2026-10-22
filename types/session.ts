@@ -12,7 +12,16 @@ export interface Session extends Models.Row {
     weekName: string;
 }
 
-export type SessionInput = Omit<Session, "$id" | "$createdAt" | "performances">;
+export interface SessionInput {
+  // Infos de la session
+  duration: number; // en secondes
+  note: string;
+
+  // Infos liées
+  trainingId: string;
+  trainingName: string;
+  weekName: string;
+}
 
 export interface Performance {
   $id: string;
