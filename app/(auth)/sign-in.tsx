@@ -11,6 +11,7 @@ import { Alert, Text, View } from "react-native";
 const SignIn = () => {
   const [ isSubmitting, setIsSubmitting ] = useState( false );
   const [ form, setForm ] = useState( { email: "", password: "" } );
+  const [ errorMessage, setErrorMessage ] = useState( "" );
   const { fetchAuthenticatedUser } = useAuthStore();
 
   const submit = async () => {
@@ -34,8 +35,8 @@ const SignIn = () => {
       await fetchAuthenticatedUser();
 
       router.replace( "/" );
-    } catch ( error: any ) {
-      Alert.alert( "Error", error.message );
+    } catch {
+      setErrorMessage( "Email ou mot de passe incorrect." );
     } finally {
       setIsSubmitting( false );
     }
@@ -64,6 +65,8 @@ const SignIn = () => {
               setForm( ( prev ) => ( { ...prev, password: text } ) )
             }
           />
+
+          <Text className="w-full text-center text-lg text-red-600">{ errorMessage }</Text>
 
           <CustomButton
             title="Connexion"

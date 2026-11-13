@@ -18,7 +18,7 @@ const AuthLayout = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior="padding"
+      behavior="position"
       style={ { backgroundColor: "#FFF9F7" } }
     >
       <ScrollView
