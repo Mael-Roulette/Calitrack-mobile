@@ -23,6 +23,10 @@ export default {
   scheme: 'calitrackts',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: 'com.mael-rltt.calitrackts',
+  },
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/images/adaptive-icon.png',
