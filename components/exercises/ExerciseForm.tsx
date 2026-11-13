@@ -43,7 +43,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
 
   return (
     <ScrollView
-      className='mt-2 px-5'
+      className='mt-2 px-5 pb-8'
       contentContainerStyle={ { display: "flex", flexDirection: "column", gap: 15 } }
       showsVerticalScrollIndicator={ false }
     >
