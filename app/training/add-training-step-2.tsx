@@ -20,7 +20,8 @@ import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-nativ
 
 const DEFAULT_SERIES_VALUES = {
   sets: 3,
-  targetValue: 8,
+  targetValue: 0,
+  isMax: false,
   rpe: 7,
   weight: 0,
   restMinutes: 2,
@@ -74,10 +75,10 @@ export default function AddTrainingStep2 () {
     setSeriesList( ( prev ) => [ ...prev, newSeries ] );
   };
 
-  const handleUpdateSeries = (
+  const handleUpdateSeries = <K extends keyof SeriesForm>(
     index: number,
-    field: keyof SeriesForm,
-    value: number | null
+    field: K,
+    value: SeriesForm[K]
   ) => {
     setSeriesList( ( prev ) =>
       prev.map( ( s, i ) => ( i === index ? { ...s, [ field ]: value } : s ) )
@@ -108,6 +109,7 @@ export default function AddTrainingStep2 () {
       exerciseId: s.exerciseId,
       sets: s.sets,
       targetValue: s.targetValue,
+      isMax: s.isMax,
       rpe: s.rpe,
       weight: s.weight as number,
       restTime: s.restMinutes * 60 + s.restSeconds,

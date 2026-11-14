@@ -25,6 +25,7 @@ export interface SeriesRaw {
   order: number;
   training: string;
   targetValue: number;
+  isMax: boolean;
 }
 
 
@@ -38,6 +39,7 @@ export interface Series {
   order: number;
   training: string;
   targetValue: number;
+  isMax: boolean;
 }
 
 export interface Exercise {
@@ -59,7 +61,8 @@ export interface UpdateExerciseImage {
 export interface CreateSeriesInput {
   exerciseId: string;
   sets: number;
-  targetValue: number;
+  targetValue?: number;
+  isMax: boolean;
   rpe: number;
   weight: number | null;
   restTime: number; // en secondes

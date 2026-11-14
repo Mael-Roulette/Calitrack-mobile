@@ -109,7 +109,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
         activeOpacity={ isInProgress ? 0.7 : 1 }
         disabled={ !isInProgress }
       >
-        <View className="w-full px-5 py-4 mb-4 border-[1px] rounded-xl border-secondary">
+        <View className="w-full px-5 py-4 mb-4 border-[1px] rounded-xl border-secondary bg-secondary-50">
           <View className="flex-row justify-between items-start gap-4">
             <View className="min-w-0 flex-row items-center gap-5 flex-1">
               <Text
@@ -119,7 +119,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
               >
                 {goal.exercise.name}
               </Text>
-              <Text className="text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary">
+              <Text className="text-xs font-sregular px-3 py-2 rounded-full border-[1px] border-secondary text-secondary bg-background">
                 {isFinished ? "Validé" : "En cours"}
               </Text>
             </View>

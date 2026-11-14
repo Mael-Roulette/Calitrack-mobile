@@ -14,7 +14,10 @@ module.exports = {
           50: "#AEC4E7",
           100: "#617188"
         },
-        secondary: "#FC7942",
+        secondary: {
+          DEFAULT: "#FC7942",
+          50: "#FEE7DD"
+        },
         background: "#FFF9F7",
         green: "#34A92F",
       },

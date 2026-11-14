@@ -26,6 +26,7 @@ const DEFAULT_SERIES_VALUES = {
   weight: 0,
   restMinutes: 2,
   restSeconds: 30,
+  isMax: false
 };
 
 export default function EditTrainingStep2 () {
@@ -57,6 +58,7 @@ export default function EditTrainingStep2 () {
           exercise: s.exercise,
           sets: s.sets,
           targetValue: s.targetValue,
+          isMax: s.isMax,
           rpe: s.rpe,
           weight: s.weight,
           restMinutes,
@@ -87,7 +89,11 @@ export default function EditTrainingStep2 () {
     setSeriesList( ( prev ) => [ ...prev, newSeries ] );
   };
 
-  const handleUpdateSeries = ( index: number, field: keyof SeriesForm, value: number | null ) => {
+  const handleUpdateSeries = <K extends keyof SeriesForm>(
+    index: number,
+    field: K,
+    value: SeriesForm[K]
+  ) => {
     setSeriesList( ( prev ) =>
       prev.map( ( s, i ) => ( i === index ? { ...s, [ field ]: value } : s ) )
     );
@@ -115,6 +121,7 @@ export default function EditTrainingStep2 () {
       exerciseId: s.exerciseId,
       sets: s.sets,
       targetValue: s.targetValue,
+      isMax: s.isMax,
       rpe: s.rpe,
       weight: s.weight as number,
       restTime: s.restMinutes * 60 + s.restSeconds,

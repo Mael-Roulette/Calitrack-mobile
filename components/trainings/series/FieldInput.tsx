@@ -45,7 +45,7 @@ export default function FieldInput ( {
 
   return (
     <View
-      className="border border-secondary rounded-lg flex-row items-center justify-center w-full"
+      className="relative border border-secondary bg-secondary-50 rounded-lg flex-row items-center justify-center w-full"
       style={ { height: 44 } }
     >
       <TextInput
@@ -57,7 +57,7 @@ export default function FieldInput ( {
         selectTextOnFocus
       />
       { suffix && (
-        <Text className="text-primary-100 font-sregular text-xs mr-2">
+        <Text className="absolute right-2 text-primary-100 font-sregular mr-2">
           { suffix }
         </Text>
       ) }
