@@ -24,8 +24,12 @@ export default {
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: 'com.mael-rltt.calitrackts',
+    infoPlist: {
+      NSPhotoLibraryAddUsageDescription: "This app requires access to your photo library if you wish to submit photos and videos to assist with your service request, or to submit a profile picture, if you choose to do so.",
+      NSPhotoLibraryUsageDescription: "This app requires access to your photo library if you wish to submit photos and videos to assist with your service request, or to submit a profile picture, if you choose to do so."
+    }
   },
   android: {
     adaptiveIcon: {
@@ -35,6 +39,10 @@ export default {
     edgeToEdgeEnabled: true,
     package: bundleId,
     googleServicesFile: './google-services.json',
+    blockedPermissions: [
+      'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+      'android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING',
+    ],
   },
   web: {
     bundler: 'metro',

@@ -102,6 +102,7 @@ export default function AddTrainingStep1 () {
               } }
               showSeconds={ false }
               minutesInterval={ 5 }
+              customStyles="items-start px-4"
             />
           </View>
           {errors.duration && (

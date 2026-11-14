@@ -111,6 +111,7 @@ export const createTraining = async (
             exercise: s.exerciseId,
             sets: s.sets,
             targetValue: s.targetValue,
+            isMax: s.isMax,
             rpe: s.rpe,
             weight: s.weight,
             restTime: s.restTime,

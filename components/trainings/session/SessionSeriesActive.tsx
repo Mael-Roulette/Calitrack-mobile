@@ -3,7 +3,7 @@ import { getExerciseImage } from "@/constants/exercises";
 import { Series } from "@/types";
 import WheelPicker from "@quidone/react-native-wheel-picker";
 import WheelPickerFeedback from "@quidone/react-native-wheel-picker-feedback";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -29,9 +29,10 @@ export default function SessionSeriesActive ( {
   onSetComplete,
 }: SessionSeriesActiveProps ) {
   const exercise = typeof series.exercise === "string" ? null : series.exercise;
-  const target = series.targetValue;
+  const isHold = exercise?.format === "hold";
+  const initialValue = series.isMax ? ( series.targetValue ?? 0 ) : series.targetValue;
 
-  const [ selectedValue, setSelectedValue ] = useState( target );
+  const [ selectedValue, setSelectedValue ] = useState( initialValue );
   const [ loadingSeries, setLoadingSeries ] = useState<boolean>( true );
 
   useEffect( () => {
@@ -40,15 +41,19 @@ export default function SessionSeriesActive ( {
     }, 1500 );
   }, [] );
 
-  const formatValue = ( v: number ) => {
-    if ( !exercise ) return `${v}`;
-    return exercise.format === "hold" ? `${v}s` : `${v}`;
-  };
+  const objectiveLabel = series.isMax
+    ? ( isHold ? "Max hold" : "Max reps" )
+    : isHold
+      ? `${series.targetValue}s`
+      : `${series.targetValue}`;
 
-  const data = [ ...Array( 100 ).keys() ].map( ( index ) => ( {
-    value: index,
-    label: exercise?.format === "hold" ? `${index}s` : `${index}rep`,
-  } ) );
+  const data = useMemo( () => {
+    const length = Math.max( 100, initialValue + 1 );
+    return [ ...Array( length ).keys() ].map( ( index ) => ( {
+      value: index,
+      label: isHold ? `${index}s` : `${index}rep`,
+    } ) );
+  }, [ isHold, initialValue ] );
 
   return (
     <View className="flex-1 bg-background">
@@ -88,7 +93,7 @@ export default function SessionSeriesActive ( {
             <View className="flex-1 items-center">
               <Text className="label-text text-center mb-1">Objectif</Text>
               <View className="w-full py-2 rounded-md border border-secondary items-center">
-                <Text className="title-3">{formatValue( target )}</Text>
+                <Text className="title-3">{ objectiveLabel }</Text>
               </View>
             </View>
             <View className="flex-1 items-center">

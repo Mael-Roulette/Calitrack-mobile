@@ -16,17 +16,18 @@ interface TimePickerProps {
 const CustomTimePicker = ( { label, value, showSeconds = true, showHours = true, minutesInterval = 1, onChange, customStyles }: TimePickerProps ) => {
   const [ visible, setVisible ] = useState( false );
   return (
-    <View>
+    <View className="w-full">
       { !!label && (
         <Text className="label-text mb-2">{ label }</Text>
       ) }
 
       <Pressable
         onPress={ () => setVisible( true ) }
-        className={ `custom-input py-3 ${customStyles}` }
+        className={ `border rounded-lg justify-center w-full ${customStyles ?? "border-secondary bg-secondary-50 items-center"}` }
+        style={ { height: 44 } }
       >
-        <Text className="text-lg text-primary w-fit">
-          { formatSecondsDuration( value, showHours ) }
+        <Text className="text-lg text-primary" numberOfLines={ 1 }>
+          {formatSecondsDuration( value, showHours )}
         </Text>
       </Pressable>
 

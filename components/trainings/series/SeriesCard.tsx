@@ -28,17 +28,26 @@ export default function seriesCard ( { series }: { series: Series } ) {
 
         <View className="flex-1">
           <Text
-            className="font-sregular text-primary text-base"
+            className="font-sregular text-primary text-lg"
             numberOfLines={ 1 }
           >
             { series.exercise.name }
           </Text>
-          <Text className="label-text text-sm">
-            { series.sets }x{ " " }
-            { isHold
-              ? `${ series.targetValue } seconde(s)`
-              : `${ series.targetValue } répétition(s)` }
-          </Text>
+          { series.isMax ? (
+            <Text className="label-text">
+              { series.sets }x{ " " }
+              { isHold
+                ? "Max hold"
+                : "Max reps" }
+            </Text>
+          ) : (
+            <Text className="label-text">
+              { series.sets }x{ " " }
+              { isHold
+                ? `${ series.targetValue } seconde(s)`
+                : `${ series.targetValue } répétition(s)` }
+            </Text>
+          )}
         </View>
       </View>
 

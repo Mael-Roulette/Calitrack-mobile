@@ -31,7 +31,7 @@ export default function WeightInput ( {
 
   return (
     <View
-      className={ `border rounded-lg flex-row items-center justify-center w-full ${ isEmpty ? "border-red-400" : "border-secondary" }` }
+      className={ `relative border rounded-lg flex-row items-center justify-center w-full bg-secondary-50 ${ isEmpty ? "border-red-400" : "border-secondary" }` }
       style={ { height: 44 } }
     >
       <TextInput
@@ -43,7 +43,7 @@ export default function WeightInput ( {
         placeholderTextColor="#9ca3af"
         selectTextOnFocus
       />
-      <Text className="text-primary-100 font-sregular text-xs mr-2">kg</Text>
+      <Text className="text-primary-100 font-sregular mr-2 absolute right-1">kg</Text>
     </View>
   );
 }

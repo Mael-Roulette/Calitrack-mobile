@@ -2,8 +2,10 @@ import CustomTimePicker from "@/components/ui/CustomTimePicker";
 import { getExerciseImage } from "@/constants/exercises";
 import { Exercise } from "@/types";
 import { Feather } from "@expo/vector-icons";
+import { Checkbox } from "expo-checkbox";
 import { Image } from "expo-image";
 import { Text, TouchableOpacity, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 import FieldInput from "./FieldInput";
 import FieldWrapper from "./FieldWrapper";
 import WeightInput from "./WeightInput";
@@ -13,6 +15,7 @@ export type SeriesForm = {
   exercise: Exercise;
   sets: number;
   targetValue: number;
+  isMax: boolean;
   rpe: number;
   weight: number | null;
   restMinutes: number;
@@ -23,7 +26,11 @@ export type SeriesForm = {
 interface SeriesCardProps {
   series: SeriesForm;
   index: number;
-  onUpdate: ( index: number, field: keyof SeriesForm, value: number ) => void;
+  onUpdate: <K extends keyof SeriesForm>(
+    index: number,
+    field: K,
+    value: SeriesForm[K]
+  ) => void;
   onDelete: ( index: number ) => void;
 }
 
@@ -80,7 +87,7 @@ export default function SeriesInputCard ( {
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row gap-2 mb-4">
+      <View className="flex-row flex-shrink-0 gap-2 mb-4">
         <FieldWrapper label="Séries">
           <FieldInput
             value={ series.sets }
@@ -88,15 +95,42 @@ export default function SeriesInputCard ( {
           />
         </FieldWrapper>
 
-        <FieldWrapper label={ isHold ? "Durée (s)" : "Répétitions" }>
-          <FieldInput
-            value={ series.targetValue }
-            onChangeValue={ ( v ) => onUpdate( index, "targetValue", v ) }
-            suffix={ isHold ? "s" : undefined }
-          />
-        </FieldWrapper>
+        <View className="flex flex-col items-end gap-1.5">
+          <FieldWrapper label={ isHold ? "Durée (s)" : "Répétitions" }>
+            { series.isMax ? (
+              <View
+                className="relative border border-secondary bg-secondary-50 rounded-lg flex-row items-center justify-center w-full"
+                style={ { height: 44 } }
+              >
+                <TextInput
+                  className="text text-center flex-1"
+                  value="Max"
+                  editable={ false }
+                />
+              </View>
+            ) : (
+              <FieldInput
+                value={ series.targetValue }
+                onChangeValue={ ( v ) => onUpdate( index, "targetValue", v ) }
+                suffix={ isHold ? "s" : undefined }
+              />
+            )}
+          </FieldWrapper>
+          <TouchableOpacity
+            className="flex-row items-center gap-2"
+            onPress={ () => onUpdate( index, "isMax", !series.isMax ) }
+            activeOpacity={ 0.7 }
+          >
+            <Checkbox
+              value={ series.isMax }
+              onValueChange={ ( checked ) => onUpdate( index, "isMax", checked ) }
+              color={ series.isMax ? "#FC7942" : undefined }
+            />
+            <Text className="text-lg">Max { isHold ? " hold" : " rep"}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View className="flex-row gap-2">
+      <View className="flex-row gap-2 h-fit">
 
         <FieldWrapper label="RPE">
           <FieldInput
@@ -111,25 +145,22 @@ export default function SeriesInputCard ( {
         <FieldWrapper label="Poids">
           <WeightInput
             value={ series.weight }
-            onChange={ ( v ) => onUpdate( index, "weight", v as unknown as number ) }
+            onChange={ ( v ) => onUpdate( index, "weight", v ) }
           />
         </FieldWrapper>
 
         <FieldWrapper label="Repos">
-          <View style={ { height: 44 } } className="w-full justify-center">
-            <CustomTimePicker
-              label=""
-              value={ series.restMinutes * 60 + series.restSeconds }
-              showHours={ false }
-              showSeconds={ true }
-              minutesInterval={ 1 }
-              onChange={ ( totalSeconds ) => {
-                onUpdate( index, "restMinutes", Math.floor( totalSeconds / 60 ) );
-                onUpdate( index, "restSeconds", totalSeconds % 60 );
-              } }
-              customStyles="border-secondary px-0 py-0 h-full justify-center items-center"
-            />
-          </View>
+          <CustomTimePicker
+            label=""
+            value={ series.restMinutes * 60 + series.restSeconds }
+            showHours={ false }
+            showSeconds={ true }
+            minutesInterval={ 1 }
+            onChange={ ( totalSeconds ) => {
+              onUpdate( index, "restMinutes", Math.floor( totalSeconds / 60 ) );
+              onUpdate( index, "restSeconds", totalSeconds % 60 );
+            } }
+          />
         </FieldWrapper>
       </View>
     </View>
