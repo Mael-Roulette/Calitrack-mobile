@@ -1,7 +1,7 @@
-import { Series } from "@/types";
-import { Performances } from "@/types/session";
 import { useMemo, useState } from "react";
 import { ActiveState, useSessionProgress } from "./useSessionProgress";
+import { Performances } from "@/types";
+import { Series } from "@/types/series";
 
 export type SessionState = "summary" | "active" | "completed";
 

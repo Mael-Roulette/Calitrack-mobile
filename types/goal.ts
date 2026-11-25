@@ -1,20 +1,22 @@
+import { Models } from "react-native-appwrite";
 import { Exercise } from ".";
 
-export interface Goal {
-  $id: string;
-  $createdAt?: string;
-  $updatedAt?: string;
+export interface Goal extends Models.Row {
   exercise: Exercise;
-  progress: number;
-  total: number;
+  targetValue: number;
   progressHistory: number[];
-  state: "in-progress" | "finished";
+  state: GoalState;
+}
+
+export enum GoalState {
+  IN_PROGRESS = "in-progress",
+  FINISHED = "finished",
 }
 
 export interface CreateGoalParams {
-  exercise: string; // ID de l'exercice
+  exercise: string;
   progress: number;
-  total: number;
+  targetValue: number;
 }
 
 export interface UpdateGoalParams {

@@ -1,6 +1,6 @@
 import { Models } from "react-native-appwrite";
 
-export interface User extends Models.Document {
+export interface User extends Models.Row {
 	name: string;
 	email: string;
 	accountId: string;

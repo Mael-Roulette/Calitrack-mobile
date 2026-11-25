@@ -17,12 +17,12 @@ export function useGoalActions () {
   const handleCreate = useCallback(
     async ( {
       exerciseId,
-      total,
+      targetValue,
       progress,
       onSuccess,
     }: {
       exerciseId: string;
-      total: string;
+      targetValue: string;
       progress: string;
       onSuccess?: () => void;
     } ) => {
@@ -39,7 +39,7 @@ export function useGoalActions () {
           return;
         }
 
-        const parsedTotal = Number( total );
+        const parsedTotal = Number( targetValue );
         const parsedProgress = Number( progress );
 
         if (
@@ -63,16 +63,16 @@ export function useGoalActions () {
 
         const response = await createGoal( user, {
           exercise: exerciseId,
-          total: parsedTotal,
+          targetValue: parsedTotal,
           progress: parsedProgress,
         } );
 
-        if ( !response.goal ) {
-          showAlert.error( response.message.body );
+        if ( !response ) {
+          showAlert.error( "Erreur lors de la création de l'objectif." );
           return;
         }
 
-        addGoalStore( response.goal );
+        addGoalStore( response );
       } catch ( error ) {
         console.log( error );
         showAlert.error(

@@ -12,7 +12,7 @@ import { ScrollView, Text, View } from "react-native";
 export default function AddGoal () {
   const [ isModalVisible, setIsModalVisible ] = useState<boolean>( false );
   const [ selectedExercise, setSelectedExercise ] = useState<Exercise[]>( [] );
-  const [ total, setTotal ] = useState<string>( "" );
+  const [ targetValue, setTargetValue ] = useState<string>( "" );
   const [ progress, setProgress ] = useState<string>( "" );
   const labels = useGoalLabels( selectedExercise[ 0 ] );
   const { handleCreate, isSubmitting } = useGoalActions();
@@ -29,11 +29,11 @@ export default function AddGoal () {
   const submit = () => {
     handleCreate( {
       exerciseId: selectedExercise[ 0 ]?.$id,
-      total,
+      targetValue,
       progress,
       onSuccess: () => {
         setSelectedExercise( [] );
-        setTotal( "" );
+        setTargetValue( "" );
         setProgress( "" );
       },
     } );
@@ -57,6 +57,7 @@ export default function AddGoal () {
                     image={ exercise.image }
                     name={ exercise.name }
                     difficulty={ exercise.difficulty }
+                    isCustom={ exercise.isCustom }
                   />
                 ) ) }
               </View>
@@ -71,10 +72,10 @@ export default function AddGoal () {
           <View className="mt-5 gap-5">
             <CustomInput
               label={ labels.total }
-              value={ total }
+              value={ targetValue }
               placeholder="10"
               keyboardType="numeric"
-              onChangeText={ setTotal }
+              onChangeText={ setTargetValue }
             />
             <CustomInput
               label={ labels.progress }

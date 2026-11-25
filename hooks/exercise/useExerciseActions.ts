@@ -1,6 +1,6 @@
 import { createCustomExercise, deleteCustomExercise, updateCustomExercise, updateCustomExerciseImage } from "@/lib/exercise.appwrite";
 import { useAuthStore, useExercicesStore } from "@/store";
-import { Exercise } from "@/types";
+import { CreateExercise, Exercise, UpdateExercise } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
@@ -8,7 +8,7 @@ import { useCallback, useState } from "react";
 export function useExerciseActions () {
   const [ isSubmitting, setIsSubmitting ] = useState<boolean>( false );
   const [ isUpdating, setIsUpdating ] = useState<boolean>( false );
-  const [ isUpdatingImage, setIsUpdatingImage ] = useState<boolean> ( false );
+  const [ isUpdatingImage, setIsUpdatingImage ] = useState<boolean>( false );
   const [ isDeleting, setIsDeleting ] = useState<boolean>( false );
   const { addExercise, updateExercise, removeExercise } = useExercicesStore();
   const { user } = useAuthStore();
@@ -24,18 +24,18 @@ export function useExerciseActions () {
       difficulty,
       format,
       image
-    }: Omit<Exercise, "$id"> ) => {
+    }: CreateExercise ) => {
       if ( !user ) {
         showAlert.error( "Utilisateur non connecté" );
-        return;
+        return { success: false };
       }
 
-      if ( isSubmitting ) return;
-
-      setIsSubmitting( true );
+      if ( isSubmitting ) return { success: false };
 
       try {
-        const response = await createCustomExercise( user, {
+        setIsSubmitting( true );
+
+        const newExercise = await createCustomExercise( user, {
           name,
           description,
           type,
@@ -44,89 +44,58 @@ export function useExerciseActions () {
           image
         } );
 
-        if ( !response ) {
-          showAlert.error(
-            "Erreur lors de la création de l'exercice",
-            () => router.push( "/exercises" )
-          );
-          return;
-        }
+        addExercise( newExercise );
 
-        addExercise( response as unknown as Exercise );
+        router.replace( "/exercises" );
+
+        return { success: true };
       } catch ( error ) {
-        console.log( error );
         showAlert.error(
-          error instanceof Error
-            ? error.message
-            : "Une erreur est survenue."
+          error instanceof Error ? error.message : "Une erreur est survenue."
         );
+        return { success: false };
       } finally {
         setIsSubmitting( false );
-        router.replace( "/exercises" );
       }
     }, [ addExercise, isSubmitting, user ] );
 
   /**
-   * Action pour modifier un exercice personnalisé
-   */
-  const handleUpdate = useCallback( async ( {
-    $id,
-    name,
-    description,
-    type,
-    difficulty,
-    format,
-    image
-  }: Exercise ) => {
+ * Action pour modifier un exercice personnalisé
+ */
+  const handleUpdate = useCallback( async ( { $id, ...data }: UpdateExercise ) => {
     if ( !user ) {
       showAlert.error( "Utilisateur non connecté" );
-      return;
+      return { success: false };
     }
 
-    if ( isUpdating ) return;
-
-    setIsUpdating( true );
+    if ( isUpdating ) return { success: false };
 
     try {
-      const response = await updateCustomExercise( {
-        $id,
-        name,
-        description,
-        type,
-        difficulty,
-        format,
-        image
-      } );
+      setIsUpdating( true );
 
-      if ( !response ) {
-        showAlert.error(
-          "Erreur lors de la modification de l'exercice",
-          () => router.push( "/exercises" )
-        );
-        return;
-      }
+      await updateCustomExercise( { $id, ...data } );
 
-      updateExercise( $id, { name, description, type, difficulty, format, image } );
+      updateExercise( $id, data );
+      router.replace( "/exercises" );
+
+      return { success: true };
     } catch ( error ) {
-      console.log( error );
       showAlert.error(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue."
+        error instanceof Error ? error.message : "Une erreur est survenue."
       );
+      return { success: false };
     } finally {
       setIsUpdating( false );
-      router.replace( "/exercises" );
     }
   }, [ isUpdating, updateExercise, user ] );
 
   /**
    * Action pour supprimer un exercice personnalisé
    */
-  const handleDelete = useCallback( async ( $id : Exercise["$id"] ) => {
+  const handleDelete = useCallback( async ( $id: Exercise["$id"] ) => {
     if ( !user ) {
       showAlert.error( "Utilisateur non connecté" );
-      return;
+      return { success: false, error: "Utilisateur non connecté" };
     }
 
     if ( isDeleting ) return { success: false, error: "Suppression en cours" };
@@ -146,11 +115,10 @@ export function useExerciseActions () {
 
             resolve( { success: true } );
           } catch ( error ) {
-            console.error( "Erreur suppression exercice:", error );
             const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "Une erreur est survenue lors de la suppression.";
+              error instanceof Error
+                ? error.message
+                : "Une erreur est survenue lors de la suppression.";
 
             showAlert.error( errorMessage );
             resolve( { success: false, error: errorMessage } );
@@ -165,15 +133,19 @@ export function useExerciseActions () {
     } );
   }, [ isDeleting, removeExercise, user ] );
 
+  /**
+   * Action pour modifier l'image d'un exercice personnalisé
+   */
   const handleUpdateImage = useCallback(
     async ( $id: string, imageUri: string ) => {
       if ( isUpdatingImage ) return { success: false };
 
-      setIsUpdatingImage( true );
-
       try {
+        setIsUpdatingImage( true );
+
         await updateCustomExerciseImage( { $id, imageUri } );
-        await updateExercise( $id, { image: imageUri } );
+        updateExercise( $id, { image: imageUri } );
+
         return { success: true };
       } catch ( error ) {
         showAlert.error(
@@ -186,7 +158,6 @@ export function useExerciseActions () {
     },
     [ isUpdatingImage, updateExercise ]
   );
-
 
   return {
     handleCreate,

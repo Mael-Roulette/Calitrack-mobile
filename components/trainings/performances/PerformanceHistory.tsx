@@ -1,5 +1,5 @@
 import { getExerciseImage } from "@/constants/exercises";
-import { Performance } from "@/types";
+import { SessionPerformance } from "@/types";
 import { formatSecondsDuration } from "@/utils/string";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -8,7 +8,7 @@ import { Text, View } from "react-native";
 export default function PerformanceHistory ( {
   performances,
 }: {
-  performances: Performance[]; // tous les sets d'un même exercice, dans l'ordre
+  performances: SessionPerformance[]; // tous les sets d'un même exercice, dans l'ordre
 } ) {
   if ( !performances || performances.length === 0 ) return null;
 

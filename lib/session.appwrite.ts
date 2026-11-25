@@ -1,7 +1,5 @@
-import { Performances, Session, SessionInput } from "@/types/session";
-
 import { SESSIONS_TTL } from "@/constants/value";
-import { User } from "@/types";
+import { Performances, Session, SessionInput, User } from "@/types";
 import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 
@@ -13,13 +11,16 @@ export const saveSession = async (
   user: User,
   session: SessionInput,
   performances: Performances
-) => {
+): Promise<Session> => {
   // Créer la session
-  const newSession = await tablesDB.createRow( {
+  const newSession = await tablesDB.createRow<Session>( {
     databaseId,
     tableId: sessionTable,
     rowId: ID.unique(),
-    data: session,
+    data: {
+      ...session,
+      performance: []
+    },
     permissions: [
       Permission.read( Role.user( user.accountId ) ),
       Permission.update( Role.user( user.accountId ) ),
@@ -76,7 +77,12 @@ export const getUserSessions = async (
       databaseId,
       tableId: sessionTable,
       total: false,
-      ttl
+      ttl,
+      queries: [
+        Query.select( [ "*", "performance.*" ] ),
+        Query.orderDesc( "$createdAt" ),
+        Query.limit( 100 ),
+      ]
     } );
 
     return sessionsResult.rows;

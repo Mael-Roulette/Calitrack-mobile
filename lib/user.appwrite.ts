@@ -1,5 +1,6 @@
+import { resetAllStores } from "@/store/index.store";
 import { CreateUserParams, SignInParams, User } from "@/types";
-import { ID, Models, Query } from "react-native-appwrite";
+import { ID, Query } from "react-native-appwrite";
 import {
   account,
   appwriteConfig,
@@ -8,33 +9,34 @@ import {
   tablesDB
 } from "./appwrite";
 import { deleteFile, getFileIdFromUrl } from "./bucket.appwrite";
-import { resetAllStores } from "@/store/index.store";
 
 /**
  * Permet de créer un nouvel utilisateur
  * @param param0 - email, password, name
- * @returns {Promise<Models.Row>} - Document de l'utilisateur créé
+ * @returns {Promise<User>} - Document de l'utilisateur créé
  * @throws {Error} - Si l'utilisateur n'a pas pu être créé
  */
 export const createUser = async ( {
   email,
   password,
   name,
-}: CreateUserParams ): Promise<Models.Row> => {
+}: CreateUserParams ): Promise<User> => {
   try {
     const newAccount = await account.create( { userId: ID.unique(), email, password, name } );
-    if ( !newAccount ) throw Error;
+    if ( !newAccount ) throw Error( "Erreur lors de la création du compte." );
 
     await signIn( { email, password } );
 
     const avatarUrl = avatars.getInitialsURL( name );
 
-    return await tablesDB.createRow( {
+    const newUser = await tablesDB.createRow<User>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.userCollectionId,
       rowId: ID.unique(),
       data: { email, name, accountId: newAccount.$id, avatar: avatarUrl, roles: [ "user" ] } as any,
     } );
+
+    return newUser;
   } catch ( e ) {
     throw new Error( e as string );
   }
@@ -64,13 +66,13 @@ export const getCurrentUser = async (): Promise<User> => {
     const currentAccount = await account.get();
     if ( !currentAccount ) throw Error;
 
-    const currentUser = await tablesDB.listRows( {
+    const currentUser = await tablesDB.listRows<User>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.userCollectionId,
       queries: [ Query.equal( "accountId", currentAccount.$id ) ]
     } );
 
-    return currentUser.rows[ 0 ] as any;
+    return currentUser.rows[ 0 ];
   } catch ( e ) {
     throw new Error( e as string );
   }
@@ -79,7 +81,7 @@ export const getCurrentUser = async (): Promise<User> => {
 export const updateUser = async (
   data: Partial<User>,
   password?: string
-): Promise<Models.Row> => {
+): Promise<User> => {
   try {
     const currentUser = await getCurrentUser();
 
@@ -113,7 +115,7 @@ export const updateUser = async (
       }
     }
 
-    const updatedUser = await tablesDB.updateRow( {
+    const updatedUser = await tablesDB.updateRow<User>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.userCollectionId,
       rowId: currentUser.$id,
@@ -131,7 +133,7 @@ export const updateUser = async (
  * @returns {Promise<void>} - Si la suppression a réussi
  * @throws {Error} - Si la suppression a échoué
  */
-export const deleteAccount = async () => {
+export const deleteAccount = async (): Promise<void> => {
   try {
     const currentUser = await getCurrentUser();
 
@@ -150,10 +152,7 @@ export const deleteAccount = async () => {
       tableId: appwriteConfig.userCollectionId,
       rowId: currentUser.$id
     } );
-
-    return { success: true };
   } catch ( e ) {
-    console.error( "Account deletion error:", e );
     throw new Error( ( e as string ) || "Failed to delete account" );
   }
 };

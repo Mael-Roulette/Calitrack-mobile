@@ -9,6 +9,10 @@ interface HistorySectionProps {
 }
 
 const HistorySection = ( { sessions, isLoading, error }: HistorySectionProps ) => {
+  const sortedSessions = [ ...sessions ].sort(
+    ( a, b ) => new Date( b.$createdAt ).getTime() - new Date( a.$createdAt ).getTime()
+  );
+
   if ( isLoading ) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -36,7 +40,7 @@ const HistorySection = ( { sessions, isLoading, error }: HistorySectionProps ) =
         </Text>
       ) : (
         <FlatList
-          data={ sessions }
+          data={ sortedSessions }
           keyExtractor={ ( item ) => item.$id }
           renderItem={ ( { item } ) => <SessionCard session={ item } /> }
           showsVerticalScrollIndicator={ false }

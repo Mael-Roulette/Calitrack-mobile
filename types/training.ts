@@ -1,12 +1,18 @@
-export interface Week {
-	$id: string;
+import { Models } from "react-native-appwrite";
+import { CreateSeriesInput, Series } from "./series";
+
+export interface Week extends Models.Row {
 	name: string;
 	order: number;
-	trainings: string[]
+	trainings?: string[]
 }
 
-export interface Training {
-	$id: string;
+export interface WeekInput {
+  name: string;
+  order: number;
+}
+
+export interface Training extends Models.Row {
 	name: string;
 	series?: Series[];
 	duration: number;
@@ -15,56 +21,23 @@ export interface Training {
 	week: string;
 }
 
-export interface SeriesRaw {
-  $id: string;
-  exercise: Exercise;
-  rpe: number;
-	weight: number;
-  sets: number;
-  restTime?: number;
-  order: number;
-  training: string;
-  targetValue: number;
-  isMax: boolean;
-}
-
-
-export interface Series {
-  $id: string;
-  exercise: Exercise;
-  rpe: number;
-	weight: number;
-  sets: number;
-  restTime?: number;
-  order: number;
-  training: string;
-  targetValue: number;
-  isMax: boolean;
-}
-
-export interface Exercise {
-	$id: string;
-	image?: string;
-	name: string;
-	description: string;
-	difficulty: string;
-	type: string;
-	format: "hold" | "repetition";
-	isCustom?: boolean;
-}
-
-export interface UpdateExerciseImage {
-  $id: string,
-  imageUri: string
-}
-
-export interface CreateSeriesInput {
-  exerciseId: string;
-  sets: number;
-  targetValue?: number;
-  isMax: boolean;
-  rpe: number;
-  weight: number | null;
-  restTime: number; // en secondes
-  order: number;
+export interface CreateTrainingInput {
+  weekId: string,
+  name: string;
+  duration: number;
+  days?: string[];
+  note?: string;
+  series: CreateSeriesInput[];
 };
+
+export interface UpdateTrainingInput {
+  name: string;
+  duration: number;
+  days?: string[];
+  note?: string;
+}
+
+export interface RenameTrainingInput {
+  trainingId: string;
+  newName: string;
+}

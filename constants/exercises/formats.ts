@@ -1,4 +1,6 @@
+import { ExerciseFormat } from "@/types";
+
 export const EXERCISE_FORMAT_OPTIONS = [
-  { label: "Hold", value: "hold" },
-  { label: "Répétition", value: "repetition" },
+  { label: "Hold", value: ExerciseFormat.HOLD },
+  { label: "Répétition", value: ExerciseFormat.REPETITION },
 ] as const;

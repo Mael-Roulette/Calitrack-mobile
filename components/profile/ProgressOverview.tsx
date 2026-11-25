@@ -1,11 +1,13 @@
-import { useAuthStore, useGoalsStore } from "@/store";
+import { useGoalsStore } from "@/store";
+import useSessionsStore from "@/store/session.store";
 import React, { useMemo } from "react";
 import { Text, View } from "react-native";
 import PrimaryGradient from "../ui/PrimaryGradient";
 
 const ProgressOverview = () => {
   const { goals } = useGoalsStore();
-  const { user } = useAuthStore();
+  const { sessions } = useSessionsStore();
+
   const finishGoalsNumber = useMemo(
     () => goals.filter( ( goal ) => goal.state === "finished" ).length,
     [ goals ]
@@ -19,7 +21,7 @@ const ProgressOverview = () => {
         </Text>
         <View className='w-full flex-row gap-3'>
           <View className='flex-1 h-full bg-background/20 rounded-md p-4 flex-col gap-1'>
-            <Text className='text-3xl text-background font-calsans'>{user?.completedTrainings || 0}</Text>
+            <Text className='text-3xl text-background font-calsans'>{ sessions.length }</Text>
             <Text className='text-base text-background font-sregular'>
               Séance(s) complétée(s)
             </Text>

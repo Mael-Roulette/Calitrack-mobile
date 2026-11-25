@@ -20,7 +20,7 @@ interface WeekStoreProps {
     weekId: string;
     name: string;
     newOrder: number;
-    swappedWeekId: string | null;
+    swappedWeekId: string | undefined;
     oldOrder: number;
   } ) => void;
   deleteWeekStore: ( weekId: string ) => Promise<void>;

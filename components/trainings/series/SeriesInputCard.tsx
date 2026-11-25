@@ -11,6 +11,7 @@ import FieldWrapper from "./FieldWrapper";
 import WeightInput from "./WeightInput";
 
 export type SeriesForm = {
+  $id?: string;
   exerciseId: string;
   exercise: Exercise;
   sets: number;

@@ -14,7 +14,6 @@ const SessionSummary = ( { training, goals }: SummaryProps ) => {
   const [ trainingSeries, setTrainingSeries ] = useState<Series[]>( [] );
   const [ relatedGoals, setRelatedGoals ] = useState<Goal[]>( [] );
 
-  /* ----- Affichage des bons exercices et objectifs ----- */
   useEffect( () => {
     if ( training && training.series ) {
       setTrainingSeries(
