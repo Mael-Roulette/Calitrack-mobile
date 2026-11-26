@@ -56,8 +56,7 @@ const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestPro
       clearRestTimerState();
       notificationService.cancelRestEndNotification();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [] );
+  }, [ notificationService, restTime ] );
 
   /**
    * TIMER LOOP (UI only)
@@ -80,8 +79,7 @@ const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestPro
     }, 1000 );
 
     return () => clearInterval( interval );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isRunning ] );
+  }, [ isRunning, player ] );
 
   /**
    * APP STATE HANDLER
@@ -93,11 +91,9 @@ const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestPro
       const remaining = getRemainingSeconds( endTime );
 
       if ( state === "active" ) {
-        // retour dans l'app → resync immédiat
         setTimeRemaining( remaining );
         setIsRunning( remaining > 0 );
 
-        // si repos terminé pendant absence → on déclenche action
         if ( remaining <= 0 ) {
           clearRestTimerState();
         }
@@ -105,7 +101,6 @@ const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestPro
         return;
       }
 
-      // pas en foreground → on ne programme notif que si encore du temps
       if ( remaining > 0 ) {
         const notifEnabled = await getBoolean( STORAGE_KEYS.REST_NOTIFICATION_ENABLED, false );
         if ( notifEnabled ) {
@@ -116,19 +111,15 @@ const SessionRest = ( { restTime, onRestComplete, nextExercise }: SessionRestPro
 
     const sub = AppState.addEventListener( "change", handleAppStateChange );
     return () => sub.remove();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [] );
+  }, [ notificationService ] );
 
   const toggleTimer = () => {
     if ( !isRunning ) {
-      // Ref prend en valeur le temps mis en mémoire lors de la pause
       endTimeRef.current = Date.now() + tempTime * 1000;
     } else {
-      // Garder en mémoire le temps lorsqu'on met en pause
       setTempTime( getRemainingSeconds( endTimeRef.current ) );
     }
 
-    // Mettre en pause ou reprendre le timer
     setIsRunning( !isRunning );
   };
 
