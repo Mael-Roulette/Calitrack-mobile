@@ -17,7 +17,7 @@ const bundleId = IS_DEV
 export default {
   name: appName,
   slug: 'calitrack-ts',
-  version: '0.9.6',
+  version: '0.9.8',
   orientation: 'portrait',
   icon: './assets/images/logo-fond.png',
   scheme: 'calitrackts',

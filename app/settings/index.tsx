@@ -126,7 +126,7 @@ const Index = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={ handleDeleteAccount }
-            className='flex-row items-center py-3 mt-5'
+            className='flex-row items-center py-3 mt-2'
           >
             <Ionicons name='log-out-outline' size={ 24 } color='#9f1239' />
             <Text className='ml-3 text-lg text-rose-800 font-medium'>
