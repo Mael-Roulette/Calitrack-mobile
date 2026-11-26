@@ -1,6 +1,7 @@
 import { Exercise } from "@/types";
 import { memo } from "react";
 import { Modal, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomButton from "../ui/CustomButton";
 import CustomInput from "../ui/CustomInput";
 
@@ -40,42 +41,44 @@ function UpdateGoalModal ( {
       statusBarTranslucent={ true }
       onRequestClose={ handleClose }
     >
-      <View className='flex-1 justify-center items-center bg-black/50'>
-        <View className='bg-background w-[85%] p-6 rounded-xl'>
-          <Text className='text-2xl font-calsans text-primary mb-2'>
-            { exercise.name }
-          </Text>
+      <GestureHandlerRootView style={ { flex: 1 } }>
+        <View className='flex-1 justify-center items-center bg-black/50'>
+          <View className='bg-background w-[85%] p-6 rounded-xl'>
+            <Text className='text-2xl font-calsans text-primary mb-2'>
+              { exercise.name }
+            </Text>
 
-          <Text className='indicator-text text-lg mb-4'>
-            Progression actuelle : { progress }
-          </Text>
+            <Text className='indicator-text text-lg mb-4'>
+              Progression actuelle : { progress }
+            </Text>
 
-          <CustomInput
-            label='Nouvelle progression'
-            value={ newProgress }
-            placeholder={ `Ex: ${ progress + 1 }` }
-            keyboardType='numeric'
-            onChangeText={ setNewProgress }
-          />
-
-          <View className='flex-row gap-3 mt-6'>
-            <CustomButton
-              title='Annuler'
-              onPress={ handleClose }
-              isLoading={ isUpdating }
-              variant='primary'
-              customStyles="flex-1 w-full"
+            <CustomInput
+              label='Nouvelle progression'
+              value={ newProgress }
+              placeholder={ `Ex: ${ progress + 1 }` }
+              keyboardType='numeric'
+              onChangeText={ setNewProgress }
             />
 
-            <CustomButton
-              title='Mettre à jour'
-              onPress={ handleUpdateProgress }
-              variant='secondary'
-              customStyles="flex-1 w-full"
-            />
+            <View className='flex-row gap-3 mt-6'>
+              <CustomButton
+                title='Annuler'
+                onPress={ handleClose }
+                isLoading={ isUpdating }
+                variant='primary'
+                customStyles="flex-1 w-full"
+              />
+
+              <CustomButton
+                title='Mettre à jour'
+                onPress={ handleUpdateProgress }
+                variant='secondary'
+                customStyles="flex-1 w-full"
+              />
+            </View>
           </View>
         </View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }

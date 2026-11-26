@@ -4,7 +4,7 @@ import { Exercise } from ".";
 export interface Goal extends Models.Row {
   exercise: Exercise;
   targetValue: number;
-  progressHistory: number[];
+  progressHistory: string;
   state: GoalState;
 }
 

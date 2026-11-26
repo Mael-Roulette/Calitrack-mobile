@@ -18,10 +18,8 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
   const [ newProgress, setNewProgress ] = useState( "" );
   const { handleUpdate, handleDelete, isUpdating, isDeleting } = useGoalActions();
 
-  const currentProgress = useMemo(
-    () => goal.progressHistory[ goal.progressHistory.length - 1 ] || 0,
-    [ goal.progressHistory ]
-  );
+  const progressHistory = JSON.parse( goal.progressHistory );
+  const currentProgress = progressHistory.length === 0 ? progressHistory[ 0 ] : progressHistory[ progressHistory.length - 1 ];
 
   const progressPercentage = useMemo(
     () => Math.min( currentProgress / goal.targetValue, 1 ),
@@ -82,7 +80,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
         <View className="flex-row justify-between mb-3">
           <Text className="text">Progression</Text>
           <Text className="text">
-            {currentProgress} / {goal.targetValue}
+            {currentProgress.progress} / {goal.targetValue}
           </Text>
         </View>
         <Progress.Bar
@@ -142,7 +140,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
         modalVisible={ modalVisible }
         setModalVisible={ handleCloseModal }
         exercise={ goal.exercise }
-        progress={ currentProgress }
+        progress={ currentProgress.progress }
         newProgress={ newProgress }
         setNewProgress={ setNewProgress }
         handleUpdateProgress={ handleUpdateProgress }

@@ -12,7 +12,6 @@ const databaseId = appwriteConfig.databaseId;
  * @returns
  */
 export const createGoal = async ( user: User, goalParams: CreateGoalParams ): Promise<Goal> => {
-  // Vérifier limite objectifs actifs
   const existingGoals = await getGoalsFromUser();
   const activeGoals = existingGoals.filter(
     ( g ) => g.state === "in-progress"
@@ -22,6 +21,10 @@ export const createGoal = async ( user: User, goalParams: CreateGoalParams ): Pr
     throw new Error( `Limite atteinte, Maximum ${LIMITS.MAX_GOALS} objectifs en cours.` );
   }
 
+  const progressHistory = {
+    progress: goalParams.progress,
+    date: new Date()
+  };
 
   const newGoal = await tablesDB.createRow<Goal>( {
     databaseId,
@@ -30,7 +33,7 @@ export const createGoal = async ( user: User, goalParams: CreateGoalParams ): Pr
     data: {
       exercise: goalParams.exercise,
       targetValue: goalParams.targetValue,
-      progressHistory: [ goalParams.progress ],
+      progressHistory: JSON.stringify( [ progressHistory ] ),
       state: GoalState.IN_PROGRESS,
     } as unknown as Omit<Goal, keyof Models.Row>,
     permissions: [
@@ -74,8 +77,14 @@ export const updateGoal = async ( {
     rowId: $id,
   } );
 
-  const progressHistory = currentRow.progressHistory ?? [];
-  const updatedHistory = [ ...progressHistory, progress ];
+  const progressHistory = currentRow.progressHistory;
+  const updatedHistory = [
+    ...JSON.parse( progressHistory ),
+    {
+      progress,
+      date: new Date()
+    }
+  ];
 
   const newState =
     progress >= currentRow.targetValue
@@ -87,7 +96,7 @@ export const updateGoal = async ( {
     tableId: goalTable,
     rowId: $id,
     data: {
-      progressHistory: updatedHistory,
+      progressHistory: JSON.stringify( updatedHistory ),
       state: newState,
     },
   } );
