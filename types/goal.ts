@@ -8,6 +8,11 @@ export interface Goal extends Models.Row {
   state: GoalState;
 }
 
+export interface GoalProgressHistory {
+  date: Date;
+  progress: number;
+}
+
 export enum GoalState {
   IN_PROGRESS = "in-progress",
   FINISHED = "finished",

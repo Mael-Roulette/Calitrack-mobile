@@ -1,7 +1,7 @@
-import { Exercise } from "@/types";
+import { Exercise, GoalProgressHistory } from "@/types";
 import { memo } from "react";
 import { Modal, Text, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { LineChart } from "react-native-gifted-charts";
 import CustomButton from "../ui/CustomButton";
 import CustomInput from "../ui/CustomInput";
 
@@ -10,6 +10,7 @@ interface UpdateGoalModalProps {
   setModalVisible: ( value: boolean ) => void;
   exercise: Exercise;
   progress: number;
+  progressHistory: GoalProgressHistory[];
   newProgress: string;
   setNewProgress: ( value: string ) => void;
   handleUpdateProgress: () => void;
@@ -21,6 +22,7 @@ function UpdateGoalModal ( {
   setModalVisible,
   exercise,
   progress,
+  progressHistory,
   newProgress,
   setNewProgress,
   handleUpdateProgress,
@@ -33,6 +35,14 @@ function UpdateGoalModal ( {
     }
   };
 
+  const data = progressHistory.map( ( entry ) => ( {
+    value: entry.progress,
+    label: new Date( entry.date ).toLocaleDateString( "fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+    } ),
+  } ) );
+
   return (
     <Modal
       animationType='fade'
@@ -41,44 +51,61 @@ function UpdateGoalModal ( {
       statusBarTranslucent={ true }
       onRequestClose={ handleClose }
     >
-      <GestureHandlerRootView style={ { flex: 1 } }>
-        <View className='flex-1 justify-center items-center bg-black/50'>
-          <View className='bg-background w-[85%] p-6 rounded-xl'>
-            <Text className='text-2xl font-calsans text-primary mb-2'>
-              { exercise.name }
-            </Text>
+      <View className='flex-1 justify-center items-center bg-black/50'>
+        <View className='bg-background w-[85%] p-6 rounded-xl'>
+          <Text className='text-2xl font-calsans text-primary mb-2'>
+            { exercise.name }
+          </Text>
 
-            <Text className='indicator-text text-lg mb-4'>
-              Progression actuelle : { progress }
-            </Text>
+          <Text className='indicator-text text-lg mb-4'>
+            Progression actuelle : { progress }
+          </Text>
 
-            <CustomInput
-              label='Nouvelle progression'
-              value={ newProgress }
-              placeholder={ `Ex: ${ progress + 1 }` }
-              keyboardType='numeric'
-              onChangeText={ setNewProgress }
-            />
-
-            <View className='flex-row gap-3 mt-6'>
-              <CustomButton
-                title='Annuler'
-                onPress={ handleClose }
-                isLoading={ isUpdating }
-                variant='primary'
-                customStyles="flex-1 w-full"
-              />
-
-              <CustomButton
-                title='Mettre à jour'
-                onPress={ handleUpdateProgress }
-                variant='secondary'
-                customStyles="flex-1 w-full"
+          { progressHistory.length > 1 && (
+            <View className="py-8 overflow-hidden">
+              <LineChart
+                data={ data }
+                color="#FC7942"
+                dataPointsColor="#132541"
+                thickness={ 3 }
+                spacing={ 40 }
+                endSpacing={ 20 }
+                initialSpacing={ 15 }
+                dataPointsRadius={ 4 }
+                xAxisThickness={ 2 }
+                xAxisLabelTextStyle={ { fontSize: 10 } }
+                scrollToEnd
+                scrollAnimation={ false }
               />
             </View>
+          )}
+
+          <CustomInput
+            label='Nouvelle progression'
+            value={ newProgress }
+            placeholder={ `Ex: ${ progress + 1 }` }
+            keyboardType='numeric'
+            onChangeText={ setNewProgress }
+          />
+
+          <View className='flex-row gap-3 mt-6'>
+            <CustomButton
+              title='Annuler'
+              onPress={ handleClose }
+              isLoading={ isUpdating }
+              variant='primary'
+              customStyles="flex-1 w-full"
+            />
+
+            <CustomButton
+              title='Mettre à jour'
+              onPress={ handleUpdateProgress }
+              variant='secondary'
+              customStyles="flex-1 w-full"
+            />
           </View>
         </View>
-      </GestureHandlerRootView>
+      </View>
     </Modal>
   );
 }

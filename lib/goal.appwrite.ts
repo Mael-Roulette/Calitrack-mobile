@@ -56,8 +56,7 @@ export const getGoalsFromUser = async (): Promise<Goal[]> => {
     tableId: goalTable,
     queries: [
       Query.select( [ "*", "exercise.*" ] ),
-      Query.orderDesc( "$createdAt" ),
-      Query.limit( 1 ),
+      Query.orderDesc( "$createdAt" )
     ],
   } );
 

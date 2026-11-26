@@ -19,10 +19,10 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
   const { handleUpdate, handleDelete, isUpdating, isDeleting } = useGoalActions();
 
   const progressHistory = JSON.parse( goal.progressHistory );
-  const currentProgress = progressHistory.length === 0 ? progressHistory[ 0 ] : progressHistory[ progressHistory.length - 1 ];
+  const currentProgress = progressHistory.at( -1 );
 
   const progressPercentage = useMemo(
-    () => Math.min( currentProgress / goal.targetValue, 1 ),
+    () => Math.min( currentProgress.progress / goal.targetValue, 1 ),
     [ currentProgress, goal.targetValue ]
   );
 
@@ -88,7 +88,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
           width={ null }
           unfilledColor="#e0e0e0"
           borderWidth={ 0 }
-          color="rgba(252, 121, 66, 1)"
+          color="#FC7942"
         />
       </View>
     );
@@ -141,6 +141,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
         setModalVisible={ handleCloseModal }
         exercise={ goal.exercise }
         progress={ currentProgress.progress }
+        progressHistory={ progressHistory }
         newProgress={ newProgress }
         setNewProgress={ setNewProgress }
         handleUpdateProgress={ handleUpdateProgress }
