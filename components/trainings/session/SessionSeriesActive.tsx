@@ -30,7 +30,7 @@ export default function SessionSeriesActive ( {
 }: SessionSeriesActiveProps ) {
   const exercise = typeof series.exercise === "string" ? null : series.exercise;
   const isHold = exercise?.format === "hold";
-  const initialValue = series.isMax ? ( series.targetValue ?? 0 ) : series.targetValue;
+  const initialValue = series.isMax ? 3 : series.targetValue;
 
   const [ selectedValue, setSelectedValue ] = useState( initialValue );
   const [ loadingSeries, setLoadingSeries ] = useState<boolean>( true );
