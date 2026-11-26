@@ -4,7 +4,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import { useExerciseActions } from "@/hooks/exercise/useExerciseActions";
 import { deleteFile, getFileIdFromUrl } from "@/lib/bucket.appwrite";
 import { getExerciseById } from "@/lib/exercise.appwrite";
-import { Exercise } from "@/types";
+import { CreateExercise, Exercise, ExerciseFormat } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { validators } from "@/utils/validation";
 import { router, useLocalSearchParams } from "expo-router";
@@ -16,14 +16,13 @@ export default function EditExercise () {
   const { handleUpdate, isUpdating } = useExerciseActions();
   const [ exercise, setExercise ] = useState<Exercise>();
   const [ loading, setLoading ] = useState( true );
-  const [ formData, setFormData ] = useState<Omit<Exercise, "$id">>( {
+  const [ formData, setFormData ] = useState<CreateExercise>( {
     name: "",
     description: "",
     image: "",
     difficulty: "beginner",
     type: "pull",
-    format: "hold",
-    isCustom: true,
+    format: ExerciseFormat.HOLD
   } );
 
 
@@ -31,8 +30,7 @@ export default function EditExercise () {
     const fetchExercise = async () => {
       setLoading( true );
       try {
-        const response = await getExerciseById( id as string );
-        const exerciseData = response as unknown as Exercise;
+        const exerciseData = await getExerciseById( id as string );
 
         setExercise( exerciseData );
 
@@ -42,8 +40,7 @@ export default function EditExercise () {
           image: exerciseData.image,
           difficulty: exerciseData.difficulty,
           type: exerciseData.type,
-          format: exerciseData.format,
-          isCustom: exerciseData.isCustom,
+          format: exerciseData.format
         } );
       } catch ( error ) {
         console.error( "Erreur lors de la récupération de l'exercice", error );
@@ -71,14 +68,7 @@ export default function EditExercise () {
       return showAlert.error( "Veuillez remplir tous les champs requis" );
     }
 
-    if ( exercise.image &&  ( exercise.image !== formData.image ) ) {
-      const oldFileId = getFileIdFromUrl( exercise.image );
-      if ( oldFileId ) {
-        await deleteFile( oldFileId );
-      }
-    }
-
-    handleUpdate( {
+    const { success } = await handleUpdate( {
       $id: exercise.$id,
       name: formData.name.trim(),
       description: formData.description.trim(),
@@ -86,8 +76,18 @@ export default function EditExercise () {
       difficulty: formData.difficulty,
       type: formData.type,
       format: formData.format,
-      isCustom: true,
     } );
+
+    if ( success && exercise.image && exercise.image !== formData.image ) {
+      const oldFileId = getFileIdFromUrl( exercise.image );
+      if ( oldFileId ) {
+        try {
+          await deleteFile( oldFileId );
+        } catch ( error ) {
+          console.error( "Impossible de supprimer l'ancienne image", error );
+        }
+      }
+    }
   };
 
   return (

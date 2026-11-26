@@ -1,6 +1,7 @@
 import { LIMITS } from "@/constants/value";
-import { CreateSeriesInput, Series, Training, User } from "@/types";
-import { ID, Permission, Role } from "react-native-appwrite";
+import { CreateTrainingInput, Training, UpdateTrainingInput, User } from "@/types";
+import { Series, SeriesInput, UpdateSeriesInput } from "@/types/series";
+import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 import { getExerciseById } from "./exercise.appwrite";
 
@@ -8,22 +9,14 @@ const databaseId = appwriteConfig.databaseId;
 const trainingTable = appwriteConfig.trainingCollectionId;
 const seriesTable = appwriteConfig.seriesCollectionId;
 
-type CreateTrainingInput = {
-  name: string;
-  duration: number;
-  days?: string[];
-  note?: string;
-  series: CreateSeriesInput[];
-};
-
 /**
  * Récupère tous les entraînements avec leurs séries enrichies
  */
-export const getUserTrainings = async () => {
+export const getUserTrainings = async (): Promise<Training[]> => {
   try {
     const [ trainingsResponse, seriesResponse ] = await Promise.all( [
-      tablesDB.listRows( { databaseId, tableId: trainingTable } ),
-      tablesDB.listRows( { databaseId, tableId: seriesTable } ),
+      tablesDB.listRows<Training>( { databaseId, tableId: trainingTable } ),
+      tablesDB.listRows<Series>( { databaseId, tableId: seriesTable } ),
     ] );
 
     const enrichedSeries = await Promise.all(
@@ -33,14 +26,14 @@ export const getUserTrainings = async () => {
         );
         return { ...s, exercise };
       } )
-    ) as unknown as Series[];
+    ) as Series[];
 
     return trainingsResponse.rows.map( ( training ) => ( {
       ...training,
       series: enrichedSeries
         .filter( ( s ) => s.training === training.$id )
         .sort( ( a, b ) => a.order - b.order ),
-    } ) ) as unknown as Training[];
+    } ) ) as Training[];
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des entraînements:", error );
     throw new Error(
@@ -52,9 +45,9 @@ export const getUserTrainings = async () => {
 /**
  * Récupère les entraînements d'une semaine donnée
  */
-export const getTrainingsByWeek = async ( weekId: string ) => {
+export const getTrainingsByWeek = async ( weekId: string ): Promise<Training[]> => {
   try {
-    const allTrainings = await getUserTrainings() as unknown as Training[];
+    const allTrainings = await getUserTrainings();
     return allTrainings.filter( ( t ) => t.week === weekId );
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des entraînements de la semaine:", error );
@@ -69,21 +62,15 @@ export const getTrainingsByWeek = async ( weekId: string ) => {
  */
 export const createTraining = async (
   user: User,
-  weekId: string,
-  { name, duration, days, note, series }: CreateTrainingInput
-) => {
+  { weekId, name, duration, days, note, series }: CreateTrainingInput
+): Promise<Training> => {
   const existingTrainings = await getTrainingsByWeek( weekId );
   if ( existingTrainings.length >= LIMITS.MAX_TRAININGS ) {
-    return {
-      message: {
-        title: "Limite atteinte",
-        body: `Maximum ${LIMITS.MAX_TRAININGS} entraînements par semaine.`,
-      },
-    };
+    throw new Error( `Limite atteinte. Maximum ${LIMITS.MAX_TRAININGS} entraînements par semaine.` );
   }
 
   try {
-    const newTraining = await tablesDB.createRow( {
+    const newTraining = await tablesDB.createRow<Training>( {
       databaseId,
       tableId: trainingTable,
       rowId: ID.unique(),
@@ -91,7 +78,7 @@ export const createTraining = async (
         name,
         duration,
         days: days ?? [],
-        note: note ?? null,
+        note,
         week: weekId,
       },
       permissions: [
@@ -101,7 +88,7 @@ export const createTraining = async (
       ],
     } );
 
-    const createdSeries = await Promise.all(
+    await Promise.all(
       series.map( ( s ) =>
         tablesDB.createRow( {
           databaseId,
@@ -127,22 +114,9 @@ export const createTraining = async (
       )
     );
 
-    return {
-      newTraining,
-      createdSeries,
-      message: {
-        title: "Entraînement créé",
-        body: "Ton entraînement a été créé avec succès.",
-      },
-    };
+    return newTraining;
   } catch ( error ) {
-    console.error( "Erreur lors de la création de l'entraînement:", error );
-    return {
-      message: {
-        title: "Erreur lors de la création",
-        body: error instanceof Error ? error.message : "Impossible de créer l'entraînement",
-      },
-    };
+    throw new Error( `Erreur lors de la création de l'entraînement: ${ error }` );
   }
 };
 
@@ -151,38 +125,107 @@ export const createTraining = async (
  */
 export const updateTraining = async (
   trainingId: string,
-  data: Partial<Pick<Training, "name" | "duration" | "days" | "note">>
-) => {
+  data: Partial<UpdateTrainingInput>
+): Promise<Training> => {
   try {
-    const updatedTraining = await tablesDB.updateRow( {
+    const updatedTraining = await tablesDB.updateRow<Training>( {
       databaseId,
       tableId: trainingTable,
       rowId: trainingId,
       data,
     } );
 
-    return {
-      updatedTraining,
-      message: {
-        title: "Entraînement modifié",
-        body: "Ton entraînement a été modifié avec succès.",
-      },
-    };
+    return updatedTraining;
   } catch ( error ) {
-    console.error( "Erreur lors de la modification de l'entraînement:", error );
-    return {
-      message: {
-        title: "Erreur lors de la modification",
-        body: error instanceof Error ? error.message : "Impossible de modifier l'entraînement",
-      },
-    };
+    throw new Error( `Erreur lors de la modification de l'entraînement: ${ error }` );
+  }
+};
+
+export const updateTrainingWithSeries = async (
+  user: User,
+  trainingId: string,
+  data: Partial<UpdateTrainingInput>,
+  series: SeriesInput[]
+): Promise<Training> => {
+  try {
+    const existing = await tablesDB.listRows<Series>( {
+      databaseId,
+      tableId: seriesTable,
+      queries: [ Query.equal( "training", trainingId ), Query.limit( 100 ) ],
+    } );
+
+    const existingIds = new Set( existing.rows.map( ( s ) => s.$id ) );
+    const keptIds = new Set( series.filter( ( s ) => s.$id ).map( ( s ) => s.$id ) );
+
+    const toUpdate = series.filter( ( s ) => s.$id && existingIds.has( s.$id ) );
+    const toCreate = series.filter( ( s ) => !s.$id || !existingIds.has( s.$id ) );
+    const toDelete = existing.rows.filter( ( s ) => !keptIds.has( s.$id ) );
+
+    const updatedTraining = await tablesDB.updateRow<Training>( {
+      databaseId, tableId: trainingTable, rowId: trainingId, data,
+    } );
+
+    // Créations / modifications d'abord, suppressions en dernier :
+    // en cas d'erreur en cours de route, on ne perd aucune donnée.
+    await Promise.all( [
+      ...toUpdate.map( ( s ) =>
+        tablesDB.updateRow( {
+          databaseId,
+          tableId: seriesTable,
+          rowId: s.$id!,
+          data: {
+            exercise: s.exerciseId,
+            sets: s.sets,
+            targetValue: s.targetValue,
+            isMax: s.isMax,
+            rpe: s.rpe,
+            weight: s.weight,
+            restTime: s.restTime,
+            order: s.order,
+          },
+        } )
+      ),
+      ...toCreate.map( ( s ) =>
+        tablesDB.createRow( {
+          databaseId,
+          tableId: seriesTable,
+          rowId: ID.unique(),
+          data: {
+            exercise: s.exerciseId,
+            sets: s.sets,
+            targetValue: s.targetValue,
+            isMax: s.isMax,
+            rpe: s.rpe,
+            weight: s.weight,
+            restTime: s.restTime,
+            order: s.order,
+            training: trainingId
+          },
+          permissions: [
+            Permission.read( Role.user( user.accountId ) ),
+            Permission.update( Role.user( user.accountId ) ),
+            Permission.delete( Role.user( user.accountId ) ),
+          ],
+        } )
+      ),
+    ] );
+
+    await Promise.all(
+      toDelete.map( ( s ) =>
+        tablesDB.deleteRow( { databaseId, tableId: seriesTable, rowId: s.$id } )
+      )
+    );
+
+    return updatedTraining;
+  } catch ( error ) {
+    throw error instanceof Error ? error : new Error( String( error ) );
   }
 };
 
 /**
  * Supprime un entraînement et toutes ses séries
  */
-export const deleteTraining = async ( trainingId: string ) => {
+export const deleteTraining = async ( trainingId: string ): Promise<void> => {
   try {
     const allSeries = await tablesDB.listRows( { databaseId, tableId: seriesTable } );
     const trainingSeries = allSeries.rows.filter( ( s ) => s.training === trainingId );
@@ -194,21 +237,8 @@ export const deleteTraining = async ( trainingId: string ) => {
     );
 
     await tablesDB.deleteRow( { databaseId, tableId: trainingTable, rowId: trainingId } );
-
-    return {
-      message: {
-        title: "Entraînement supprimé",
-        body: "Ton entraînement a été supprimé avec succès.",
-      },
-    };
   } catch ( error ) {
-    console.error( "Erreur lors de la suppression de l'entraînement:", error );
-    return {
-      message: {
-        title: "Erreur lors de la suppression",
-        body: error instanceof Error ? error.message : "Impossible de supprimer l'entraînement",
-      },
-    };
+    throw new Error( `Erreur lors de la suppression de l'entraînement: ${ error }` );
   }
 };
 
@@ -217,54 +247,29 @@ export const deleteTraining = async ( trainingId: string ) => {
  */
 export const updateSeries = async (
   seriesId: string,
-  data: Partial<Pick<Series, "sets" | "targetValue" | "rpe" | "weight" | "restTime" | "order">>
-) => {
+  data: UpdateSeriesInput
+): Promise<Series> => {
   try {
-    const updatedSeries = await tablesDB.updateRow( {
+    const updatedSeries = await tablesDB.updateRow<Series>( {
       databaseId,
       tableId: seriesTable,
       rowId: seriesId,
       data,
     } );
 
-    return {
-      updatedSeries,
-      message: {
-        title: "Série modifiée",
-        body: "La série a été modifiée avec succès.",
-      },
-    };
+    return updatedSeries;
   } catch ( error ) {
-    console.error( "Erreur lors de la modification de la série:", error );
-    return {
-      message: {
-        title: "Erreur lors de la modification",
-        body: error instanceof Error ? error.message : "Impossible de modifier la série",
-      },
-    };
+    throw new Error( `Erreur lors de la modification de la série: ${ error }` );
   }
 };
 
 /**
  * Supprime une série
  */
-export const deleteSeries = async ( seriesId: string ) => {
+export const deleteSeries = async ( seriesId: string ): Promise<void> => {
   try {
     await tablesDB.deleteRow( { databaseId, tableId: seriesTable, rowId: seriesId } );
-
-    return {
-      message: {
-        title: "Série supprimée",
-        body: "La série a été supprimée avec succès.",
-      },
-    };
   } catch ( error ) {
-    console.error( "Erreur lors de la suppression de la série:", error );
-    return {
-      message: {
-        title: "Erreur lors de la suppression",
-        body: error instanceof Error ? error.message : "Impossible de supprimer la série",
-      },
-    };
+    throw new Error( `Erreur lors de la suppression de la série: ${ error }` );
   }
 };

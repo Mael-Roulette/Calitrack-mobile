@@ -1,5 +1,4 @@
 import PageHeaderWithTabs from "@/components/headers/PageHeaderWithTabs";
-import UsageGeneralSection from "@/components/settings/UsageGeneralSection";
 import UsageTrainingSection from "@/components/settings/UsageTrainingSection";
 import { useKeepAwakePreference } from "@/hooks/preferences/useKeepAwakePreference";
 import { useRestNotificationPreference } from "@/hooks/preferences/useRestNotificationPreference";
@@ -7,7 +6,8 @@ import { useRestSoundPreference } from "@/hooks/preferences/useRestSoundPreferen
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-const UsageTabs = [ "Générale", "Entraînement" ] as const;
+// const UsageTabs = [ "Générale", "Entraînement" ] as const;
+const UsageTabs = [ "Entraînement" ] as const;
 type UsageTabsType = ( typeof UsageTabs )[number];
 
 const Index = () => {
@@ -37,7 +37,7 @@ const Index = () => {
       />
       <ScrollView className="p-5">
         <View className="flex-1 bg-background">
-          {activeTab === UsageTabs[ 0 ] ? (
+          {/* {activeTab === UsageTabs[ 0 ] ? (
             <UsageGeneralSection
             />
           ) : (
@@ -51,7 +51,17 @@ const Index = () => {
               isRestSoundActive={ isRestSoundActive }
               toggleRestSound={ toggleRestSound }
             />
-          )}
+          )} */}
+          <UsageTrainingSection
+            isKeepAwakeActive={ isKeepAwakeActive }
+            isKeepAwakeAvailable={ isKeepAwakeAvailable }
+            toggleKeepAwake={ toggleKeepAwake }
+            isRestNotificationActive={ isRestNotificationActive }
+            isRestNotificationAvailable={ isRestNotificationAvailable }
+            toggleRestNotification={ toggleRestNotification }
+            isRestSoundActive={ isRestSoundActive }
+            toggleRestSound={ toggleRestSound }
+          />
         </View>
       </ScrollView>
     </View>

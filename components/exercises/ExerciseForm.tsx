@@ -6,7 +6,7 @@ import {
 } from "@/constants/exercises";
 import { createFile } from "@/lib/bucket.appwrite";
 import { useAuthStore } from "@/store";
-import { Exercise } from "@/types";
+import { CreateExercise, ExerciseFormat } from "@/types";
 import { showAlert } from "@/utils/alert";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
@@ -16,8 +16,8 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import CustomInput from "../ui/CustomInput";
 
 interface ExerciseFormProps {
-  formData: Omit<Exercise, "$id">;
-  setFormData: Dispatch<React.SetStateAction<Omit<Exercise, "$id">>>;
+  formData: CreateExercise;
+  setFormData: Dispatch<React.SetStateAction<CreateExercise>>;
 }
 
 const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
@@ -121,7 +121,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
         <CustomSelect
           options={ EXERCISE_FORMAT_OPTIONS }
           value={ formData.format }
-          onChange={ ( text: "hold" | "repetition" ) =>
+          onChange={ ( text: ExerciseFormat.HOLD | ExerciseFormat.REPETITION ) =>
             setFormData( ( prev ) => ( { ...prev, format: text } ) )
           }
         />

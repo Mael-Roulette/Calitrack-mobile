@@ -1,47 +1,22 @@
 import { LIMITS } from "@/constants/value";
-import { Exercise, UpdateExerciseImage, User } from "@/types";
-import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
+import { CreateExercise, Exercise, UpdateExercise, UpdateExerciseImage, User } from "@/types";
+import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 import { deleteFile, getFileIdFromUrl } from "./bucket.appwrite";
 
 /**
- * Permet de récupérer tous les exercices disponibles (généraux + personnalisés de l'utilisateur)
- * @param userId - ID de l'utilisateur pour récupérer aussi ses exercices personnalisés
- * @returns {Promise<Models.Row[]>} - Liste des exercices disponibles
+ * Permet de récupérer tous les exercices disponibles
+ * @returns {Promise<Exercise[]>} - Liste des exercices disponibles
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
-export const getAllExercises = async (): Promise<Models.Row[]> => {
+export const getAllExercises = async (): Promise<Exercise[]> => {
   try {
-    // Récupérer les exercices généraux (isCustom = false ou null)
-    const generalExercises = await tablesDB.listRows( {
+    const generalExercises = await tablesDB.listRows<Exercise>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
-      queries: [
-        Query.or( [
-          Query.equal( "isCustom", false ),
-          Query.isNull( "isCustom" )
-        ] )
-      ]
     } );
 
-    let customExercises: Models.Row[] = [];
-
-    try {
-      const customResponse = await tablesDB.listRows( {
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.exerciseCollectionId,
-        queries: [
-          Query.equal( "isCustom", true ),
-        ]
-      } );
-      customExercises = customResponse.rows;
-    } catch {
-      customExercises = [];
-    }
-
-
-    // Combiner les deux listes
-    return [ ...generalExercises.rows, ...customExercises ];
+    return generalExercises.rows;
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des exercices:", error );
     throw new Error(
@@ -52,12 +27,12 @@ export const getAllExercises = async (): Promise<Models.Row[]> => {
 
 /**
  * Permet de récupérer uniquement les exercices personnalisés de l'utilisateur
- * @returns {Promise<Models.Row[]>} - Liste des exercices personnalisés
+ * @returns {Promise<Exercise[]>} - Liste des exercices personnalisés
  * @throws {Error} - Si les exercices n'ont pas pu être récupérés
  */
-export const getCustomExercises = async ( ): Promise<Models.Row[]> => {
+export const getCustomExercises = async ( ): Promise<Exercise[]> => {
   try {
-    const response = await tablesDB.listRows( {
+    const response = await tablesDB.listRows<Exercise>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
       queries: [
@@ -76,17 +51,17 @@ export const getCustomExercises = async ( ): Promise<Models.Row[]> => {
 /**
  * Permet de récupérer un exercice par son ID
  * @param id - ID de l'exercice à récupérer
- * @returns {Promise<Models.Row>} - L'exercice correspondant à l'ID
+ * @returns {Promise<Exercise>} - L'exercice correspondant à l'ID
  * @throws {Error} - Si l'exercice n'a pas pu être récupéré
  */
 export const getExerciseById = async ( id: string ): Promise<Exercise> => {
   try {
-    const exercise = await tablesDB.getRow( {
+    const exercise = await tablesDB.getRow<Exercise>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
       rowId: id
     } );
-    return exercise as unknown as Exercise;
+    return exercise;
   } catch ( error ) {
     console.error( "Erreur lors de la récupération de l'exercice:", error );
     throw new Error(
@@ -99,34 +74,19 @@ export const getExerciseById = async ( id: string ): Promise<Exercise> => {
  * Permet de créer un exercice personnalisé pour un seul utilisateur
  * @returns l'exercice personnalisé
  */
-export const createCustomExercise = async ( user: User, {
-  name,
-  description,
-  type,
-  difficulty,
-  format,
-  image
-}: Omit<Exercise, "$id"> ) => {
+export const createCustomExercise = async ( user: User, exerciseProps: CreateExercise ): Promise<Exercise> => {
   try {
     const existingCustomExercises = await getCustomExercises();
 
     if ( existingCustomExercises.length >= LIMITS.MAX_CUSTOM_EXERCISES ) {
-      return;
+      throw new Error( "Impossible d'ajouter de nouveaux exercices" );
     }
 
-    const customExercise = await tablesDB.createRow( {
+    const customExercise = await tablesDB.createRow<Exercise>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
       rowId: ID.unique(),
-      data: {
-        name,
-        description,
-        type,
-        difficulty,
-        format,
-        image,
-        isCustom: true
-      },
+      data: { ...exerciseProps, isCustom: true },
       permissions: [
         Permission.read( Role.user( user.accountId ) ),
         Permission.update( Role.user( user.accountId ) ),
@@ -136,7 +96,7 @@ export const createCustomExercise = async ( user: User, {
 
     return customExercise;
   } catch ( e ) {
-    throw new Error( e as string );
+    throw e instanceof Error ? e : new Error( String( e ) );
   }
 };
 
@@ -144,42 +104,25 @@ export const createCustomExercise = async ( user: User, {
  * Permet de modifier un exercice personnalisé
  * @returns l'exercice personnalisé modifié
  */
-export const updateCustomExercise = async ( {
-  $id,
-  name,
-  description,
-  type,
-  difficulty,
-  format,
-  image
-}: Exercise ) => {
+export const updateCustomExercise = async ( { $id, ...data }: UpdateExercise ): Promise<Exercise> => {
   try {
-    const customExercise = await tablesDB.updateRow( {
+    return await tablesDB.updateRow<Exercise>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
       rowId: $id,
-      data: {
-        name,
-        description,
-        type,
-        difficulty,
-        format,
-        image,
-      }
+      data,
     } );
-
-    return customExercise;
   } catch ( e ) {
-    throw new Error( e as string );
+    throw e instanceof Error ? e : new Error( String( e ) );
   }
 };
 
 export const updateCustomExerciseImage = async ( {
   $id,
   imageUri
-}: UpdateExerciseImage ) => {
+}: UpdateExerciseImage ): Promise<void> => {
   try {
-    tablesDB.updateRow( {
+    await tablesDB.updateRow( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
       rowId: $id,
@@ -188,7 +131,7 @@ export const updateCustomExerciseImage = async ( {
       }
     } );
   } catch ( e ) {
-    throw new Error( e as string );
+    throw e instanceof Error ? e : new Error( String( e ) );
   }
 };
 
@@ -196,7 +139,7 @@ export const updateCustomExerciseImage = async ( {
  * Permet de supprimer un exercice personnalisé
  * @param id id de l'exercice à supprimer
  */
-export const deleteCustomExercise = async ( id: string ) => {
+export const deleteCustomExercise = async ( id: string ): Promise<void> => {
   try {
     const exercise = await getExerciseById( id );
 
@@ -215,6 +158,6 @@ export const deleteCustomExercise = async ( id: string ) => {
     } );
 
   } catch ( e ) {
-    throw new Error( e as string );
+    throw e instanceof Error ? e : new Error( String( e ) );
   }
 };

@@ -5,6 +5,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import useTrainingActions from "@/hooks/actions/training/useTrainingActions";
 import useTrainingsStore from "@/store/training.store";
 import { Exercise } from "@/types";
+import { SeriesInput } from "@/types/series";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -54,6 +55,7 @@ export default function EditTrainingStep2 () {
         const restMinutes = Math.floor( ( s.restTime ?? 0 ) / 60 );
         const restSeconds = ( s.restTime ?? 0 ) % 60;
         return {
+          $id: s.$id,
           exerciseId: s.exercise.$id,
           exercise: s.exercise,
           sets: s.sets,
@@ -117,7 +119,8 @@ export default function EditTrainingStep2 () {
       return;
     }
 
-    const seriesData = seriesList.map( ( s ) => ( {
+    const seriesData: SeriesInput[] = seriesList.map( ( s ) => ( {
+      $id: s.$id,
       exerciseId: s.exerciseId,
       sets: s.sets,
       targetValue: s.targetValue,
@@ -128,14 +131,12 @@ export default function EditTrainingStep2 () {
       order: s.order,
     } ) );
 
-    await handleUpdate( {
-      trainingId: params.trainingId,
+    await handleUpdate( params.trainingId, {
       name: params.trainingName,
       duration: parseInt( params.duration ),
       days: JSON.parse( params.days || "[]" ) as string[],
       note: params.note || undefined,
-      series: seriesData,
-    } );
+    }, seriesData );
   };
 
   return (

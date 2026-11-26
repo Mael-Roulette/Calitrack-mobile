@@ -1,7 +1,6 @@
 import { LIMITS } from "@/constants/value";
-import { CreateGoalParams, Goal, UpdateGoalParams, User } from "@/types";
-import { buildGoalObject } from "@/utils/goals";
-import { ID, Permission, Role } from "react-native-appwrite";
+import { CreateGoalParams, Goal, GoalState, UpdateGoalParams, User } from "@/types";
+import { ID, Models, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 
 const goalTable = appwriteConfig.goalCollectionId;
@@ -12,36 +11,31 @@ const databaseId = appwriteConfig.databaseId;
  * @param param0
  * @returns
  */
-export const createGoal = async ( user: User, {
-  exercise,
-  progress,
-  total,
-}: CreateGoalParams ) => {
-  // Vérifier limite objectifs actifs
+export const createGoal = async ( user: User, goalParams: CreateGoalParams ): Promise<Goal> => {
   const existingGoals = await getGoalsFromUser();
   const activeGoals = existingGoals.filter(
     ( g ) => g.state === "in-progress"
   );
 
   if ( activeGoals.length >= LIMITS.MAX_GOALS ) {
-    return {
-      message: {
-        title: "Limite atteinte",
-        body: `Maximum ${LIMITS.MAX_GOALS} objectifs en cours.`,
-      },
-    };
+    throw new Error( `Limite atteinte, Maximum ${LIMITS.MAX_GOALS} objectifs en cours.` );
   }
 
-  const newRow = await tablesDB.createRow( {
+  const progressHistory = {
+    progress: goalParams.progress,
+    date: new Date()
+  };
+
+  const newGoal = await tablesDB.createRow<Goal>( {
     databaseId,
     tableId: goalTable,
     rowId: ID.unique(),
     data: {
-      exercise,
-      targetValue: total,
-      progressHistory: [ progress ],
-      state: "in-progress",
-    },
+      exercise: goalParams.exercise,
+      targetValue: goalParams.targetValue,
+      progressHistory: JSON.stringify( [ progressHistory ] ),
+      state: GoalState.IN_PROGRESS,
+    } as unknown as Omit<Goal, keyof Models.Row>,
     permissions: [
       Permission.read( Role.user( user.accountId ) ),
       Permission.update( Role.user( user.accountId ) ),
@@ -49,15 +43,7 @@ export const createGoal = async ( user: User, {
     ],
   } );
 
-  const goal = await buildGoalObject( newRow );
-
-  return {
-    goal,
-    message: {
-      title: "Objectif créé",
-      body: "Ton objectif a été créé avec succès.",
-    },
-  };
+  return newGoal;
 };
 
 
@@ -65,12 +51,16 @@ export const createGoal = async ( user: User, {
  * Permet de récupérer les objectifs de l'utilisateur connecté
  */
 export const getGoalsFromUser = async (): Promise<Goal[]> => {
-  const response = await tablesDB.listRows( {
+  const goals = await tablesDB.listRows<Goal>( {
     databaseId,
     tableId: goalTable,
+    queries: [
+      Query.select( [ "*", "exercise.*" ] ),
+      Query.orderDesc( "$createdAt" )
+    ],
   } );
 
-  return Promise.all( response.rows.map( buildGoalObject ) );
+  return goals.rows;
 };
 
 /**
@@ -80,31 +70,37 @@ export const updateGoal = async ( {
   $id,
   progress,
 }: UpdateGoalParams ): Promise<Goal> => {
-  const currentRow = await tablesDB.getRow( {
+  const currentRow = await tablesDB.getRow<Goal>( {
     databaseId,
     tableId: goalTable,
     rowId: $id,
   } );
 
-  const progressHistory = currentRow.progressHistory ?? [];
-  const updatedHistory = [ ...progressHistory, progress ];
+  const progressHistory = currentRow.progressHistory;
+  const updatedHistory = [
+    ...JSON.parse( progressHistory ),
+    {
+      progress,
+      date: new Date()
+    }
+  ];
 
   const newState =
     progress >= currentRow.targetValue
-      ? "finished"
-      : "in-progress";
+      ? GoalState.FINISHED
+      : GoalState.IN_PROGRESS;
 
-  const updatedRow = await tablesDB.updateRow( {
+  const updatedGoal = await tablesDB.updateRow<Goal>( {
     databaseId,
     tableId: goalTable,
     rowId: $id,
     data: {
-      progressHistory: updatedHistory,
+      progressHistory: JSON.stringify( updatedHistory ),
       state: newState,
     },
   } );
 
-  return buildGoalObject( updatedRow );
+  return updatedGoal;
 };
 
 /**

@@ -1,9 +1,8 @@
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
-import { Performances } from "@/types/session";
 import { ScrollView, View } from "react-native";
 import SessionRecap from "./SessionRecap";
-import { Training } from "@/types";
+import { Performances, Training } from "@/types";
 
 export default function SessionCompleted ( {
   training,

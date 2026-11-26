@@ -1,11 +1,11 @@
-import { Performance, Session } from "@/types";
+import { Session, SessionPerformance } from "@/types";
 import { formatSecondsDuration } from "@/utils/string";
 import { Text, View } from "react-native";
 import PerformanceHistory from "../performances/PerformanceHistory";
 
 const SessionHistoryContent = ( { session }: { session: Session } ) => {
   // Regroupe les performances par exercice (via `order`) pour reconstituer les séries
-  const grouped = session.performance.reduce<Record<number, Performance[]>>(
+  const grouped = session.performance.reduce<Record<number, SessionPerformance[]>>(
     ( acc, performance ) => {
       if ( !acc[ performance.order ] ) {
         acc[ performance.order ] = [];
@@ -16,12 +16,12 @@ const SessionHistoryContent = ( { session }: { session: Session } ) => {
     {}
   );
 
+
   const orderedGroups = Object.entries( grouped )
     .sort( ( [ a ], [ b ] ) => Number( a ) - Number( b ) )
     .map( ( [ , performances ] ) =>
       [ ...performances ].sort( ( a, b ) => a.setNumber - b.setNumber )
     );
-
   return (
     <View>
       <View className="flex-row gap-1 items-center mb-4">

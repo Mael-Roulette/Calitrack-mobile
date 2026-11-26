@@ -1,6 +1,7 @@
-import { Exercise } from "@/types";
+import { Exercise, GoalProgressHistory } from "@/types";
 import { memo } from "react";
 import { Modal, Text, View } from "react-native";
+import { LineChart } from "react-native-gifted-charts";
 import CustomButton from "../ui/CustomButton";
 import CustomInput from "../ui/CustomInput";
 
@@ -9,6 +10,7 @@ interface UpdateGoalModalProps {
   setModalVisible: ( value: boolean ) => void;
   exercise: Exercise;
   progress: number;
+  progressHistory: GoalProgressHistory[];
   newProgress: string;
   setNewProgress: ( value: string ) => void;
   handleUpdateProgress: () => void;
@@ -20,6 +22,7 @@ function UpdateGoalModal ( {
   setModalVisible,
   exercise,
   progress,
+  progressHistory,
   newProgress,
   setNewProgress,
   handleUpdateProgress,
@@ -31,6 +34,14 @@ function UpdateGoalModal ( {
       setModalVisible( false );
     }
   };
+
+  const data = progressHistory.map( ( entry ) => ( {
+    value: entry.progress,
+    label: new Date( entry.date ).toLocaleDateString( "fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+    } ),
+  } ) );
 
   return (
     <Modal
@@ -49,6 +60,25 @@ function UpdateGoalModal ( {
           <Text className='indicator-text text-lg mb-4'>
             Progression actuelle : { progress }
           </Text>
+
+          { progressHistory.length > 1 && (
+            <View className="py-8 overflow-hidden">
+              <LineChart
+                data={ data }
+                color="#FC7942"
+                dataPointsColor="#132541"
+                thickness={ 3 }
+                spacing={ 40 }
+                endSpacing={ 20 }
+                initialSpacing={ 15 }
+                dataPointsRadius={ 4 }
+                xAxisThickness={ 2 }
+                xAxisLabelTextStyle={ { fontSize: 10 } }
+                scrollToEnd
+                scrollAnimation={ false }
+              />
+            </View>
+          )}
 
           <CustomInput
             label='Nouvelle progression'

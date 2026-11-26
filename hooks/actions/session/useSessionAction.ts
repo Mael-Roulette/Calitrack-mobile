@@ -1,7 +1,7 @@
 import { saveSession } from "@/lib/session.appwrite";
 import { useAuthStore } from "@/store";
 import useSessionsStore from "@/store/session.store";
-import { Performances, SessionInput } from "@/types/session";
+import { Performances, SessionInput } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { useCallback, useRef, useState } from "react";
 

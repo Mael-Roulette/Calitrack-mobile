@@ -41,9 +41,15 @@ export default function PerformanceRecap ( {
           </Text>
           <Text className="label-text text-sm">
             {series.sets}x{" "}
-            {isHold
-              ? `${series.targetValue} seconde(s)`
-              : `${series.targetValue} répétition(s)`}
+            { series.isMax ? (
+              isHold
+                ? "Max hold"
+                : "Max reps"
+            ) : (
+              isHold
+                ? `${series.targetValue} seconde(s)`
+                : `${series.targetValue} répétition(s)`
+            )}
           </Text>
         </View>
       </View>
@@ -110,8 +116,8 @@ export default function PerformanceRecap ( {
               >
                 <Text className="text">
                   {achieved !== undefined
-                    ? `${achieved.achievedValue} / ${series.targetValue} ${
-                      isHold ? "s" : "rep"
+                    ? `${achieved.achievedValue}${ isHold ? "s" : "rep" } / ${ series.isMax ? "Max" : series.targetValue } ${
+                      isHold ? "sec" : "rep"
                     }`
                     : "-"}
                 </Text>

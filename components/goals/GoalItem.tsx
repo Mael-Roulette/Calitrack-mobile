@@ -18,23 +18,17 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
   const [ newProgress, setNewProgress ] = useState( "" );
   const { handleUpdate, handleDelete, isUpdating, isDeleting } = useGoalActions();
 
-  // Calculer la progression actuelle
-  const currentProgress = useMemo(
-    () => goal.progressHistory[ goal.progressHistory.length - 1 ] || 0,
-    [ goal.progressHistory ]
-  );
+  const progressHistory = JSON.parse( goal.progressHistory );
+  const currentProgress = progressHistory.at( -1 );
 
-  // Calculer le pourcentage de progression
   const progressPercentage = useMemo(
-    () => Math.min( currentProgress / goal.total, 1 ),
-    [ currentProgress, goal.total ]
+    () => Math.min( currentProgress.progress / goal.targetValue, 1 ),
+    [ currentProgress, goal.targetValue ]
   );
 
-  // État de l'objectif
   const isInProgress = goal.state === "in-progress";
   const isFinished = goal.state === "finished";
 
-  // Gestion de la mise à jour
   const handleUpdateProgress = useCallback( async () => {
     const parsedProgress = Number( newProgress );
     const result = await handleUpdate( {
@@ -48,7 +42,6 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
     }
   }, [ newProgress, handleUpdate, goal.$id ] );
 
-  // Gestion de la suppression
   const handleDeleteGoal = useCallback( async () => {
     const result = await handleDelete( {
       goalId: goal.$id
@@ -79,7 +72,6 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
     setShowDelete( false );
   };
 
-  // Rendu de la barre de progression
   const renderProgress = useMemo( () => {
     if ( !isInProgress ) return null;
 
@@ -88,7 +80,7 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
         <View className="flex-row justify-between mb-3">
           <Text className="text">Progression</Text>
           <Text className="text">
-            {currentProgress} / {goal.total}
+            {currentProgress.progress} / {goal.targetValue}
           </Text>
         </View>
         <Progress.Bar
@@ -96,11 +88,11 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
           width={ null }
           unfilledColor="#e0e0e0"
           borderWidth={ 0 }
-          color="rgba(252, 121, 66, 1)"
+          color="#FC7942"
         />
       </View>
     );
-  }, [ isInProgress, currentProgress, goal.total, progressPercentage ] );
+  }, [ isInProgress, currentProgress, goal.targetValue, progressPercentage ] );
 
   return (
     <>
@@ -148,7 +140,8 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
         modalVisible={ modalVisible }
         setModalVisible={ handleCloseModal }
         exercise={ goal.exercise }
-        progress={ currentProgress }
+        progress={ currentProgress.progress }
+        progressHistory={ progressHistory }
         newProgress={ newProgress }
         setNewProgress={ setNewProgress }
         handleUpdateProgress={ handleUpdateProgress }
@@ -166,7 +159,6 @@ function GoalItem ( { goal, canDelete = true }: GoalItemProps ) {
 }
 
 export default memo( GoalItem, ( prevProps, nextProps ) => {
-  // Ne re-render que si l'objectif a changé
   return (
     prevProps.goal.$id === nextProps.goal.$id &&
     prevProps.goal.state === nextProps.goal.state &&

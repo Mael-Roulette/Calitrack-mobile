@@ -1,5 +1,4 @@
-import { Training } from "@/types";
-import { Performances } from "@/types/session";
+import { Performances, Training } from "@/types";
 import { Text, View } from "react-native";
 import SessionContent from "./SessionRecapContent";
 

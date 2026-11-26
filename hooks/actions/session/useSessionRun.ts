@@ -1,5 +1,5 @@
-import { Series } from "@/types";
-import { Performances } from "@/types/session";
+import { Performances } from "@/types";
+import { Series } from "@/types/series";
 import { useMemo, useState } from "react";
 import { ActiveState, useSessionProgress } from "./useSessionProgress";
 
@@ -51,11 +51,13 @@ export function useSessionRun ( series: Series[] ) {
         [ progress.set ]: {
           exerciseName: currentSeries.exercise.name,
           exerciseImage: currentSeries.exercise.image,
+          exerciseFormat: currentSeries.exercise.format,
           rpe: currentSeries.rpe,
           weight: currentSeries.weight,
           restTime: currentSeries.restTime,
           order: currentSeries.order,
           targetValue: currentSeries.targetValue,
+          isMax: currentSeries.isMax,
           achievedValue,
         },
       },

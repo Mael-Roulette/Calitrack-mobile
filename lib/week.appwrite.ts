@@ -1,5 +1,6 @@
 import { LIMITS } from "@/constants/value";
-import { Training, User } from "@/types";
+import { Training, User, Week, WeekInput } from "@/types";
+import { Series } from "@/types/series";
 import { ID, Permission, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 import { getUserTrainings } from "./training.appwrite";
@@ -8,9 +9,9 @@ import { getUserTrainings } from "./training.appwrite";
  * Permet de récupérer les semaines d'un utilisateur donné
  * @returns Les semaines de l'utilisateur
  */
-export const getUserWeeks = async () => {
+export const getUserWeeks = async (): Promise<Week[]> => {
   try {
-    const response = await tablesDB.listRows( {
+    const response = await tablesDB.listRows<Week>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.weekCollectionId
     } );
@@ -30,14 +31,14 @@ export const getUserWeeks = async () => {
 export const createWeek = async ( user: User, {
   name,
   order
-}: { name: string, order: number } ) => {
+}: WeekInput ): Promise<Week> => {
   const existingWeeks = await getUserWeeks();
   if ( existingWeeks.length >= LIMITS.MAX_WEEKS ) {
-    return;
+    throw new Error( `Limite atteinte. Maximum ${LIMITS.MAX_WEEKS} semaines autorisées.` );
   }
 
   try {
-    const newWeek = await tablesDB.createRow( {
+    const newWeek = await tablesDB.createRow<Week>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.weekCollectionId,
       rowId: ID.unique(),
@@ -49,48 +50,29 @@ export const createWeek = async ( user: User, {
       ]
     } );
 
-    return {
-      newWeek,
-      message: {
-        title: "Semaine créée",
-        body: "Ta semaine a été créée avec succès.",
-      },
-    };
+    return newWeek;
   } catch ( error ) {
-    console.log( error );
-    return {
-      message: {
-        title: "Erreur lors de la création",
-        body: error instanceof Error ? error.message : "Impossible de créer la semaine",
-      },
-    };
+    throw new Error( `Erreur lors de la création de la semaine: ${error}` );
   }
 };
 
 /**
  * Permet de dupliquer une semaine existante
  */
-export const duplicateWeek = async ( user: User, weekId: string ) => {
+export const duplicateWeek = async ( user: User, weekId: string ): Promise<Week> => {
   const existingWeeks = await getUserWeeks();
 
   if ( existingWeeks.length >= LIMITS.MAX_WEEKS ) {
-    return {
-      message: {
-        title: "Limite atteinte",
-        body: `Maximum ${LIMITS.MAX_WEEKS} semaines autorisées.`,
-      },
-    };
+    throw new Error( `Limite atteinte. Maximum ${LIMITS.MAX_WEEKS} semaines autorisées.` );
   }
 
   const sourceWeek = existingWeeks.find( ( w ) => w.$id === weekId );
   if ( !sourceWeek ) {
-    return {
-      message: { title: "Erreur", body: "Semaine introuvable." },
-    };
+    throw new Error( "Semaine à dupliquer introuvable." );
   }
 
   try {
-    const newWeek = await tablesDB.createRow( {
+    const newWeek = await tablesDB.createRow<Week>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.weekCollectionId,
       rowId: ID.unique(),
@@ -109,7 +91,7 @@ export const duplicateWeek = async ( user: User, weekId: string ) => {
     const sourceTrainings = trainings.filter( t => t.week === weekId );
 
     for ( const training of sourceTrainings ) {
-      const newTraining = await tablesDB.createRow( {
+      const newTraining = await tablesDB.createRow<Training>( {
         databaseId: appwriteConfig.databaseId,
         tableId: appwriteConfig.trainingCollectionId,
         rowId: ID.unique(),
@@ -117,7 +99,7 @@ export const duplicateWeek = async ( user: User, weekId: string ) => {
           name: training.name,
           duration: training.duration,
           days: training.days ?? [],
-          note: training.note ?? null,
+          note: training.note,
           week: newWeek.$id,
         },
         permissions: [
@@ -132,18 +114,19 @@ export const duplicateWeek = async ( user: User, weekId: string ) => {
 
       await Promise.all(
         trainingSeries.map( ( s ) =>
-          tablesDB.createRow( {
+          tablesDB.createRow<Series>( {
             databaseId: appwriteConfig.databaseId,
             tableId: appwriteConfig.seriesCollectionId,
             rowId: ID.unique(),
             data: {
-              exercise: typeof s.exercise === "string" ? s.exercise : s.exercise.$id,
+              exercise: s.exercise,
               sets: s.sets,
               targetValue: s.targetValue,
               rpe: s.rpe,
               weight: s.weight,
               restTime: s.restTime,
               order: s.order,
+              isMax: s.isMax,
               training: newTraining.$id,
             },
             permissions: [
@@ -156,60 +139,46 @@ export const duplicateWeek = async ( user: User, weekId: string ) => {
       );
     }
 
-    return {
-      newWeek,
-      message: {
-        title: "Semaine dupliquée",
-        body: "Semaine + entraînements copiés avec succès.",
-      },
-    };
+    return newWeek;
   } catch ( error ) {
-    return {
-      message: {
-        title: "Erreur lors de la duplication",
-        body: error instanceof Error ? error.message : "Impossible de dupliquer la semaine",
-      },
-    };
+    throw new Error( `Erreur lors de la duplication de la semaine: ${error}` );
   }
 };
 
 /**
- * Modifie le nom d'une semaine et swape les ordres si nécessaire.
+ * Modifie le nom d'une semaine et swap les ordres si nécessaire.
  * Si newOrder est déjà pris par une autre semaine, les deux semaines
  * échangent leur ordre.
  *
- * @returns les données mises à jour : la semaine modifiée + l'éventuelle semaine swappée
+ * @returns les données mises à jour : la semaine modifiée + l'éventuelle semaine swapée
  */
 export const updateWeek = async (
   weekId: string,
-  { name, newOrder }: { name: string; newOrder: number }
-) => {
+  { name, order }: WeekInput
+): Promise<Week> => {
   const allWeeks = await getUserWeeks();
   const targetWeek = allWeeks.find( ( w ) => w.$id === weekId );
 
   if ( !targetWeek ) {
-    return {
-      message: { title: "Erreur", body: "Semaine introuvable." },
-    };
+    throw new Error( `Identifiant de la semaine introuvable: ${weekId}` );
   }
 
   const oldOrder = targetWeek.order as number;
   const conflictWeek = allWeeks.find(
-    ( w ) => w.$id !== weekId && ( w.order as number ) === newOrder
+    ( w ) => w.$id !== weekId && ( w.order as number ) === order
   );
 
   try {
-    const updatedWeek = await tablesDB.updateRow( {
+    const updatedWeek = await tablesDB.updateRow<Week>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.weekCollectionId,
       rowId: weekId,
-      data: { name, order: newOrder },
+      data: { name, order },
     } );
 
     // Si une autre semaine occupait cet ordre, lui donner l'ancien ordre
-    let swappedWeek = null;
     if ( conflictWeek ) {
-      swappedWeek = await tablesDB.updateRow( {
+      await tablesDB.updateRow<Week>( {
         databaseId: appwriteConfig.databaseId,
         tableId: appwriteConfig.weekCollectionId,
         rowId: conflictWeek.$id,
@@ -217,73 +186,40 @@ export const updateWeek = async (
       } );
     }
 
-    return {
-      updatedWeek,
-      swappedWeek,
-      swappedWeekId: conflictWeek?.$id ?? null,
-      oldOrder,
-      message: {
-        title: "Semaine modifiée",
-        body: "Ta semaine a été modifiée avec succès.",
-      },
-    };
+    return updatedWeek;
   } catch ( error ) {
-    return {
-      message: {
-        title: "Erreur lors de la modification",
-        body: error instanceof Error ? error.message : "Impossible de modifier la semaine",
-      },
-    };
+    throw new Error( `Erreur lors de la modification de la semaine: ${error}` );
   }
 };
 
 /**
  * Permet de supprimer une semaine donnée
  */
-export const deleteWeek = async ( weekId: string ) => {
+export const deleteWeek = async ( weekId: string ): Promise<void> => {
   try {
     await tablesDB.deleteRow( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.weekCollectionId,
       rowId: weekId,
     } );
-
-    return {
-      message: {
-        title: "Semaine supprimée",
-        body: "Ta semaine a été supprimée avec succès.",
-      },
-    };
   } catch ( error ) {
-    console.log( error );
-    return {
-      message: {
-        title: "Erreur lors de la suppression",
-        body: error instanceof Error ? error.message : "Impossible de supprimer la semaine",
-      },
-    };
+    throw new Error( `Erreur lors de la suppression de la semaine: ${error}` );
   }
 };
 
 /**
  * récupération d'une semaine par son ID
  */
-export const getWeekById = async ( weekId: string ) => {
+export const getWeekById = async ( weekId: string ): Promise<Week> => {
   try {
-    const response = await tablesDB.getRow( {
+    const week = await tablesDB.getRow<Week>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.weekCollectionId,
       rowId: weekId,
     } );
 
-    return response;
+    return week;
   } catch ( error ) {
-    console.log( error );
-    return {
-      message: {
-        title: "Erreur lors de la récupération",
-        body: error instanceof Error ? error.message : "Impossible de récupérer la semaine",
-      },
-    };
+    throw new Error( `Erreur lors de la récupération de la semaine: ${error}` );
   }
 };
