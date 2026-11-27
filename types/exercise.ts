@@ -5,7 +5,7 @@ export interface Exercise extends Models.Row {
 	name: string;
 	description: string;
 	difficulty: string;
-	type: string;
+	type: ExerciseType;
 	format: ExerciseFormat;
 	isCustom: boolean;
 }
@@ -13,7 +13,7 @@ export interface Exercise extends Models.Row {
 export interface CreateExercise {
 	name: string;
 	description: string;
-	type: string;
+	type: ExerciseType;
 	difficulty: string;
 	format: ExerciseFormat;
   image?: string;
@@ -23,7 +23,7 @@ export interface UpdateExercise {
 	$id: string;
 	name: string;
 	description: string;
-	type: string;
+	type: ExerciseType;
 	difficulty: string;
 	format: ExerciseFormat;
   image?: string
@@ -38,3 +38,10 @@ export enum ExerciseFormat {
   HOLD = "hold",
   REPETITION = "repetition"
 }
+
+export enum ExerciseType {
+	PUSH = "push",
+	PULL = "pull"
+}
+
+export type Category = ExerciseType | "custom";

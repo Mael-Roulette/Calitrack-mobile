@@ -4,7 +4,7 @@ import TrainingDay from "@/components/trainings/TrainingDay";
 import EmptyState from "@/components/ui/EmptyState";
 import PrimaryGradient from "@/components/ui/PrimaryGradient";
 import { useTodayTraining, useTrainingDoneToday } from "@/hooks/time/useTodayTraining";
-import { useAuthStore, useExercicesStore, useGoalsStore } from "@/store";
+import { useAuthStore, useGoalsStore } from "@/store";
 import useSessionsStore from "@/store/session.store";
 import useTrainingsStore from "@/store/training.store";
 import useWeeksStore from "@/store/week.store";
@@ -16,7 +16,6 @@ import { ScrollView, Text, View } from "react-native";
 export default function HomePage () {
   const { user, isLoading } = useAuthStore();
   const { fetchUserGoals, getActiveGoals, isLoading: isGoalsLoading } = useGoalsStore();
-  const { fetchExercises } = useExercicesStore();
   const { fetchUserWeeks } = useWeeksStore();
   const { fetchUserTrainings } = useTrainingsStore();
   const { fetchUserSessions } = useSessionsStore();
@@ -30,13 +29,14 @@ export default function HomePage () {
   }, [ user, isLoading ] );
 
   useEffect( () => {
-    fetchExercises();
+    if ( !user ) return;
+
     fetchUserGoals();
     fetchUserWeeks();
     fetchUserTrainings();
     fetchUserSessions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ user ] );
+  }, [ user?.$id ] );
 
   const inProgressGoals = getActiveGoals();
 

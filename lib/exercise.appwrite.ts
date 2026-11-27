@@ -1,22 +1,31 @@
 import { LIMITS } from "@/constants/value";
-import { CreateExercise, Exercise, UpdateExercise, UpdateExerciseImage, User } from "@/types";
+import { CreateExercise, Exercise, ExerciseType, UpdateExercise, UpdateExerciseImage, User } from "@/types";
 import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { appwriteConfig, tablesDB } from "./appwrite";
 import { deleteFile, getFileIdFromUrl } from "./bucket.appwrite";
 
-/**
- * Permet de récupérer tous les exercices disponibles
- * @returns {Promise<Exercise[]>} - Liste des exercices disponibles
- * @throws {Error} - Si les exercices n'ont pas pu être récupérés
- */
-export const getAllExercises = async (): Promise<Exercise[]> => {
+export const EXERCISES_PAGE_SIZE = 20;
+
+export const getExercisesByType = async ( type: ExerciseType, cursor?: string ): Promise<Exercise[]> => {
   try {
-    const generalExercises = await tablesDB.listRows<Exercise>( {
+    const queries = [
+      Query.equal( "type", type ),
+      Query.equal( "isCustom", false ),
+      Query.limit( EXERCISES_PAGE_SIZE )
+    ];
+
+    if ( cursor ) {
+      queries.push( Query.cursorAfter( cursor ) ) ;
+    }
+
+    const exercises = await tablesDB.listRows<Exercise>( {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.exerciseCollectionId,
+      queries,
+      total: false
     } );
 
-    return generalExercises.rows;
+    return exercises.rows;
   } catch ( error ) {
     console.error( "Erreur lors de la récupération des exercices:", error );
     throw new Error(

@@ -2,7 +2,7 @@ import ExerciseForm from "@/components/exercises/ExerciseForm";
 import PageHeader from "@/components/headers/PageHeader";
 import CustomButton from "@/components/ui/CustomButton";
 import { useExerciseActions } from "@/hooks/exercise/useExerciseActions";
-import { CreateExercise, ExerciseFormat } from "@/types";
+import { CreateExercise, ExerciseFormat, ExerciseType } from "@/types";
 import { showAlert } from "@/utils/alert";
 import { validators } from "@/utils/validation";
 import { useState } from "react";
@@ -15,7 +15,7 @@ export default function AddExercise () {
     description: "",
     image: "",
     difficulty: "beginner",
-    type: "pull",
+    type: ExerciseType.PULL,
     format: ExerciseFormat.HOLD
   } );
 

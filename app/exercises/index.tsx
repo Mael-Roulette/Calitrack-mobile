@@ -1,85 +1,34 @@
-import ExerciseItem from "@/components/exercises/ExerciseItem";
+import ExerciseTypeItem from "@/components/exercises/ExerciseTypeItem";
 import PageHeader from "@/components/headers/PageHeader";
-import { LIMITS } from "@/constants/value";
-import { useExerciseFilters } from "@/hooks/exercise/useExerciseFilters";
-import { useExercicesStore } from "@/store";
+import { EXERCISES_TYPES } from "@/constants/exercises";
 import { router } from "expo-router";
 import React from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 const ExerciseList = () => {
-  const { exercices } = useExercicesStore();
-  const { activeTab, setActiveTab, filteredExercises } = useExerciseFilters( exercices );
-
-  const goToExerciseDetails = ( id: string ) => {
-    router.push( {
-      pathname: "/exercises/[id]",
-      params: { id },
-    } );
-  };
-
   return (
     <View className="flex-1">
       <PageHeader
         title="Les mouvements"
         onRightPress={ () => router.push( "/exercises/add-exercise" ) }
       />
-      {/* Custom Tabs */ }
-      <View className="flex-row border-b border-primary-100/20">
-        <TouchableOpacity
-          className={ `flex-1 py-4 items-center ${activeTab === "all" ? "border-b-2 border-secondary" : ""
-          }` }
-          onPress={ () => setActiveTab( "all" ) }
-        >
-          <Text
-            className={ `title-3 ${activeTab === "all" ? "text-secondary" : "text-primary-100"
-            }` }
-          >
-            Généraux
-          </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          className={ `flex-1 py-4 items-center ${activeTab === "custom" ? "border-b-2 border-secondary" : ""
-          }` }
-          onPress={ () => setActiveTab( "custom" ) }
-        >
-          <Text
-            className={ `title-3 ${activeTab === "custom" ? "text-secondary" : "text-primary-100"
-            }` }
-          >
-            Personnalisés
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={ false }>
+        { EXERCISES_TYPES.map( ( { type, label, description } ) => (
+          <ExerciseTypeItem
+            key={ type }
+            handlePress={ () =>router.push( { pathname: "/exercises/type/[type]", params: { type } } ) }
+            title={ label }
+            description={ description }
+          />
+        ) ) }
 
-      {/* Content */ }
-      <View className="flex-1 px-2 pt-4 pb-5">
-        { activeTab === "custom" &&
-          <Text className="indicator-text mb-4">Nombre d&apos;exercices personnalisés : { filteredExercises.length } / { LIMITS.MAX_CUSTOM_EXERCISES } </Text>
-        }
-
-        <FlatList
-          data={ filteredExercises }
-          renderItem={ ( { item } ) => (
-            <View style={ { flex: 1, maxWidth: "50%", padding: 5 } }>
-              <ExerciseItem
-                exercise={ item }
-                onPress={ () => goToExerciseDetails( item.$id ) }
-              />
-            </View>
-          ) }
-          keyExtractor={ ( item ) => item.$id }
-          showsVerticalScrollIndicator={ false }
-          ListEmptyComponent={
-            <Text className="text-center text-primary-100 mt-4">
-              Aucun exercice trouvé
-            </Text>
-          }
-          numColumns={ 2 }
-          columnWrapperStyle={ { paddingHorizontal: 0 } }
+        <ExerciseTypeItem
+          handlePress={ () => router.push( "/exercises/custom" ) }
+          title="Personnalisés"
+          description="Tes propres exercices"
         />
-      </View>
+      </ScrollView>
     </View>
   );
 };

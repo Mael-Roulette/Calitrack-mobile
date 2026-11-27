@@ -1,22 +1,17 @@
-import CustomInput from "@/components/ui/CustomInput";
-import { useExercicesStore } from "@/store";
-import { Exercise } from "@/types";
+import { EXERCISES_TYPES } from "@/constants/exercises";
+import { Category, Exercise } from "@/types";
 import { toggleExerciseSelection } from "@/utils/selection";
-import React, { useCallback, useState } from "react";
-import {
-  Animated,
-  FlatList,
-  Modal,
-  TouchableWithoutFeedback,
-  View
-} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Animated, Modal, TouchableWithoutFeedback, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useExerciseSearch } from "../../../hooks/exercise/useExerciseSearch";
 import { useModalAnimation } from "../../../hooks/exercise/useModalAnimation";
-import ExerciseSelectionItem from "../ExerciseSelectionItem";
 import { ModalActions } from "./ModalActions";
+import { CategoryBackHeader } from "./ModalCategoryBackHeader";
+import { CategoryList } from "./ModalCategoryList";
+import { ModalCustomExercises } from "./ModalCustomExercises";
 import { ModalDragHandle } from "./ModalDragHandle";
 import { ModalHeader } from "./ModalHeader";
+import { TypeExercises } from "./ModalTypeExercises";
 
 interface ExerciseSelectionModalProps {
   isVisible: boolean;
@@ -33,11 +28,18 @@ export default function ExercisesSelectionModal ( {
   initialSelectedExercises = [],
   selectableExercise,
 }: ExerciseSelectionModalProps ) {
-  const { exercices } = useExercicesStore();
   const [ selectedExercises, setSelectedExercises ] = useState<Exercise[]>( initialSelectedExercises );
+  const [ category, setCategory ] = useState<Category | null>( null );
 
-  const { filteredExercises, handleSearch } = useExerciseSearch( exercices );
   const { panY, panResponder, closeModal } = useModalAnimation( isVisible, onClose );
+
+  useEffect( () => {
+    if ( isVisible ) {
+      setCategory( null );
+      setSelectedExercises( initialSelectedExercises );
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ isVisible ] );
 
   const handleExerciseToggle = useCallback( ( exercise: Exercise ) => {
     setSelectedExercises( ( prev ) =>
@@ -46,22 +48,28 @@ export default function ExercisesSelectionModal ( {
   }, [ selectableExercise ] );
 
   const isExerciseSelected = useCallback(
-    ( exerciseId: string ) => {
-      return selectedExercises.some( ( ex ) => ex.$id === exerciseId );
-    },
+    ( exerciseId: string ) => selectedExercises.some( ( ex ) => ex.$id === exerciseId ),
     [ selectedExercises ]
   );
 
   const handleConfirmSelection = useCallback( () => {
     setTimeout( () => {
-      if ( onExerciseSelected ) {
-        onExerciseSelected( selectedExercises );
-      }
+      onExerciseSelected?.( selectedExercises );
       closeModal();
     }, 0 );
   }, [ selectedExercises, onExerciseSelected, closeModal ] );
 
   if ( !isVisible ) return null;
+
+  const categoryLabel =
+    category === "custom"
+      ? "Personnalisés"
+      : EXERCISES_TYPES.find( ( t ) => t.type === category )?.label;
+
+  const selectionProps = {
+    isSelected: isExerciseSelected,
+    onToggle: handleExerciseToggle,
+  };
 
   return (
     <Modal
@@ -94,30 +102,21 @@ export default function ExercisesSelectionModal ( {
               <View className='flex-1'>
                 <ModalHeader selectedCount={ selectedExercises.length } />
 
-                <CustomInput
-                  label='Rechercher un exercice'
-                  placeholder='Ex : Front, planche, ...'
-                  onChangeText={ handleSearch }
-                  customStyles='mb-4'
-                />
-
-                <FlatList
-                  className='flex-1 mb-4'
-                  data={ filteredExercises }
-                  showsVerticalScrollIndicator={ false }
-                  keyExtractor={ ( item ) => item.$id }
-                  renderItem={ ( { item } ) => (
-                    <ExerciseSelectionItem
-                      image={ item.image }
-                      name={ item.name }
-                      difficulty={ item.difficulty }
-                      isCustom={ item.isCustom || false }
-                      selectable
-                      isSelected={ isExerciseSelected( item.$id ) }
-                      onPress={ () => handleExerciseToggle( item ) }
+                { category === null ? (
+                  <CategoryList onSelect={ setCategory } />
+                ) : (
+                  <View className='flex-1'>
+                    <CategoryBackHeader
+                      label={ categoryLabel }
+                      onBack={ () => setCategory( null ) }
                     />
-                  ) }
-                />
+                    { category === "custom" ? (
+                      <ModalCustomExercises { ...selectionProps } />
+                    ) : (
+                      <TypeExercises type={ category } { ...selectionProps } />
+                    ) }
+                  </View>
+                ) }
 
                 <ModalActions
                   selectedCount={ selectedExercises.length }

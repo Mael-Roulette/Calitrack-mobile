@@ -6,7 +6,7 @@ import {
 } from "@/constants/exercises";
 import { createFile } from "@/lib/bucket.appwrite";
 import { useAuthStore } from "@/store";
-import { CreateExercise, ExerciseFormat } from "@/types";
+import { CreateExercise, ExerciseFormat, ExerciseType } from "@/types";
 import { showAlert } from "@/utils/alert";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
@@ -110,7 +110,7 @@ const ExerciseForm = ( { formData, setFormData }: ExerciseFormProps ) => {
         <CustomSelect
           options={ EXERCISE_TYPE_OPTIONS }
           value={ formData.type }
-          onChange={ ( text: string ) =>
+          onChange={ ( text: ExerciseType ) =>
             setFormData( ( prev ) => ( { ...prev, type: text } ) )
           }
         />
